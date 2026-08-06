@@ -1,0 +1,66 @@
+{
+  "name": "@tuwaio/siwx-evm",
+  "version": "0.0.1",
+  "private": false,
+  "author": "Oleksandr Tkach",
+  "license": "Apache-2.0",
+  "description": "EVM adapter for @tuwaio/siwx (L2). Signs and verifies CAIP-122 messages for eip155 chains via viem and wagmi, including EIP-1271 smart contract wallet support.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "socket.json"
+  ],
+  "scripts": {
+    "start": "tsup src/index.ts --watch",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "web3",
+    "typescript",
+    "caip-122",
+    "evm",
+    "eip155",
+    "eip-191",
+    "eip-1271",
+    "viem",
+    "wagmi",
+    "sign-in-with-ethereum",
+    "siwe",
+    "authentication",
+    "tuwa"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TuwaIO/siwx.git",
+    "directory": "packages/siwx-evm"
+  },
+  "homepage": "https://github.com/TuwaIO/siwx",
+  "bugs": {
+    "url": "https://github.com/TuwaIO/siwx/issues"
+  },
+  "contributors": [
+    {
+      "name": "Oleksandr Tkach",
+      "url": "https://github.com/Argeare5"
+    }
+  ],
+  "peerDependencies": {
+    "@tuwaio/siwx-core": "workspace:*",
+    "@wagmi/core": "^3.0.0",
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "@tuwaio/siwx-core": "workspace:*",
+    "@wagmi/core": "^3.6.4",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "viem": "^2.55.11"
+  }
+}

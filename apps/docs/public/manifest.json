@@ -1,0 +1,21 @@
+{
+  "name": "TUWA Orbit Documentation",
+  "short_name": "TUWA Orbit",
+  "description": "Technical documentation for TUWA Orbit: The framework-agnostic low-level Web3 communication primitives.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/favicon/icon0.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

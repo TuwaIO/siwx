@@ -1,0 +1,66 @@
+{
+  "name": "@tuwaio/siwx-react",
+  "version": "0.0.1",
+  "private": false,
+  "author": "Oleksandr Tkach",
+  "license": "Apache-2.0",
+  "description": "React bindings for @tuwaio/siwx (L2). Provides hooks and a Zustand-powered session store for managing the full CAIP-122 authentication lifecycle, independent of any backend.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "socket.json"
+  ],
+  "scripts": {
+    "start": "tsup src/index.ts --watch",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "web3",
+    "typescript",
+    "react",
+    "caip-122",
+    "authentication",
+    "hooks",
+    "zustand",
+    "sign-in-with-x",
+    "session",
+    "tuwa"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TuwaIO/siwx.git",
+    "directory": "packages/siwx-react"
+  },
+  "homepage": "https://github.com/TuwaIO/siwx",
+  "bugs": {
+    "url": "https://github.com/TuwaIO/siwx/issues"
+  },
+  "contributors": [
+    {
+      "name": "Oleksandr Tkach",
+      "url": "https://github.com/Argeare5"
+    }
+  ],
+  "peerDependencies": {
+    "@tuwaio/siwx-core": "workspace:*",
+    "immer": "^10.0.0 || ^11.0.0",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tuwaio/siwx-core": "workspace:*",
+    "@types/react": "^19",
+    "immer": "^11.1.16",
+    "react": "^19.2.8",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "zustand": "^5.0.14"
+  }
+}

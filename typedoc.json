@@ -1,0 +1,24 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "API Reference — @tuwaio/siwx (CAIP-122 Authentication Layer)",
+  "entryPoints": [
+    "packages/siwx-core/src/index.ts",
+    "packages/siwx-evm/src/index.ts",
+    "packages/siwx-solana/src/index.ts",
+    "packages/siwx-react/src/index.ts",
+    "packages/siwx-server/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "tsconfig": "tsconfig.json",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-react"],
+  "out": "apps/docs/src/content/apiReference",
+  "readme": "none",
+  "githubPages": false,
+  "hideGenerator": true,
+  "cleanOutputDir": true,
+  "categorizeByGroup": true,
+  "hideBreadcrumbs": true,
+  "pageTitleTemplates": {
+    "member": "{name}"
+  }
+}

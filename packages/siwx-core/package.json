@@ -1,0 +1,54 @@
+{
+  "name": "@tuwaio/siwx-core",
+  "version": "0.0.1",
+  "private": false,
+  "author": "Oleksandr Tkach",
+  "license": "Apache-2.0",
+  "description": "Chain-agnostic CAIP-122 message builder, parser, and validator. The L1 foundational engine of the @tuwaio/siwx ecosystem.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "socket.json"
+  ],
+  "scripts": {
+    "start": "tsup src/index.ts --watch",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "web3",
+    "typescript",
+    "caip-122",
+    "siwe",
+    "sign-in-with-x",
+    "authentication",
+    "headless",
+    "chain-agnostic",
+    "tuwa"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TuwaIO/siwx.git",
+    "directory": "packages/siwx-core"
+  },
+  "homepage": "https://github.com/TuwaIO/siwx",
+  "bugs": {
+    "url": "https://github.com/TuwaIO/siwx/issues"
+  },
+  "contributors": [
+    {
+      "name": "Oleksandr Tkach",
+      "url": "https://github.com/Argeare5"
+    }
+  ],
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}
