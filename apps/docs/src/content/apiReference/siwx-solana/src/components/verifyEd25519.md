@@ -6,7 +6,7 @@
 
 > **verifyEd25519**(`payload`, `options?`): `Promise`\<`SiwxVerifyResult`\>
 
-Defined in: [packages/siwx-solana/src/verify.ts:74](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-solana/src/verify.ts#L74)
+Defined in: [packages/siwx-solana/src/verify.ts:74](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-solana/src/verify.ts#L74)
 
 Verifies a Solana CAIP-122 signature using ed25519 cryptography.
 Compatible with all Wallet Standard wallets (Phantom, Solflare, Backpack, etc.).

@@ -4,7 +4,7 @@
 
 # EvmVerifyResult
 
-Defined in: [packages/siwx-evm/src/types.ts:38](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-evm/src/types.ts#L38)
+Defined in: [packages/siwx-evm/src/types.ts:38](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-evm/src/types.ts#L38)
 
 Result of an EIP-1271 contract signature check, indicating which verification path was used.
 
@@ -48,7 +48,7 @@ Present only when `success` is false.
 
 > `optional` **method?**: `"eip191"` \| `"eip1271"`
 
-Defined in: [packages/siwx-evm/src/types.ts:44](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-evm/src/types.ts#L44)
+Defined in: [packages/siwx-evm/src/types.ts:44](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-evm/src/types.ts#L44)
 
 The method used for verification.
 - `eip191`: Standard EOA signature recovery.

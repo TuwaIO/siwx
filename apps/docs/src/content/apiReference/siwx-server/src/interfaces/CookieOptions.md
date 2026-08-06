@@ -4,7 +4,7 @@
 
 # CookieOptions
 
-Defined in: [packages/siwx-server/src/types.ts:60](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L60)
+Defined in: [packages/siwx-server/src/types.ts:60](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L60)
 
 Options for cookie session serialization.
 
@@ -14,7 +14,7 @@ Options for cookie session serialization.
 
 > `optional` **domain?**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:79](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L79)
+Defined in: [packages/siwx-server/src/types.ts:79](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L79)
 
 The cookie domain.
 
@@ -24,7 +24,7 @@ The cookie domain.
 
 > `optional` **maxAge?**: `number`
 
-Defined in: [packages/siwx-server/src/types.ts:70](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L70)
+Defined in: [packages/siwx-server/src/types.ts:70](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L70)
 
 Max age in seconds. Defaults to 7 days.
 
@@ -40,7 +40,7 @@ Max age in seconds. Defaults to 7 days.
 
 > `optional` **name?**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:65](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L65)
+Defined in: [packages/siwx-server/src/types.ts:65](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L65)
 
 The name of the cookie.
 
@@ -56,7 +56,7 @@ The name of the cookie.
 
 > `optional` **path?**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:75](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L75)
+Defined in: [packages/siwx-server/src/types.ts:75](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L75)
 
 The cookie path.
 
@@ -72,7 +72,7 @@ The cookie path.
 
 > `optional` **sameSite?**: `"Strict"` \| `"Lax"` \| `"None"`
 
-Defined in: [packages/siwx-server/src/types.ts:89](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L89)
+Defined in: [packages/siwx-server/src/types.ts:89](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L89)
 
 The SameSite policy.
 
@@ -88,7 +88,7 @@ The SameSite policy.
 
 > `optional` **secure?**: `boolean`
 
-Defined in: [packages/siwx-server/src/types.ts:84](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/types.ts#L84)
+Defined in: [packages/siwx-server/src/types.ts:84](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L84)
 
 Whether to set the Secure flag.
 

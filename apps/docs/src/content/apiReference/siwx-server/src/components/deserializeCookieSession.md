@@ -6,7 +6,7 @@
 
 > **deserializeCookieSession**(`cookieValue`): [`SiwxSession`](../interfaces/SiwxSession.md) \| `null`
 
-Defined in: [packages/siwx-server/src/server.ts:178](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/server.ts#L178)
+Defined in: [packages/siwx-server/src/server.ts:178](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/server.ts#L178)
 
 Deserializes a `SiwxSession` from a base64url-encoded cookie value.
 This is the inverse of `serializeCookieSession`.

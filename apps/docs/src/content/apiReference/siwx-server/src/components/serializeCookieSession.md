@@ -6,7 +6,7 @@
 
 > **serializeCookieSession**(`session`, `opts?`): [`SerializedCookieSession`](../interfaces/SerializedCookieSession.md)
 
-Defined in: [packages/siwx-server/src/server.ts:141](https://github.com/TuwaIO/siwx/blob/83e0c9855663c2d6978ceb9e5f570cbbfb6bb802/packages/siwx-server/src/server.ts#L141)
+Defined in: [packages/siwx-server/src/server.ts:141](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/server.ts#L141)
 
 Serializes a `SiwxSession` into an `HttpOnly` cookie string.
 The session data is base64url-encoded (not encrypted — use a signed cookie or JWT for production).
