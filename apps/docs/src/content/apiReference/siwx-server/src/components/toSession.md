@@ -6,7 +6,7 @@
 
 > **toSession**(`parsed`): [`SiwxSession`](../interfaces/SiwxSession.md)
 
-Defined in: [packages/siwx-server/src/types.ts:108](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L108)
+Defined in: [packages/siwx-server/src/types.ts:114](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-server/src/types.ts#L114)
 
 **`Internal`**
 

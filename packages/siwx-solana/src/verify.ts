@@ -3,7 +3,7 @@
  * Uses ed25519 cryptography via the native SubtleCrypto API (Node.js & browser compatible).
  */
 
-import type { SiwxVerifyPayload, SiwxVerifyResult } from '@tuwaio/siwx-core';
+import type { SiwxVerifyResult } from '@tuwaio/siwx-core';
 import {
   parseMessage,
   SiwxUnsupportedNamespaceError,
@@ -12,6 +12,8 @@ import {
   validateMessage,
 } from '@tuwaio/siwx-core';
 import { address as solanaAddress } from 'gill';
+
+import type { SolanaVerifyPayload } from './types';
 
 /**
  * Decodes a base58-encoded string into a Uint8Array.
@@ -53,30 +55,66 @@ function extractSolanaAddress(caip10Address: string): string {
 }
 
 /**
+ * Normalizes input payload formats into raw message bytes, CAIP-122 string, and signature bytes.
+ * Handles Wallet Standard `solana:signIn` output, `Uint8Array`, and standard base58 payloads.
+ * @internal
+ */
+function normalizeSolanaPayload(payload: SolanaVerifyPayload): {
+  messageString: string;
+  messageBytes: Uint8Array;
+  signatureBytes: Uint8Array;
+} {
+  const rawPayload = 'output' in payload ? payload.output : payload;
+
+  const rawMessage = 'signedMessage' in rawPayload ? rawPayload.signedMessage : rawPayload.message;
+  const rawSignature = rawPayload.signature;
+
+  let messageString: string;
+  let messageBytes: Uint8Array;
+
+  if (rawMessage instanceof Uint8Array) {
+    messageBytes = rawMessage;
+    messageString = new TextDecoder().decode(rawMessage);
+  } else {
+    messageString = rawMessage;
+    messageBytes = new TextEncoder().encode(rawMessage);
+  }
+
+  let signatureBytes: Uint8Array;
+  if (rawSignature instanceof Uint8Array) {
+    signatureBytes = rawSignature;
+  } else {
+    signatureBytes = base58ToBytes(rawSignature);
+  }
+
+  return { messageString, messageBytes, signatureBytes };
+}
+
+/**
  * Verifies a Solana CAIP-122 signature using ed25519 cryptography.
- * Compatible with all Wallet Standard wallets (Phantom, Solflare, Backpack, etc.).
+ * Compatible with all Wallet Standard wallets (Phantom, Solflare, Backpack, etc.)
+ * and accepts raw `solana:signIn` output objects as well as string payloads.
  *
  * Uses the native `SubtleCrypto` API for ed25519 verification, ensuring
- * compatibility with both Node.js (v19+) and browser environments.
+ * compatibility with both Node.js (v19+) and browser environments without polyfills.
  *
- * @param payload - The CAIP-122 message string and the base58-encoded signature.
+ * @param payload - Standard SIWX payload, Uint8Array buffers, or Wallet Standard `solana:signIn` output.
+ * @param options - Verification options.
  * @returns A `SiwxVerifyResult` with `success: true` and parsed data, or an error result.
  *
  * @example
  * ```ts
- * const result = await verifyEd25519({
- *   message: rawCaip122Message,
- *   signature: base58EncodedSignature,
- * });
+ * const result = await verifyEd25519(solanaSignInOutput);
  * if (result.success) console.log('Authenticated:', result.data?.address);
  * ```
  */
 export async function verifyEd25519(
-  payload: SiwxVerifyPayload,
+  payload: SolanaVerifyPayload,
   options?: { skipExpiration?: boolean },
 ): Promise<SiwxVerifyResult> {
   try {
-    const parsed = parseMessage(payload.message);
+    const { messageString, messageBytes, signatureBytes } = normalizeSolanaPayload(payload);
+    const parsed = parseMessage(messageString);
 
     if (!parsed.chainId.startsWith('solana:')) {
       throw new SiwxUnsupportedNamespaceError(parsed.chainId.split(':')[0] ?? 'unknown');
@@ -91,10 +129,7 @@ export async function verifyEd25519(
 
     // Validate the address using gill's address utility
     const validatedAddress = solanaAddress(rawAddress);
-
     const publicKeyBytes = base58ToBytes(validatedAddress);
-    const signatureBytes = base58ToBytes(payload.signature);
-    const messageBytes = new TextEncoder().encode(payload.message);
 
     const cryptoKey = await globalThis.crypto.subtle.importKey(
       'raw',
@@ -108,7 +143,7 @@ export async function verifyEd25519(
       { name: 'Ed25519' },
       cryptoKey,
       signatureBytes.buffer as ArrayBuffer,
-      messageBytes,
+      messageBytes.buffer as ArrayBuffer,
     );
 
     if (!isValid) {

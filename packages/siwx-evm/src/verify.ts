@@ -163,3 +163,36 @@ export async function verifyEip1271(
     return { success: false, error: `EIP-1271 verification failed: ${String(error)}` };
   }
 }
+
+/**
+ * Universal EVM signature verifier for CAIP-122 messages.
+ * Tries EIP-191 (standard EOA ecrecover) first.
+ * If EIP-191 fails and a `publicClient` is provided, automatically falls back to EIP-1271 (`isValidSignature`).
+ *
+ * @param message - The raw CAIP-122 message string that was signed.
+ * @param signature - The hex-encoded signature from the wallet.
+ * @param options - Options including optional `publicClient` for smart contract wallets.
+ * @returns An `EvmVerifyResult` indicating success or failure and the method used (`eip191` or `eip1271`).
+ *
+ * @example
+ * ```ts
+ * const result = await verifyEvmSignature(rawMessage, '0xdeadbeef...', { publicClient });
+ * if (result.success) console.log('Authenticated via:', result.method);
+ * ```
+ */
+export async function verifyEvmSignature(
+  message: string,
+  signature: Hex,
+  options: EvmVerifyOptions = {},
+): Promise<EvmVerifyResult> {
+  const eip191Result = await verifyEip191(message, signature, options);
+  if (eip191Result.success) {
+    return eip191Result;
+  }
+
+  if (options.publicClient) {
+    return verifyEip1271(message, signature, options);
+  }
+
+  return eip191Result;
+}

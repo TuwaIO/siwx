@@ -21,6 +21,12 @@ export interface ServerVerifyOptions {
    * @default false
    */
   skipExpiration?: boolean;
+
+  /**
+   * Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wallet) verification.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publicClient?: any;
 }
 
 /**

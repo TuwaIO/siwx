@@ -14,4 +14,4 @@
  */
 
 export type { EvmVerifyOptions, EvmVerifyPayload, EvmVerifyResult } from './types';
-export { verifyEip191, verifyEip1271 } from './verify';
+export { verifyEip191, verifyEip1271, verifyEvmSignature } from './verify';

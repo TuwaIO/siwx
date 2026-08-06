@@ -6,7 +6,7 @@
 
 > **generateNonce**(): `string`
 
-Defined in: [packages/siwx-core/src/validateMessage.ts:198](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-core/src/validateMessage.ts#L198)
+Defined in: [packages/siwx-core/src/validateMessage.ts:198](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-core/src/validateMessage.ts#L198)
 
 Generates a cryptographically secure random nonce string suitable for CAIP-122 messages.
 Produces a 16-byte random hex string (32 characters).

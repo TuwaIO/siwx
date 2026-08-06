@@ -113,4 +113,33 @@ describe('verifyEd25519()', () => {
     expect(result.success).toBe(false);
     expect(result.error).toContain('Unsupported CAIP-2 namespace');
   });
+
+  it('successfully verifies a Wallet Standard solana:signIn output object', async () => {
+    const keyPair = (await globalThis.crypto.subtle.generateKey('Ed25519', true, ['sign', 'verify'])) as CryptoKeyPair;
+
+    const rawPublicKey = await globalThis.crypto.subtle.exportKey('raw', keyPair.publicKey);
+    const solanaAddress = bytesToBase58(new Uint8Array(rawPublicKey));
+
+    const message = buildMessage({
+      domain: 'app.tuwa.io',
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      uri: 'https://app.tuwa.io',
+      version: '1',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      nonce: 'a4f3b2c1d0e5f678',
+      issuedAt: '2026-08-06T08:00:00.000Z',
+    });
+
+    const messageBytes = new TextEncoder().encode(message);
+    const signatureBuffer = await globalThis.crypto.subtle.sign('Ed25519', keyPair.privateKey, messageBytes);
+
+    const result = await verifyEd25519({
+      account: { address: solanaAddress, publicKey: new Uint8Array(rawPublicKey) },
+      signedMessage: messageBytes,
+      signature: new Uint8Array(signatureBuffer),
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.address).toBe(`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`);
+  });
 });

@@ -76,9 +76,10 @@ export async function verifySiwxPayload(
 
     // Dynamically import the appropriate chain adapter to keep this package dependency-free
     if (namespace === 'eip155') {
-      const { verifyEip191 } = await import('@tuwaio/siwx-evm');
-      const result = await verifyEip191(payload.message, payload.signature as `0x${string}`, {
+      const { verifyEvmSignature } = await import('@tuwaio/siwx-evm');
+      const result = await verifyEvmSignature(payload.message, payload.signature as `0x${string}`, {
         skipExpiration: options.skipExpiration,
+        publicClient: options.publicClient,
       });
       return { ...result, namespace };
     }

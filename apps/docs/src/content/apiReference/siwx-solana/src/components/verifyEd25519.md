@@ -6,23 +6,26 @@
 
 > **verifyEd25519**(`payload`, `options?`): `Promise`\<`SiwxVerifyResult`\>
 
-Defined in: [packages/siwx-solana/src/verify.ts:74](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-solana/src/verify.ts#L74)
+Defined in: [packages/siwx-solana/src/verify.ts:111](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-solana/src/verify.ts#L111)
 
 Verifies a Solana CAIP-122 signature using ed25519 cryptography.
-Compatible with all Wallet Standard wallets (Phantom, Solflare, Backpack, etc.).
+Compatible with all Wallet Standard wallets (Phantom, Solflare, Backpack, etc.)
+and accepts raw `solana:signIn` output objects as well as string payloads.
 
 Uses the native `SubtleCrypto` API for ed25519 verification, ensuring
-compatibility with both Node.js (v19+) and browser environments.
+compatibility with both Node.js (v19+) and browser environments without polyfills.
 
 ## Parameters
 
 ### payload
 
-`SiwxVerifyPayload`
+[`SolanaVerifyPayload`](../type-aliases/SolanaVerifyPayload.md)
 
-The CAIP-122 message string and the base58-encoded signature.
+Standard SIWX payload, Uint8Array buffers, or Wallet Standard `solana:signIn` output.
 
 ### options?
+
+Verification options.
 
 #### skipExpiration?
 
@@ -37,9 +40,6 @@ A `SiwxVerifyResult` with `success: true` and parsed data, or an error result.
 ## Example
 
 ```ts
-const result = await verifyEd25519({
-  message: rawCaip122Message,
-  signature: base58EncodedSignature,
-});
+const result = await verifyEd25519(solanaSignInOutput);
 if (result.success) console.log('Authenticated:', result.data?.address);
 ```

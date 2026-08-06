@@ -6,7 +6,7 @@
 
 > **SiwxChainId** = `` `${SiwxChainNamespace}:${string}` ``
 
-Defined in: [packages/siwx-core/src/types.ts:19](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-core/src/types.ts#L19)
+Defined in: [packages/siwx-core/src/types.ts:19](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-core/src/types.ts#L19)
 
 A fully qualified CAIP-2 chain ID string.
 

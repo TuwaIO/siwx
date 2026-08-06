@@ -6,7 +6,7 @@
 
 > **verifyEip191**(`message`, `signature`, `options?`): `Promise`\<[`EvmVerifyResult`](../interfaces/EvmVerifyResult.md)\>
 
-Defined in: [packages/siwx-evm/src/verify.ts:65](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-evm/src/verify.ts#L65)
+Defined in: [packages/siwx-evm/src/verify.ts:65](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-evm/src/verify.ts#L65)
 
 Verifies an EVM (eip155) CAIP-122 signature using EIP-191 (personal_sign).
 This method is used for standard EOA (Externally Owned Account) wallets.

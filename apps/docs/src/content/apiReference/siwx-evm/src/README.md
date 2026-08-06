@@ -24,3 +24,4 @@ Public API barrel for @tuwaio/siwx-evm.
 
 - [verifyEip1271](functions/verifyEip1271.md)
 - [verifyEip191](functions/verifyEip191.md)
+- [verifyEvmSignature](functions/verifyEvmSignature.md)

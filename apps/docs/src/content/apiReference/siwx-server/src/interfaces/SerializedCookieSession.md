@@ -4,7 +4,7 @@
 
 # SerializedCookieSession
 
-Defined in: [packages/siwx-server/src/types.ts:95](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L95)
+Defined in: [packages/siwx-server/src/types.ts:101](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-server/src/types.ts#L101)
 
 The serialized cookie string and session data together.
 
@@ -14,7 +14,7 @@ The serialized cookie string and session data together.
 
 > **cookieHeader**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:97](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L97)
+Defined in: [packages/siwx-server/src/types.ts:103](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-server/src/types.ts#L103)
 
 The full `Set-Cookie` header value.
 
@@ -24,7 +24,7 @@ The full `Set-Cookie` header value.
 
 > **cookieValue**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:101](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L101)
+Defined in: [packages/siwx-server/src/types.ts:107](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-server/src/types.ts#L107)
 
 The base64url-encoded session payload (the cookie value).
 
@@ -34,6 +34,6 @@ The base64url-encoded session payload (the cookie value).
 
 > **session**: [`SiwxSession`](SiwxSession.md)
 
-Defined in: [packages/siwx-server/src/types.ts:99](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-server/src/types.ts#L99)
+Defined in: [packages/siwx-server/src/types.ts:105](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-server/src/types.ts#L105)
 
 The session data embedded in the cookie.

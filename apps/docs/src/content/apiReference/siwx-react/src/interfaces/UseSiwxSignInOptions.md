@@ -4,7 +4,7 @@
 
 # UseSiwxSignInOptions
 
-Defined in: [packages/siwx-react/src/hooks.ts:15](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/hooks.ts#L15)
+Defined in: [packages/siwx-react/src/hooks.ts:15](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/hooks.ts#L15)
 
 Options for the `useSiwx` hook's `signIn` function.
 
@@ -14,7 +14,7 @@ Options for the `useSiwx` hook's `signIn` function.
 
 > **fields**: `Omit`\<`SiwxMessageFields`, `"version"` \| `"nonce"` \| `"issuedAt"`\> & `object`
 
-Defined in: [packages/siwx-react/src/hooks.ts:39](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/hooks.ts#L39)
+Defined in: [packages/siwx-react/src/hooks.ts:39](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/hooks.ts#L39)
 
 The fields to build the CAIP-122 message with.
 `nonce` and `issuedAt` are auto-generated if not provided.
@@ -35,7 +35,7 @@ The fields to build the CAIP-122 message with.
 
 > **signer**: (`message`) => `Promise`\<`string`\>
 
-Defined in: [packages/siwx-react/src/hooks.ts:23](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/hooks.ts#L23)
+Defined in: [packages/siwx-react/src/hooks.ts:23](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/hooks.ts#L23)
 
 A function that accepts the formatted CAIP-122 message string and returns the signature.
 This is where you integrate with your wallet connector (e.g., satellite, wagmi, gill).
@@ -60,7 +60,7 @@ A promise resolving to the hex/base58-encoded signature string.
 
 > **verifier**: (`payload`) => `Promise`\<[`SiwxClientSession`](SiwxClientSession.md) \| `null`\>
 
-Defined in: [packages/siwx-react/src/hooks.ts:33](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/hooks.ts#L33)
+Defined in: [packages/siwx-react/src/hooks.ts:33](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/hooks.ts#L33)
 
 A function that submits the `{ message, signature }` payload to your backend
 for verification and issues a session (cookie/JWT).

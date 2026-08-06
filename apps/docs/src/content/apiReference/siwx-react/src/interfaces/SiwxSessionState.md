@@ -4,7 +4,7 @@
 
 # SiwxSessionState
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:31](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/sessionStore.ts#L31)
+Defined in: [packages/siwx-react/src/sessionStore.ts:31](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L31)
 
 The shape of the siwx session Zustand store state.
 
@@ -14,7 +14,7 @@ The shape of the siwx session Zustand store state.
 
 > **error**: `string` \| `null`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:37](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/sessionStore.ts#L37)
+Defined in: [packages/siwx-react/src/sessionStore.ts:37](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L37)
 
 The last error message, present when `status` is 'error'.
 
@@ -24,7 +24,7 @@ The last error message, present when `status` is 'error'.
 
 > **session**: [`SiwxClientSession`](SiwxClientSession.md) \| `null`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:35](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/sessionStore.ts#L35)
+Defined in: [packages/siwx-react/src/sessionStore.ts:35](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L35)
 
 The active session, present when `status` is 'authenticated'.
 
@@ -34,6 +34,6 @@ The active session, present when `status` is 'authenticated'.
 
 > **status**: `SiwxStatus`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:33](https://github.com/TuwaIO/siwx/blob/09eb108718ca0fbc6fd96fa980ed6a900a00adb2/packages/siwx-react/src/sessionStore.ts#L33)
+Defined in: [packages/siwx-react/src/sessionStore.ts:33](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L33)
 
 Current authentication status.
