@@ -16,5 +16,11 @@
 
 export type { UseSiwxReturn, UseSiwxSignInOptions } from './hooks';
 export { useSiwx, useSiwxSession } from './hooks';
+export type {
+  MinimalSatelliteConnection,
+  SatelliteSiwxFieldOptions,
+  UseSatelliteSiwxAutoAuthOptions,
+} from './satelliteHelpers';
+export { createSatelliteSiwxSigner, getSatelliteSiwxFields, useSatelliteSiwxAutoAuth } from './satelliteHelpers';
 export type { SiwxClientSession, SiwxSessionActions, SiwxSessionState, SiwxSessionStore } from './sessionStore';
 export { useSiwxSessionStore } from './sessionStore';

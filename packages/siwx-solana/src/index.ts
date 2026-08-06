@@ -11,5 +11,7 @@
  * @see {@link https://github.com/TuwaIO/siwx Repository}
  */
 
+export type { SolanaSiwxSignerTarget } from './signer';
+export { createSolanaSiwxSigner } from './signer';
 export type { SolanaSignInAccount, SolanaSignInOutput, SolanaVerifyPayload } from './types';
 export { verifyEd25519 } from './verify';

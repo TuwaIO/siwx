@@ -180,6 +180,12 @@ importers:
       '@tuwaio/siwx-core':
         specifier: workspace:*
         version: link:../siwx-core
+      '@tuwaio/siwx-evm':
+        specifier: workspace:*
+        version: link:../siwx-evm
+      '@tuwaio/siwx-solana':
+        specifier: workspace:*
+        version: link:../siwx-solana
       '@types/react':
         specifier: ^19
         version: 19.2.17

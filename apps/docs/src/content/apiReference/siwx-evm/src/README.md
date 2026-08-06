@@ -20,8 +20,13 @@ Public API barrel for @tuwaio/siwx-evm.
 - [EvmVerifyPayload](interfaces/EvmVerifyPayload.md)
 - [EvmVerifyResult](interfaces/EvmVerifyResult.md)
 
+## Type Aliases
+
+- [EvmSiwxSignerTarget](type-aliases/EvmSiwxSignerTarget.md)
+
 ## Functions
 
+- [createEvmSiwxSigner](functions/createEvmSiwxSigner.md)
 - [verifyEip1271](functions/verifyEip1271.md)
 - [verifyEip191](functions/verifyEip191.md)
 - [verifyEvmSignature](functions/verifyEvmSignature.md)

@@ -4,7 +4,7 @@
 
 # SiwxSessionActions
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:43](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L43)
+Defined in: [packages/siwx-react/src/sessionStore.ts:43](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/sessionStore.ts#L43)
 
 Actions available on the siwx session Zustand store.
 
@@ -14,7 +14,7 @@ Actions available on the siwx session Zustand store.
 
 > **reset**: () => `void`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:72](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L72)
+Defined in: [packages/siwx-react/src/sessionStore.ts:72](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/sessionStore.ts#L72)
 
 Resets the store to `idle` and clears all session data.
 Use this to log the user out.
@@ -29,7 +29,7 @@ Use this to log the user out.
 
 > **setAuthenticated**: (`parsed`) => `void`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:60](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L60)
+Defined in: [packages/siwx-react/src/sessionStore.ts:60](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/sessionStore.ts#L60)
 
 Sets the store to `authenticated` and stores the session.
 
@@ -51,7 +51,7 @@ The verified parsed CAIP-122 message.
 
 > **setError**: (`error`) => `void`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:66](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L66)
+Defined in: [packages/siwx-react/src/sessionStore.ts:66](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/sessionStore.ts#L66)
 
 Sets the store to `error` state with a message.
 
@@ -73,7 +73,7 @@ Human-readable error description.
 
 > **setSigning**: () => `void`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:48](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L48)
+Defined in: [packages/siwx-react/src/sessionStore.ts:48](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/sessionStore.ts#L48)
 
 Sets the store into the `signing` state.
 Call this before triggering the wallet sign request.
@@ -88,7 +88,7 @@ Call this before triggering the wallet sign request.
 
 > **setVerifying**: () => `void`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:54](https://github.com/TuwaIO/siwx/blob/f3976975efb71bc20b6908e4a2785aadb8b7e132/packages/siwx-react/src/sessionStore.ts#L54)
+Defined in: [packages/siwx-react/src/sessionStore.ts:54](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/sessionStore.ts#L54)
 
 Sets the store into the `verifying` state.
 Call this after the user has signed but before server verification.

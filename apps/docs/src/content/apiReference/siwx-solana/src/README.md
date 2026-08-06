@@ -17,6 +17,7 @@ Public API barrel for @tuwaio/siwx-solana.
 
 - [SolanaSignInAccount](interfaces/SolanaSignInAccount.md)
 - [SolanaSignInOutput](interfaces/SolanaSignInOutput.md)
+- [SolanaSiwxSignerTarget](interfaces/SolanaSiwxSignerTarget.md)
 
 ## Type Aliases
 
@@ -24,4 +25,5 @@ Public API barrel for @tuwaio/siwx-solana.
 
 ## Functions
 
+- [createSolanaSiwxSigner](functions/createSolanaSiwxSigner.md)
 - [verifyEd25519](functions/verifyEd25519.md)
