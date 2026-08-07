@@ -4,7 +4,7 @@
 
 # MinimalSatelliteConnection
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:15](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L15)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:15](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L15)
 
 Duck-typed interface for a Satellite Connection to avoid strict dependency on `@tuwaio/satellite-core`.
 
@@ -14,7 +14,7 @@ Duck-typed interface for a Satellite Connection to avoid strict dependency on `@
 
 > `optional` **address?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:17](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L17)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:17](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L17)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:17](https://github.com/
 
 > `optional` **chainId?**: `string` \| `number`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:18](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L18)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:18](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L18)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:18](https://github.com/
 
 > `optional` **connectedAccount?**: `unknown`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L22)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L22)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/
 
 > `optional` **connectedWallet?**: `unknown`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L23)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L23)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/
 
 > `optional` **connector?**: `object`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:19](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L19)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:19](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L19)
 
 #### getWalletClient?
 
@@ -62,4 +62,4 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:19](https://github.com/
 
 > `optional` **isConnected?**: `boolean`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:16](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L16)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:16](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L16)

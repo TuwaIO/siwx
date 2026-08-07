@@ -4,7 +4,7 @@
 
 # UseSatelliteSiwxAutoAuthOptions
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:101](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L101)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:101](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L101)
 
 Configuration options for the auto-auth hook.
 
@@ -18,7 +18,7 @@ Configuration options for the auto-auth hook.
 
 > **activeConnection**: [`MinimalSatelliteConnection`](MinimalSatelliteConnection.md) \| `null` \| `undefined`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:102](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L102)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:102](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L102)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:102](https://github.com
 
 > `optional` **domain?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L30)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L30)
 
 #### Inherited from
 
@@ -38,7 +38,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/
 
 > `optional` **enabled?**: `boolean`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:103](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L103)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:103](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L103)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:103](https://github.com
 
 > `optional` **statement?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L32)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L32)
 
 #### Inherited from
 
@@ -58,7 +58,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/
 
 > `optional` **uri?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:31](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L31)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:31](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L31)
 
 #### Inherited from
 
@@ -70,7 +70,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:31](https://github.com/
 
 > **verifier**: (`payload`) => `Promise`\<[`SiwxClientSession`](SiwxClientSession.md) \| `null`\>
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:104](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L104)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:104](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/satelliteHelpers.ts#L104)
 
 #### Parameters
 

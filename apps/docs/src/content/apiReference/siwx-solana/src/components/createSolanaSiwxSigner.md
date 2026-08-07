@@ -6,7 +6,7 @@
 
 > **createSolanaSiwxSigner**(`signer`): (`message`) => `Promise`\<`string`\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:32](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-solana/src/signer.ts#L32)
+Defined in: [packages/siwx-solana/src/signer.ts:32](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-solana/src/signer.ts#L32)
 
 Creates a standard SIWX signer callback for Solana chains.
 Automatically adapts to Wallet Standard, Web3 v2 (gill), or legacy Solana signers.

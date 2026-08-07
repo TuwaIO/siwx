@@ -66,7 +66,7 @@ export interface UseSiwxReturn {
  *   signIn({
  *     signer: (msg) => walletClient.signMessage({ message: msg }),
  *     verifier: async (payload) => {
- *       const res = await fetch('/api/auth/verify', {
+ *       const res = await fetch('/api/siwx/verify', {
  *         method: 'POST',
  *         body: JSON.stringify(payload),
  *       });

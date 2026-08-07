@@ -57,7 +57,7 @@ Client                          Wallet          Your Backend
   │── buildMessage(fields) ──>    │                  │
   │── signMessage(message) ──>    │                  │
   │<── signature ─────────────── │                  │
-  │── POST /auth/verify ──────────────────────────> │
+  │── POST /api/siwx/verify ──────────────────────────> │
   │                                                  │── verifySiwxPayload()
   │                                                  │── serializeCookieSession()
   │<── Set-Cookie: siwx-session ─────────────────── │
