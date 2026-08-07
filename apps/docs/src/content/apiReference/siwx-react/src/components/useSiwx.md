@@ -6,7 +6,7 @@
 
 > **useSiwx**(): [`UseSiwxReturn`](../interfaces/UseSiwxReturn.md)
 
-Defined in: [packages/siwx-react/src/hooks.ts:85](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-react/src/hooks.ts#L85)
+Defined in: [packages/siwx-react/src/hooks.ts:85](https://github.com/TuwaIO/siwx/blob/8e4b42d7efd91d50100ad87a03ed6922bb680d68/packages/siwx-react/src/hooks.ts#L85)
 
 The primary hook for triggering the full CAIP-122 Sign-In With X flow.
 Orchestrates: message building → wallet signing → backend verification → session storage.

@@ -44,7 +44,7 @@ const handler = createSiwxApiHandler({
   // Optional: Pass used nonces to prevent replay attacks
   verifyOptions: {
     // usedNonces: await getNonceStore()
-  }
+  },
 });
 
 // Automatically exposes GET, POST, and DELETE methods

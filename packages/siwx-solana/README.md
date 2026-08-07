@@ -44,26 +44,33 @@ if (result.success) {
 
 ---
 
-## Wallet Standard Integration
+### `createSolanaSiwxSigner(signer)`
 
-When using a Wallet Standard compatible wallet (Phantom, Solflare, Backpack):
+Creates a standard SIWX signer callback for Solana chains. Automatically adapts to Wallet Standard, Web3 v2 (gill), or legacy Solana signers.
 
 ```ts
-import { buildMessage, generateNonce } from '@tuwaio/siwx-core';
-import { verifyEd25519 } from '@tuwaio/siwx-solana';
+import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
 
-// 1. Build the message
-const message = buildMessage({ ... });
+const signer = createSolanaSiwxSigner(connectedAccount);
+const signature = await signer('Message to sign');
+```
 
-// 2. Sign with wallet (Wallet Standard)
-const encodedMessage = new TextEncoder().encode(message);
-const { signature } = await wallet.features['standard:signMessage'].signMessage({
-  message: encodedMessage,
-  account: wallet.accounts[0],
-});
+---
 
-// 3. Convert Uint8Array signature to base58 and verify
-const result = await verifyEd25519({ message, signature: base58Signature });
+## Wallet Standard Integration
+
+When using a Wallet Standard compatible wallet (Phantom, Solflare, Backpack), integration is seamless with the factory:
+
+```ts
+import { useSiwx } from '@tuwaio/siwx-react';
+import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
+
+const { signIn } = useSiwx();
+
+// `connectedAccount` is the `UiWalletAccount` from `@wallet-standard/react`
+const signer = createSolanaSiwxSigner(connectedAccount);
+
+await signIn({ signer, verifier, fields: { ... } });
 ```
 
 ---

@@ -32,14 +32,15 @@ Provides `signIn` and `signOut` actions.
 
 ```tsx
 import { useSiwx } from '@tuwaio/siwx-react';
+import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
 
 function LoginButton({ address }: { address: string }) {
   const { signIn, signOut } = useSiwx();
 
   const handleLogin = () =>
     signIn({
-      // 1. Your wallet signing function
-      signer: async (message) => walletClient.signMessage({ message }),
+      // 1. Your wallet signing function (using the standard adapter)
+      signer: createEvmSiwxSigner(walletClient),
       // 2. Your backend verifier (returns session or null)
       verifier: async (payload) => {
         // You can easily create this endpoint using @tuwaio/siwx-server/next

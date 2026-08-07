@@ -25,6 +25,17 @@ pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core viem @wagmi/core
 
 ## API
 
+### `createEvmSiwxSigner(target, account?)`
+
+Creates a standard SIWX signer callback for EVM chains. Automatically adapts to either a Wagmi `Config` or a Viem `WalletClient`.
+
+```ts
+import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+
+const signer = createEvmSiwxSigner(walletClient);
+const signature = await signer('Message to sign');
+```
+
 ### `verifyEip191(message, signature, options?): Promise<EvmVerifyResult>`
 
 Verifies a standard EOA wallet signature. Recovers the signer address and compares it to the CAIP-10 address embedded in the message. Accept optional `options?: EvmVerifyOptions` (e.g. `{ skipExpiration?: boolean }`).

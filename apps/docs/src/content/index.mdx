@@ -64,14 +64,77 @@ Client                          Wallet          Your Backend
   │── useSiwxSession() shows authenticated           │
 ```
 
+## Integrations
+
+SIWX is completely headless, giving you full control over how you wire up the frontend and backend.
+
+### 1. Backend (Next.js Example)
+
+For Next.js App Router, `@tuwaio/siwx-server/next` provides a ready-to-use API handler that implements the verification and session management endpoints.
+
+```tsx
+// app/api/siwx/[...siwx]/route.ts
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+
+const handler = createSiwxApiHandler({
+  cookieOptions: { name: 'siwx-session' },
+});
+
+export const { GET, POST, DELETE } = handler;
+```
+
+This creates standard endpoints natively compatible with the React state store:
+
+- `GET /api/siwx/session` (Retrieves the active session)
+- `POST /api/siwx/verify` (Verifies a signature and issues a session cookie)
+- `DELETE /api/siwx/logout` (Destroys the session cookie)
+
+### 2. Frontend (React Example)
+
+Use the `useSiwx` hook to trigger the authentication flow. You must provide a `signer` function tailored to the connected chain, and a `verifier` function that calls your backend.
+
+For convenience, `@tuwaio/siwx-evm` and `@tuwaio/siwx-solana` provide standard signer adapters (`createEvmSiwxSigner` and `createSolanaSiwxSigner`).
+
+```tsx
+import { useSiwx } from '@tuwaio/siwx-react';
+import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+// import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
+
+const { signIn, signOut } = useSiwx();
+
+const handleSignIn = async () => {
+  // 1. Resolve your signer adapter based on the active wallet connection
+  // Examples: createEvmSiwxSigner(walletClient) or createSolanaSiwxSigner(connectedAccount)
+  const signer = createEvmSiwxSigner(walletClient);
+
+  // 2. Trigger the SIWX flow
+  await signIn({
+    signer,
+    verifier: async (payload) => {
+      // POST to the `verify` action from createSiwxApiHandler
+      const res = await fetch('/api/siwx/verify', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      return res.ok ? res.json() : null;
+    },
+    fields: {
+      domain: window.location.host,
+      uri: window.location.origin,
+      address: `eip155:1:${address}`, // Strict CAIP-10 format
+      chainId: 'eip155:1', // Strict CAIP-2 format
+      statement: 'Sign in to TUWA.',
+    },
+  });
+};
+```
+
 ## Design Principles
 
 - **Headless First**: Zero UI. This library is pure logic.
 - **Backend-Agnostic**: `siwx-server` works with Next.js, NestJS, Hono, Express, and Cloudflare Workers.
 - **No State in SDK**: `siwx-react` manages client state independently using Zustand.
 - **Strict Standard**: Every message is CAIP-122 spec-compliant. Parser and builder are round-trip compatible.
-- **Type-Safe**: Strict TypeScript throughout. No `any`.
-- **Sovereign Individual**: No reliance on cloud services. Deploy anywhere. Own your auth.
 
 ## 📚 Technical Reference
 

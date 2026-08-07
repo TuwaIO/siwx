@@ -6,7 +6,7 @@
 
 > **validateMessage**(`fields`, `options?`): [`SiwxValidationResult`](../interfaces/SiwxValidationResult.md)
 
-Defined in: [packages/siwx-core/src/validateMessage.ts:137](https://github.com/TuwaIO/siwx/blob/38c3a86a4f2ede00b00c21f5bf6ebea6fa7bbcee/packages/siwx-core/src/validateMessage.ts#L137)
+Defined in: [packages/siwx-core/src/validateMessage.ts:137](https://github.com/TuwaIO/siwx/blob/8e4b42d7efd91d50100ad87a03ed6922bb680d68/packages/siwx-core/src/validateMessage.ts#L137)
 
 Validates all fields of a CAIP-122 message object.
 Collects all errors and returns them together rather than failing on the first.
