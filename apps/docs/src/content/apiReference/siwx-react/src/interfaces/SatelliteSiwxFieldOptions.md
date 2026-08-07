@@ -4,13 +4,9 @@
 
 # SatelliteSiwxFieldOptions
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:29](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L29)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:19](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L19)
 
 Options for generating Satellite SIWX fields.
-
-## Extended by
-
-- [`UseSatelliteSiwxAutoAuthOptions`](UseSatelliteSiwxAutoAuthOptions.md)
 
 ## Properties
 
@@ -18,7 +14,7 @@ Options for generating Satellite SIWX fields.
 
 > `optional` **domain?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L30)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:20](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L20)
 
 ***
 
@@ -26,7 +22,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/
 
 > `optional` **statement?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L32)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L22)
 
 ***
 
@@ -34,4 +30,4 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/
 
 > `optional` **uri?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:31](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L31)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:21](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L21)

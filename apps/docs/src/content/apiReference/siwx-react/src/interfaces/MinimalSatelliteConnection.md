@@ -4,7 +4,7 @@
 
 # MinimalSatelliteConnection
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:15](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L15)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:4](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L4)
 
 Duck-typed interface for a Satellite Connection to avoid strict dependency on `@tuwaio/satellite-core`.
 
@@ -14,7 +14,7 @@ Duck-typed interface for a Satellite Connection to avoid strict dependency on `@
 
 > `optional` **address?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:17](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L17)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:6](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L6)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:17](https://github.com/
 
 > `optional` **chainId?**: `string` \| `number`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:18](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L18)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:7](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L7)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:18](https://github.com/
 
 > `optional` **connectedAccount?**: `unknown`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L22)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:12](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L12)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/
 
 > `optional` **connectedWallet?**: `unknown`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L23)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:13](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L13)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/
 
 > `optional` **connector?**: `object`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:19](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L19)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:9](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L9)
 
 #### getWalletClient?
 
@@ -62,4 +62,22 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:19](https://github.com/
 
 > `optional` **isConnected?**: `boolean`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:16](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L16)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:5](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L5)
+
+***
+
+### signMessage?
+
+> `optional` **signMessage?**: (`message`) => `Promise`\<`string`\>
+
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:8](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L8)
+
+#### Parameters
+
+##### message
+
+`string`
+
+#### Returns
+
+`Promise`\<`string`\>

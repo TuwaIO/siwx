@@ -6,7 +6,7 @@
 
 > **parseMessage**(`message`): [`SiwxMessageFields`](../interfaces/SiwxMessageFields.md)
 
-Defined in: [packages/siwx-core/src/parseMessage.ts:31](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-core/src/parseMessage.ts#L31)
+Defined in: [packages/siwx-core/src/parseMessage.ts:31](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-core/src/parseMessage.ts#L31)
 
 Parses a raw CAIP-122 compliant message string into a structured `ParsedSiwxMessage` object.
 

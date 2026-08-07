@@ -16,14 +16,10 @@
 
 export type { UseSiwxReturn, UseSiwxSignInOptions } from './hooks';
 export { useSiwx, useSiwxSession } from './hooks';
-export type {
-  MinimalSatelliteConnection,
-  SatelliteSiwxFieldOptions,
-  UseSatelliteSiwxAutoAuthOptions,
-} from './satelliteHelpers';
-export { createSatelliteSiwxSigner, getSatelliteSiwxFields, useSatelliteSiwxAutoAuth } from './satelliteHelpers';
+export type { MinimalSatelliteConnection, SatelliteSiwxFieldOptions } from './satelliteHelpers';
+export { createSatelliteSiwxSigner, getSatelliteSiwxFields } from './satelliteHelpers';
 export type { SiwxClientSession, SiwxSessionActions, SiwxSessionState, SiwxSessionStore } from './sessionStore';
 export { useSiwxSessionStore } from './sessionStore';
 
 // Re-export common types from siwx-core for convenience
-export type { SiwxMessageFields, SiwxStatus, ParsedSiwxMessage } from '@tuwaio/siwx-core';
+export type { ParsedSiwxMessage, SiwxMessageFields, SiwxStatus } from '@tuwaio/siwx-core';

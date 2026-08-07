@@ -6,9 +6,9 @@
 
 > **createSatelliteSiwxSigner**(`activeConnection`): `Promise`\<(`message`) => `Promise`\<`string`\>\>
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:68](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L68)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:58](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-react/src/satelliteHelpers.ts#L58)
 
-Inspects a Satellite connection and dynamically loads the appropriate EVM or Solana SIWX signer.
+Accepts a Satellite connection and returns its native signing method.
 
 ## Parameters
 

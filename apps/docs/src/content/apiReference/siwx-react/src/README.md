@@ -20,7 +20,6 @@ Public API barrel for @tuwaio/siwx-react.
 - [SiwxMessageFields](interfaces/SiwxMessageFields.md)
 - [SiwxSessionActions](interfaces/SiwxSessionActions.md)
 - [SiwxSessionState](interfaces/SiwxSessionState.md)
-- [UseSatelliteSiwxAutoAuthOptions](interfaces/UseSatelliteSiwxAutoAuthOptions.md)
 - [UseSiwxReturn](interfaces/UseSiwxReturn.md)
 - [UseSiwxSignInOptions](interfaces/UseSiwxSignInOptions.md)
 
@@ -38,6 +37,5 @@ Public API barrel for @tuwaio/siwx-react.
 
 - [createSatelliteSiwxSigner](functions/createSatelliteSiwxSigner.md)
 - [getSatelliteSiwxFields](functions/getSatelliteSiwxFields.md)
-- [useSatelliteSiwxAutoAuth](functions/useSatelliteSiwxAutoAuth.md)
 - [useSiwx](functions/useSiwx.md)
 - [useSiwxSession](functions/useSiwxSession.md)

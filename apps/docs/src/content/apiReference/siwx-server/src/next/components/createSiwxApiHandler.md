@@ -6,7 +6,7 @@
 
 > **createSiwxApiHandler**(`options?`): `object`
 
-Defined in: [packages/siwx-server/src/next.ts:38](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-server/src/next.ts#L38)
+Defined in: [packages/siwx-server/src/next.ts:38](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-server/src/next.ts#L38)
 
 Creates a ready-to-use Next.js App Router route handler for SIWX operations.
 Exposes GET, POST, and DELETE methods that handle session verification, fetching, and logout.
