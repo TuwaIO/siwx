@@ -24,3 +24,6 @@ export type {
 export { createSatelliteSiwxSigner, getSatelliteSiwxFields, useSatelliteSiwxAutoAuth } from './satelliteHelpers';
 export type { SiwxClientSession, SiwxSessionActions, SiwxSessionState, SiwxSessionStore } from './sessionStore';
 export { useSiwxSessionStore } from './sessionStore';
+
+// Re-export common types from siwx-core for convenience
+export type { SiwxMessageFields, SiwxStatus, ParsedSiwxMessage } from '@tuwaio/siwx-core';

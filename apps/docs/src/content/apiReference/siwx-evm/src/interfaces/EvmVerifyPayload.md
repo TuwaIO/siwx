@@ -4,7 +4,7 @@
 
 # EvmVerifyPayload
 
-Defined in: [packages/siwx-evm/src/types.ts:30](https://github.com/TuwaIO/siwx/blob/8e4b42d7efd91d50100ad87a03ed6922bb680d68/packages/siwx-evm/src/types.ts#L30)
+Defined in: [packages/siwx-evm/src/types.ts:30](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-evm/src/types.ts#L30)
 
 The payload for EVM signature verification, extending the base SIWX payload
 with a typed `signature` field.
@@ -33,7 +33,7 @@ The raw CAIP-122 compliant message string that was signed.
 
 > **signature**: `` `0x${string}` ``
 
-Defined in: [packages/siwx-evm/src/types.ts:32](https://github.com/TuwaIO/siwx/blob/8e4b42d7efd91d50100ad87a03ed6922bb680d68/packages/siwx-evm/src/types.ts#L32)
+Defined in: [packages/siwx-evm/src/types.ts:32](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-evm/src/types.ts#L32)
 
 The EVM hex-encoded signature string.
 

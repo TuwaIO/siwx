@@ -6,7 +6,7 @@
 
 > **getSatelliteSiwxFields**(`activeConnection`, `options?`): `object`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:38](https://github.com/TuwaIO/siwx/blob/8e4b42d7efd91d50100ad87a03ed6922bb680d68/packages/siwx-react/src/satelliteHelpers.ts#L38)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:38](https://github.com/TuwaIO/siwx/blob/635cad282f213892454d5971831155271a225905/packages/siwx-react/src/satelliteHelpers.ts#L38)
 
 Generates exact CAIP-10 and CAIP-2 identifiers strictly from the active connection.
 

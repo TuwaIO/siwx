@@ -17,6 +17,7 @@ Public API barrel for @tuwaio/siwx-react.
 - [MinimalSatelliteConnection](interfaces/MinimalSatelliteConnection.md)
 - [SatelliteSiwxFieldOptions](interfaces/SatelliteSiwxFieldOptions.md)
 - [SiwxClientSession](interfaces/SiwxClientSession.md)
+- [SiwxMessageFields](interfaces/SiwxMessageFields.md)
 - [SiwxSessionActions](interfaces/SiwxSessionActions.md)
 - [SiwxSessionState](interfaces/SiwxSessionState.md)
 - [UseSatelliteSiwxAutoAuthOptions](interfaces/UseSatelliteSiwxAutoAuthOptions.md)
@@ -25,7 +26,9 @@ Public API barrel for @tuwaio/siwx-react.
 
 ## Type Aliases
 
+- [ParsedSiwxMessage](type-aliases/ParsedSiwxMessage.md)
 - [SiwxSessionStore](type-aliases/SiwxSessionStore.md)
+- [SiwxStatus](type-aliases/SiwxStatus.md)
 
 ## Variables
 

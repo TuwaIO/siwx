@@ -60,11 +60,14 @@ export interface UseSiwxReturn {
  *
  * @example
  * ```tsx
+ * import { useSiwx } from '@tuwaio/siwx-react';
+ * import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+ *
  * const { signIn, signOut } = useSiwx();
  *
  * const handleLogin = () =>
  *   signIn({
- *     signer: (msg) => walletClient.signMessage({ message: msg }),
+ *     signer: createEvmSiwxSigner(walletClient),
  *     verifier: async (payload) => {
  *       const res = await fetch('/api/siwx/verify', {
  *         method: 'POST',
