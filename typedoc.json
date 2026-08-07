@@ -6,8 +6,10 @@
     "packages/siwx-evm/src/index.ts",
     "packages/siwx-solana/src/index.ts",
     "packages/siwx-react/src/index.ts",
-    "packages/siwx-server/src/index.ts"
+    "packages/siwx-server/src/index.ts",
+    "packages/siwx-server/src/next.ts"
   ],
+  "exclude": ["**/__tests__/**"],
   "entryPointStrategy": "expand",
   "tsconfig": "tsconfig.json",
   "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-react"],

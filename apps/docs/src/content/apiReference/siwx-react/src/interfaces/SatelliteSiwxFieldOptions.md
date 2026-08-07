@@ -4,7 +4,7 @@
 
 # SatelliteSiwxFieldOptions
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:29](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/satelliteHelpers.ts#L29)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:29](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L29)
 
 Options for generating Satellite SIWX fields.
 
@@ -18,7 +18,7 @@ Options for generating Satellite SIWX fields.
 
 > `optional` **domain?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/satelliteHelpers.ts#L30)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L30)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:30](https://github.com/
 
 > `optional` **statement?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/satelliteHelpers.ts#L32)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L32)
 
 ***
 
@@ -34,4 +34,4 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:32](https://github.com/
 
 > `optional` **uri?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:31](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-react/src/satelliteHelpers.ts#L31)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:31](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-react/src/satelliteHelpers.ts#L31)

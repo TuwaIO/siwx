@@ -4,7 +4,7 @@
 
 # ServerVerifyOptions
 
-Defined in: [packages/siwx-server/src/types.ts:10](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-server/src/types.ts#L10)
+Defined in: [packages/siwx-server/src/types.ts:10](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-server/src/types.ts#L10)
 
 Options for the `verifySiwxPayload` function.
 
@@ -14,7 +14,7 @@ Options for the `verifySiwxPayload` function.
 
 > `optional` **publicClient?**: `any`
 
-Defined in: [packages/siwx-server/src/types.ts:29](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-server/src/types.ts#L29)
+Defined in: [packages/siwx-server/src/types.ts:29](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-server/src/types.ts#L29)
 
 Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wallet) verification.
 
@@ -24,7 +24,7 @@ Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wal
 
 > `optional` **skipExpiration?**: `boolean`
 
-Defined in: [packages/siwx-server/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-server/src/types.ts#L23)
+Defined in: [packages/siwx-server/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-server/src/types.ts#L23)
 
 If true, skips the `expirationTime` validation check.
 Not recommended for production use.
@@ -41,7 +41,7 @@ false
 
 > `optional` **usedNonces?**: `Set`\<`string`\>
 
-Defined in: [packages/siwx-server/src/types.ts:16](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-server/src/types.ts#L16)
+Defined in: [packages/siwx-server/src/types.ts:16](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-server/src/types.ts#L16)
 
 A set of nonces that have already been used.
 If the payload's nonce is found in this set, verification will fail

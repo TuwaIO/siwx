@@ -10,4 +10,5 @@
 - [siwx-evm/src](siwx-evm/src/README.md)
 - [siwx-react/src](siwx-react/src/README.md)
 - [siwx-server/src](siwx-server/src/README.md)
+- [siwx-server/src/next](siwx-server/src/next/README.md)
 - [siwx-solana/src](siwx-solana/src/README.md)

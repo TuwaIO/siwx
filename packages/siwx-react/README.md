@@ -42,7 +42,8 @@ function LoginButton({ address }: { address: string }) {
       signer: async (message) => walletClient.signMessage({ message }),
       // 2. Your backend verifier (returns session or null)
       verifier: async (payload) => {
-        const res = await fetch('/api/auth/verify', {
+        // You can easily create this endpoint using @tuwaio/siwx-server/next
+        const res = await fetch('/api/siwx/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),

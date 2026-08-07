@@ -28,6 +28,35 @@ pnpm add @tuwaio/siwx-evm @tuwaio/siwx-solana
 
 ## API
 
+### `createSiwxApiHandler(options?)` (Next.js App Router)
+
+A ready-to-use Next.js Route Handler for handling the full SIWX lifecycle (`/verify`, `/session`, `/logout`). It works purely with standard Web `Request`/`Response` APIs, keeping your backend fast and edge-compatible.
+
+```ts
+// app/api/siwx/[...siwx]/route.ts
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+
+const handler = createSiwxApiHandler({
+  cookieOptions: {
+    name: 'tuwa-auth',
+    secure: process.env.NODE_ENV === 'production',
+  },
+  // Optional: Pass used nonces to prevent replay attacks
+  verifyOptions: {
+    // usedNonces: await getNonceStore()
+  }
+});
+
+// Automatically exposes GET, POST, and DELETE methods
+export const { GET, POST, DELETE } = handler;
+```
+
+---
+
+## Manual Verification API
+
+If you aren't using Next.js or prefer full control, you can use the low-level utilities.
+
 ### `verifySiwxPayload(payload, options?): Promise<ServerVerifyResult>`
 
 The main server-side verification entry point. Chain is detected automatically from the CAIP-2 `chainId` in the message. Accepts optional `options?: ServerVerifyOptions` (`usedNonces?: Set<string>`, `skipExpiration?: boolean`).

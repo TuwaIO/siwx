@@ -4,7 +4,7 @@
 
 # ServerVerifyResult
 
-Defined in: [packages/siwx-server/src/types.ts:36](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-server/src/types.ts#L36)
+Defined in: [packages/siwx-server/src/types.ts:36](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-server/src/types.ts#L36)
 
 The result of a server-side verification operation, extending the base result
 with the verification method used.
@@ -49,7 +49,7 @@ Present only when `success` is false.
 
 > `optional` **namespace?**: `"eip155"` \| `"solana"`
 
-Defined in: [packages/siwx-server/src/types.ts:41](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-server/src/types.ts#L41)
+Defined in: [packages/siwx-server/src/types.ts:41](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-server/src/types.ts#L41)
 
 The CAIP-2 namespace used for verification routing.
 `eip155` for EVM chains, `solana` for Solana.

@@ -4,7 +4,7 @@
 
 # SiwxMessageFields
 
-Defined in: [packages/siwx-core/src/types.ts:30](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L30)
+Defined in: [packages/siwx-core/src/types.ts:30](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L30)
 
 The complete set of fields required to build a CAIP-122 compliant message.
 All fields follow the CAIP-122 specification.
@@ -15,7 +15,7 @@ All fields follow the CAIP-122 specification.
 
 > **address**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:41](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L41)
+Defined in: [packages/siwx-core/src/types.ts:41](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L41)
 
 The blockchain account address performing the sign-in, CAIP-10 compliant.
 
@@ -31,7 +31,7 @@ The blockchain account address performing the sign-in, CAIP-10 compliant.
 
 > **chainId**: `` `eip155:${string}` `` \| `` `solana:${string}` ``
 
-Defined in: [packages/siwx-core/src/types.ts:65](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L65)
+Defined in: [packages/siwx-core/src/types.ts:65](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L65)
 
 The CAIP-2 chain ID to which the session is bound.
 
@@ -47,7 +47,7 @@ The CAIP-2 chain ID to which the session is bound.
 
 > **domain**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:35](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L35)
+Defined in: [packages/siwx-core/src/types.ts:35](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L35)
 
 The RFC 3986 URI of the domain requesting the sign-in.
 
@@ -63,7 +63,7 @@ The RFC 3986 URI of the domain requesting the sign-in.
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:82](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L82)
+Defined in: [packages/siwx-core/src/types.ts:82](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L82)
 
 Optional ISO 8601 datetime string after which the session is no longer valid.
 
@@ -73,7 +73,7 @@ Optional ISO 8601 datetime string after which the session is no longer valid.
 
 > **issuedAt**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:77](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L77)
+Defined in: [packages/siwx-core/src/types.ts:77](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L77)
 
 The ISO 8601 datetime string of when the message was generated.
 
@@ -89,7 +89,7 @@ The ISO 8601 datetime string of when the message was generated.
 
 > **nonce**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:71](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L71)
+Defined in: [packages/siwx-core/src/types.ts:71](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L71)
 
 A unique, secure, randomly generated string used to prevent replay attacks.
 
@@ -105,7 +105,7 @@ A unique, secure, randomly generated string used to prevent replay attacks.
 
 > `optional` **notBefore?**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:87](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L87)
+Defined in: [packages/siwx-core/src/types.ts:87](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L87)
 
 Optional ISO 8601 datetime string when the session is valid from.
 
@@ -115,7 +115,7 @@ Optional ISO 8601 datetime string when the session is valid from.
 
 > `optional` **requestId?**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:92](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L92)
+Defined in: [packages/siwx-core/src/types.ts:92](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L92)
 
 Optional system-specific identifier for the request.
 
@@ -125,7 +125,7 @@ Optional system-specific identifier for the request.
 
 > `optional` **resources?**: `string`[]
 
-Defined in: [packages/siwx-core/src/types.ts:97](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L97)
+Defined in: [packages/siwx-core/src/types.ts:97](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L97)
 
 Optional list of URIs the session is valid for.
 
@@ -135,7 +135,7 @@ Optional list of URIs the session is valid for.
 
 > `optional` **statement?**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:47](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L47)
+Defined in: [packages/siwx-core/src/types.ts:47](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L47)
 
 A statement (human-readable) that the user will sign.
 Must not contain '\n'.
@@ -146,7 +146,7 @@ Must not contain '\n'.
 
 > **uri**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:53](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L53)
+Defined in: [packages/siwx-core/src/types.ts:53](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L53)
 
 The RFC 3986 URI referring to the resource that is the subject of the sign-in.
 
@@ -162,7 +162,7 @@ The RFC 3986 URI referring to the resource that is the subject of the sign-in.
 
 > **version**: `"1"`
 
-Defined in: [packages/siwx-core/src/types.ts:59](https://github.com/TuwaIO/siwx/blob/b9b124994d5ac633a6d509fd0c9a5e5efdaac504/packages/siwx-core/src/types.ts#L59)
+Defined in: [packages/siwx-core/src/types.ts:59](https://github.com/TuwaIO/siwx/blob/ee070bdd2ff65c730e0fee4e3a75b864166091f0/packages/siwx-core/src/types.ts#L59)
 
 The version of the CAIP-122 message specification.
 Currently always "1".
