@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    "packages/siwx-core": {
+      "package-name": "@tuwaio/siwx-core",
+      "release-type": "node"
+    },
+    "packages/siwx-evm": {
+      "package-name": "@tuwaio/siwx-evm",
+      "release-type": "node"
+    },
+    "packages/siwx-solana": {
+      "package-name": "@tuwaio/siwx-solana",
+      "release-type": "node"
+    },
+    "packages/siwx-react": {
+      "package-name": "@tuwaio/siwx-react",
+      "release-type": "node"
+    },
+    "packages/siwx-server": {
+      "package-name": "@tuwaio/siwx-server",
+      "release-type": "node"
+    }
+  },
+  "initial-version": "0.0.1"
+}

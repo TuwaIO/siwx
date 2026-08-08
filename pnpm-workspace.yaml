@@ -1,0 +1,13 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+allowBuilds:
+  esbuild: false
+  sharp: false
+minimumReleaseAgeExclude:
+  - viem@2.51.3 || 2.55.11
+  - '@wagmi/core@3.5.1'
+  - '@tuwaio/*'
+  - immer@11.1.16
+overrides:
+  zod: 4.3.6

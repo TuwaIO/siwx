@@ -1,0 +1,87 @@
+{
+  "name": "@tuwaio/siwx-server",
+  "version": "0.0.1",
+  "private": false,
+  "author": "Oleksandr Tkach",
+  "license": "Apache-2.0",
+  "description": "Layer 2 (L2) of the TUWA Ecosystem. Backend utilities for @tuwaio/siwx. Parses, validates, and verifies CAIP-122 payloads on Node.js or Edge runtimes.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./next": {
+      "import": {
+        "types": "./dist/next.d.mts",
+        "default": "./dist/next.mjs"
+      },
+      "require": {
+        "types": "./dist/next.d.ts",
+        "default": "./dist/next.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "socket.json"
+  ],
+  "scripts": {
+    "start": "tsup src/index.ts --watch",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "web3",
+    "typescript",
+    "caip-122",
+    "server",
+    "backend",
+    "node",
+    "edge",
+    "authentication",
+    "verification",
+    "session",
+    "cookie",
+    "jwt",
+    "tuwa"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TuwaIO/siwx.git",
+    "directory": "packages/siwx-server"
+  },
+  "homepage": "https://github.com/TuwaIO/siwx",
+  "bugs": {
+    "url": "https://github.com/TuwaIO/siwx/issues"
+  },
+  "contributors": [
+    {
+      "name": "Oleksandr Tkach",
+      "url": "https://github.com/Argeare5"
+    }
+  ],
+  "peerDependencies": {
+    "@tuwaio/siwx-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@tuwaio/siwx-core": "workspace:*",
+    "@tuwaio/siwx-evm": "workspace:*",
+    "@tuwaio/siwx-solana": "workspace:*",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "viem": "^2.55.11"
+  }
+}

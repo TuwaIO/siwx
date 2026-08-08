@@ -1,0 +1,3 @@
+@import 'nextra-theme-docs/style.css';
+@import '@tuwaio/docs-ui/dist/index.css';
+@import 'tailwindcss';

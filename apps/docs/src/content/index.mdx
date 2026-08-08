@@ -1,0 +1,141 @@
+---
+title: Introduction — TUWA Sign-In With X (SIWX)
+description: A modular, multi-chain authentication library built on the CAIP-122 standard. Headless, backend-agnostic, and designed for Sovereign Individual ownership.
+---
+
+# Sign-In With X (SIWX)
+
+**`@tuwaio/siwx`** provides the foundational Low-Level Core & Adapters Layer (L1/L2) of the TUWA Ecosystem. It implements the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) (Sign-In With X) standard — a chain-agnostic, interoperable format for authenticating blockchain accounts across any network.
+
+## Multi-Chain CAIP-122 Authentication
+
+`@tuwaio/siwx` establishes a unified authentication protocol across heterogenous blockchain networks. By leveraging [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) chain identifiers (e.g., `eip155:1`, `solana:5eykt4...`) and [CAIP-10](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-10.md) account representations, it enables seamless, spec-compliant sign-in flows regardless of the underlying network or frontend framework.
+
+A CAIP-122 message looks like:
+
+```
+app.tuwa.io wants you to sign in with your blockchain account:
+eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+
+Sign in to TUWA.
+
+URI: https://app.tuwa.io
+Version: 1
+Chain ID: eip155:1
+Nonce: a4f3b2c1d0e5f6789abc
+Issued At: 2026-08-06T08:00:00.000Z
+Expiration Time: 2026-08-06T08:10:00.000Z
+```
+
+## Architecture
+
+SIWX is designed with strict separation of concerns within the TUWA layer model:
+
+| Layer  | Package                                         | Responsibility                                                       |
+| ------ | ----------------------------------------------- | -------------------------------------------------------------------- |
+| **L1** | `@tuwaio/siwx-core`                             | Low-level CAIP-122 Engine (zero dependencies, completely standalone) |
+| **L2** | `@tuwaio/siwx-evm`, `solana`, `react`, `server` | Multi-chain Adapters, React bindings & Server utilities              |
+| **L3** | `satellite`                                     | Wallet Connection & Session Integration Layer                        |
+| **L7** | `nova-uikit`                                    | UI View Layer (consumes `siwx-react`)                                |
+
+### Package Structure
+
+```
+@tuwaio/siwx-core    → Message building, parsing, validation (zero deps)
+@tuwaio/siwx-evm     → EIP-191 + EIP-1271 verification via viem
+@tuwaio/siwx-solana  → ed25519 verification via SubtleCrypto + gill
+@tuwaio/siwx-react   → Zustand session store + React hooks
+@tuwaio/siwx-server  → Backend verification dispatcher + cookie serialization
+```
+
+## Authentication Flow
+
+```
+Client                          Wallet          Your Backend
+  │                               │                  │
+  │── generateNonce() ──────────> │                  │
+  │── buildMessage(fields) ──>    │                  │
+  │── signMessage(message) ──>    │                  │
+  │<── signature ─────────────── │                  │
+  │── POST /api/siwx/verify ──────────────────────────> │
+  │                                                  │── verifySiwxPayload()
+  │                                                  │── serializeCookieSession()
+  │<── Set-Cookie: siwx-session ─────────────────── │
+  │── useSiwxSession() shows authenticated           │
+```
+
+## Integrations
+
+SIWX is completely headless, giving you full control over how you wire up the frontend and backend.
+
+### 1. Backend (Next.js Example)
+
+For Next.js App Router, `@tuwaio/siwx-server/next` provides a ready-to-use API handler that implements the verification and session management endpoints.
+
+```tsx
+// app/api/siwx/[...siwx]/route.ts
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+
+const handler = createSiwxApiHandler({
+  cookieOptions: { name: 'siwx-session' },
+});
+
+export const { GET, POST, DELETE } = handler;
+```
+
+This creates standard endpoints natively compatible with the React state store:
+
+- `GET /api/siwx/session` (Retrieves the active session)
+- `POST /api/siwx/verify` (Verifies a signature and issues a session cookie)
+- `DELETE /api/siwx/logout` (Destroys the session cookie)
+
+### 2. Frontend (React Example)
+
+Use the `useSiwx` hook to trigger the authentication flow. You must provide a `signer` function tailored to the connected chain, and a `verifier` function that calls your backend.
+
+For convenience, `@tuwaio/siwx-evm` and `@tuwaio/siwx-solana` provide standard signer adapters (`createEvmSiwxSigner` and `createSolanaSiwxSigner`).
+
+```tsx
+import { useSiwx } from '@tuwaio/siwx-react';
+import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+// import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
+
+const { signIn, signOut } = useSiwx();
+
+const handleSignIn = async () => {
+  // 1. Resolve your signer adapter based on the active wallet connection
+  // Examples: createEvmSiwxSigner(walletClient) or createSolanaSiwxSigner(connectedAccount)
+  const signer = createEvmSiwxSigner(walletClient);
+
+  // 2. Trigger the SIWX flow
+  await signIn({
+    signer,
+    verifier: async (payload) => {
+      // POST to the `verify` action from createSiwxApiHandler
+      const res = await fetch('/api/siwx/verify', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      return res.ok ? res.json() : null;
+    },
+    fields: {
+      domain: window.location.host,
+      uri: window.location.origin,
+      address: `eip155:1:${address}`, // Strict CAIP-10 format
+      chainId: 'eip155:1', // Strict CAIP-2 format
+      statement: 'Sign in to TUWA.',
+    },
+  });
+};
+```
+
+## Design Principles
+
+- **Headless First**: Zero UI. This library is pure logic.
+- **Backend-Agnostic**: `siwx-server` works with Next.js, NestJS, Hono, Express, and Cloudflare Workers.
+- **No State in SDK**: `siwx-react` manages client state independently using Zustand.
+- **Strict Standard**: Every message is CAIP-122 spec-compliant. Parser and builder are round-trip compatible.
+
+## 📚 Technical Reference
+
+Refer to the **[API Reference](./apiReference/README/)** to explore generated TypeDoc definitions for all exported types, functions, and interfaces.
