@@ -6,7 +6,7 @@
 
 > **useSiwxSession**(): `object`
 
-Defined in: [packages/siwx-react/src/hooks.ts:186](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-react/src/hooks.ts#L186)
+Defined in: [packages/siwx-react/src/hooks.ts:186](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-react/src/hooks.ts#L186)
 
 A selector hook that returns the current SIWX session state.
 Provides the current status, active session, and any error.

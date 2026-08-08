@@ -4,7 +4,7 @@
 
 # SiwxApiHandlerOptions
 
-Defined in: [packages/siwx-server/src/next.ts:8](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-server/src/next.ts#L8)
+Defined in: [packages/siwx-server/src/next.ts:8](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/next.ts#L8)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/siwx-server/src/next.ts:8](https://github.com/TuwaIO/siwx/
 
 > `optional` **cookieOptions?**: [`CookieOptions`](../../interfaces/CookieOptions.md)
 
-Defined in: [packages/siwx-server/src/next.ts:12](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-server/src/next.ts#L12)
+Defined in: [packages/siwx-server/src/next.ts:12](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/next.ts#L12)
 
 Options for cookie serialization.
 
@@ -22,6 +22,6 @@ Options for cookie serialization.
 
 > `optional` **verifyOptions?**: [`ServerVerifyOptions`](../../interfaces/ServerVerifyOptions.md)
 
-Defined in: [packages/siwx-server/src/next.ts:16](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-server/src/next.ts#L16)
+Defined in: [packages/siwx-server/src/next.ts:16](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/next.ts#L16)
 
 Options for server-side payload verification (e.g. nonce replays, public client).

@@ -39,18 +39,27 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
 
     let signatureBytes: Uint8Array;
 
+    const getFeature = (obj: unknown) => {
+      if (!obj || typeof obj !== 'object') return undefined;
+      const feat = (obj as { features?: Record<string, unknown> }).features;
+      if (feat && typeof feat === 'object' && !Array.isArray(feat)) {
+        return feat['solana:signMessage'];
+      }
+      return undefined;
+    };
+
     const solanaSignMessageFeature =
-      (signer.features?.['solana:signMessage'] as
+      (getFeature(signer) as
         | {
             signMessage?: (input: { message: Uint8Array; account: unknown }[]) => Promise<{ signature: Uint8Array }[]>;
           }
         | undefined) ??
-      ((signer.wallet as { features?: Record<string, unknown> })?.features?.['solana:signMessage'] as
+      (getFeature(signer.wallet) as
         | {
             signMessage?: (input: { message: Uint8Array; account: unknown }[]) => Promise<{ signature: Uint8Array }[]>;
           }
         | undefined) ??
-      ((signer.account as { features?: Record<string, unknown> })?.features?.['solana:signMessage'] as
+      (getFeature(signer.account) as
         | {
             signMessage?: (input: { message: Uint8Array; account: unknown }[]) => Promise<{ signature: Uint8Array }[]>;
           }
@@ -105,6 +114,38 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
         signatureBytes = result.signature;
       } else {
         throw new Error('[SIWX-SOLANA] Unexpected legacy signMessage result format.');
+      }
+    }
+    // Case E: Injected browser extension provider (window.phantom?.solana / window.solana / window.solflare)
+    else if (
+      typeof window !== 'undefined' &&
+      ((window as unknown as Record<string, unknown>).phantom ||
+        (window as unknown as Record<string, unknown>).solana ||
+        (window as unknown as Record<string, unknown>).solflare)
+    ) {
+      const win = window as unknown as Record<string, Record<string, unknown>>;
+      const provider =
+        (win.phantom?.solana as Record<string, unknown> | undefined) ??
+        (win.solana as Record<string, unknown> | undefined) ??
+        (win.solflare as Record<string, unknown> | undefined);
+
+      if (typeof provider?.signMessage === 'function') {
+        const result = await (
+          provider.signMessage as (
+            msg: Uint8Array,
+            encoding?: string,
+          ) => Promise<{ signature: Uint8Array } | Uint8Array>
+        )(messageBytes, 'utf8');
+
+        if (result && 'signature' in result && result.signature instanceof Uint8Array) {
+          signatureBytes = result.signature;
+        } else if (result instanceof Uint8Array) {
+          signatureBytes = result;
+        } else {
+          throw new Error('[SIWX-SOLANA] Unexpected window provider signMessage result format.');
+        }
+      } else {
+        throw new Error('[SIWX-SOLANA] Signer lacks known message signing capabilities.');
       }
     } else {
       throw new Error('[SIWX-SOLANA] Signer lacks known message signing capabilities.');
