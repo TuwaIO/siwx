@@ -4,7 +4,7 @@
 
 # SiwxAdapter
 
-Defined in: [packages/siwx-core/src/types.ts:146](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-core/src/types.ts#L146)
+Defined in: [packages/siwx-core/src/types.ts:146](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-core/src/types.ts#L146)
 
 A chain-specific adapter interface that all siwx chain packages must implement.
 
@@ -14,7 +14,7 @@ A chain-specific adapter interface that all siwx chain packages must implement.
 
 > **namespace**: [`SiwxChainNamespace`](../type-aliases/SiwxChainNamespace.md)
 
-Defined in: [packages/siwx-core/src/types.ts:150](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-core/src/types.ts#L150)
+Defined in: [packages/siwx-core/src/types.ts:150](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-core/src/types.ts#L150)
 
 The CAIP-2 namespace this adapter handles.
 
@@ -24,7 +24,7 @@ The CAIP-2 namespace this adapter handles.
 
 > **verify**(`payload`): `Promise`\<[`SiwxVerifyResult`](SiwxVerifyResult.md)\>
 
-Defined in: [packages/siwx-core/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-core/src/types.ts#L157)
+Defined in: [packages/siwx-core/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/5bd36b810264d62d40a05e48557149b572817954/packages/siwx-core/src/types.ts#L157)
 
 Verifies a CAIP-122 payload signature.
 

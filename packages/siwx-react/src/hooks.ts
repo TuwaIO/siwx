@@ -40,6 +40,20 @@ export interface UseSiwxSignInOptions {
     nonce?: string;
     issuedAt?: string;
   };
+
+  /**
+   * Optional callback triggered immediately after successful authentication.
+   *
+   * @param session - The authenticated client session object.
+   */
+  onSuccess?: (session: SiwxClientSession) => void;
+
+  /**
+   * Optional callback triggered if signing or verification fails.
+   *
+   * @param error - The error message string.
+   */
+  onError?: (error: string) => void;
 }
 
 /**
@@ -90,7 +104,7 @@ export function useSiwx(): UseSiwxReturn {
 
   const signIn = useCallback(
     async (options: UseSiwxSignInOptions) => {
-      const { signer, verifier, fields } = options;
+      const { signer, verifier, fields, onSuccess, onError } = options;
 
       try {
         setSigning();
@@ -112,7 +126,9 @@ export function useSiwx(): UseSiwxReturn {
         const session = await verifier({ message, signature });
 
         if (!session) {
-          setError('Backend verification failed. No session returned.');
+          const err = 'Backend verification failed. No session returned.';
+          setError(err);
+          onError?.(err);
           return;
         }
 
@@ -127,8 +143,20 @@ export function useSiwx(): UseSiwxReturn {
           issuedAt: session.issuedAt,
           expirationTime: session.expirationTime,
         });
+
+        const clientSession: SiwxClientSession = {
+          domain: session.domain,
+          address: session.address,
+          chainId: session.chainId,
+          issuedAt: session.issuedAt,
+          expirationTime: session.expirationTime,
+        };
+
+        onSuccess?.(clientSession);
       } catch (error) {
-        setError(error instanceof Error ? error.message : String(error));
+        const errMessage = error instanceof Error ? error.message : String(error);
+        setError(errMessage);
+        onError?.(errMessage);
       }
     },
     [setSigning, setVerifying, setAuthenticated, setError],

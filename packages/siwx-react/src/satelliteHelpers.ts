@@ -33,21 +33,27 @@ export function getSatelliteSiwxFields(
     throw new Error('[SIWX-REACT] Connection missing address or chainId.');
   }
 
+  const rawAddress = String(activeConnection.address);
+  const rawChainId = String(activeConnection.chainId);
+
   const isEvm =
-    activeConnection.address.startsWith('0x') ||
+    rawAddress.startsWith('0x') ||
+    rawAddress.startsWith('eip155:') ||
     typeof activeConnection.chainId === 'number' ||
+    rawChainId.startsWith('eip155:') ||
     !!activeConnection.connector;
 
-  const caip2ChainId = isEvm ? `eip155:${activeConnection.chainId}` : `solana:${activeConnection.chainId}`;
+  const chainRef = rawChainId.includes(':') ? rawChainId.split(':').slice(1).join(':') : rawChainId;
+  const accountAddr = rawAddress.includes(':') ? rawAddress.split(':').pop()! : rawAddress;
 
-  const caip10Address = `${caip2ChainId}:${activeConnection.address}`;
+  const caip2ChainId = isEvm ? `eip155:${chainRef}` : `solana:${chainRef}`;
+  const caip10Address = `${caip2ChainId}:${accountAddr}`;
 
   return {
     domain: options?.domain ?? (typeof window !== 'undefined' ? window.location.host : ''),
     uri: options?.uri ?? (typeof window !== 'undefined' ? window.location.href : ''),
     statement: options?.statement,
     address: caip10Address,
-    // Type assertion is safe here as the structure matches SiwxChainId
     chainId: caip2ChainId as never,
   };
 }
