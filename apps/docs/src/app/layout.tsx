@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     title: 'TUWA SIWX Documentation',
     description: 'Technical documentation for TUWA SIWX.',
     url: 'https://siwx.docs.tuwa.io/',
-    siteName: 'Orbit Utils Docs',
+    siteName: 'TUWA SIWX Docs',
     images: [
       {
         url: 'https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/preview/preview-logo.png',

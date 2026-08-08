@@ -6,6 +6,6 @@
 
 > **SiwxSessionStore** = [`SiwxSessionState`](../interfaces/SiwxSessionState.md) & [`SiwxSessionActions`](../interfaces/SiwxSessionActions.md)
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:76](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L76)
+Defined in: [packages/siwx-react/src/sessionStore.ts:76](https://github.com/TuwaIO/siwx/blob/937790ab6674ad6603e43d2020db35b698d6f5b0/packages/siwx-react/src/sessionStore.ts#L76)
 
 Combined store type

@@ -10,6 +10,7 @@ import { createSignableMessage, getSignatureFromBytes, getUtf8Encoder } from 'gi
  */
 export interface SolanaSiwxSignerTarget {
   address?: string;
+  name?: string;
   publicKey?: Uint8Array | unknown;
   account?: unknown;
   wallet?: unknown;

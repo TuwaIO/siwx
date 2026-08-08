@@ -1,7 +1,7 @@
 {
-  "name": "TUWA Orbit Documentation",
-  "short_name": "TUWA Orbit",
-  "description": "Technical documentation for TUWA Orbit: The framework-agnostic low-level Web3 communication primitives.",
+  "name": "TUWA SIWX Documentation",
+  "short_name": "TUWA SIWX",
+  "description": "Technical documentation for TUWA SIWX: Multi-chain CAIP-122 Sign-In With X authentication primitives.",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",

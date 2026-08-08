@@ -34,21 +34,26 @@ siwx/
 │   ├── siwx-evm/                # EVM adapter (eip155). EIP-191 + EIP-1271.
 │   │   └── src/
 │   │       ├── types.ts         # EVM-specific types
+│   │       ├── signer.ts        # createEvmSiwxSigner()
 │   │       ├── verify.ts        # verifyEip191() + verifyEip1271()
 │   │       └── index.ts
 │   ├── siwx-solana/             # Solana adapter. ed25519 via SubtleCrypto.
 │   │   └── src/
+│   │       ├── types.ts         # Solana-specific types
+│   │       ├── signer.ts        # createSolanaSiwxSigner()
 │   │       ├── verify.ts        # verifyEd25519()
 │   │       └── index.ts
 │   ├── siwx-react/              # React hooks + Zustand session store.
 │   │   └── src/
 │   │       ├── sessionStore.ts  # Zustand store (useSiwxSessionStore)
 │   │       ├── hooks.ts         # useSiwx() + useSiwxSession()
+│   │       ├── satelliteHelpers.ts # createSatelliteSiwxWatcherOptions()
 │   │       └── index.ts
 │   └── siwx-server/             # Backend utilities. Backend-agnostic.
 │       └── src/
 │           ├── types.ts         # SiwxSession, CookieOptions, ServerVerifyResult
 │           ├── server.ts        # verifySiwxPayload() + cookie utils
+│           ├── next.ts          # createSiwxApiHandler() for Next.js App Router
 │           └── index.ts
 ├── package.json                 # Root workspace config
 └── pnpm-workspace.yaml
