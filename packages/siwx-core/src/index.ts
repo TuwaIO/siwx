@@ -33,4 +33,5 @@ export type {
   SiwxVerifyPayload,
   SiwxVerifyResult,
 } from './types';
-export { generateNonce, validateMessage } from './validateMessage';
+export type { SiwxSessionLike } from './validateMessage';
+export { generateNonce, isSessionMatchingTarget, validateMessage } from './validateMessage';

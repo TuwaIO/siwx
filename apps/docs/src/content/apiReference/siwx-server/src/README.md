@@ -27,3 +27,15 @@ Public API barrel for @tuwaio/siwx-server.
 - [serializeCookieSession](functions/serializeCookieSession.md)
 - [toSession](functions/toSession.md)
 - [verifySiwxPayload](functions/verifySiwxPayload.md)
+
+## References
+
+### isSessionMatchingTarget
+
+Re-exports [isSessionMatchingTarget](../../siwx-react/src/functions/isSessionMatchingTarget.md)
+
+***
+
+### SiwxSessionLike
+
+Re-exports [SiwxSessionLike](../../siwx-react/src/interfaces/SiwxSessionLike.md)

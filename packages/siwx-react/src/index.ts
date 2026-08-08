@@ -21,5 +21,6 @@ export { createSatelliteSiwxSigner, getSatelliteSiwxFields, isSessionMatchingCon
 export type { SiwxClientSession, SiwxSessionActions, SiwxSessionState, SiwxSessionStore } from './sessionStore';
 export { useSiwxSessionStore } from './sessionStore';
 
-// Re-export common types from siwx-core for convenience
-export type { ParsedSiwxMessage, SiwxMessageFields, SiwxStatus } from '@tuwaio/siwx-core';
+// Re-export common types and utilities from siwx-core for convenience
+export type { ParsedSiwxMessage, SiwxMessageFields, SiwxSessionLike, SiwxStatus } from '@tuwaio/siwx-core';
+export { isSessionMatchingTarget } from '@tuwaio/siwx-core';

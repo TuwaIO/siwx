@@ -6,7 +6,7 @@
 
 > **createSatelliteSiwxSigner**(`activeConnection`): `Promise`\<(`message`) => `Promise`\<`string`\>\>
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:66](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-react/src/satelliteHelpers.ts#L66)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:66](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/satelliteHelpers.ts#L66)
 
 Accepts a Satellite connection and returns its native signing method.
 

@@ -78,10 +78,24 @@ const message = buildMessage({
 
 ### 3. Verify on the Server
 
+You can use the high-level Next.js route handler from `@tuwaio/siwx-server/next`:
+
+```ts
+// app/api/siwx/[...siwx]/route.ts
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+
+const handler = createSiwxApiHandler({
+  cookieOptions: { name: 'siwx-session', secure: process.env.NODE_ENV === 'production' },
+});
+
+export const { GET, POST, DELETE } = handler;
+```
+
+Or manually verify payloads with low-level utilities:
+
 ```ts
 import { verifySiwxPayload, serializeCookieSession, toSession } from '@tuwaio/siwx-server';
 
-// Example Web API Route Handler (Next.js, Hono, Express, etc.)
 export async function POST(request: Request) {
   const { message, signature } = await request.json();
 
@@ -102,15 +116,41 @@ export async function POST(request: Request) {
 
 ```tsx
 import { useSiwx, useSiwxSession } from '@tuwaio/siwx-react';
+import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+// import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
 
-function LoginButton() {
-  const { signIn } = useSiwx();
+function LoginButton({ walletClient, address }: { walletClient: any; address: string }) {
+  const { signIn, signOut } = useSiwx();
   const { isAuthenticated, session } = useSiwxSession();
 
+  const handleSignIn = async () => {
+    await signIn({
+      signer: createEvmSiwxSigner(walletClient),
+      verifier: async (payload) => {
+        const res = await fetch('/api/siwx/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        return res.ok ? res.json() : null;
+      },
+      fields: {
+        domain: window.location.host,
+        address: `eip155:1:${address}`,
+        uri: window.location.origin,
+        chainId: 'eip155:1',
+        statement: 'Sign in to TUWA.',
+      },
+    });
+  };
+
   return isAuthenticated ? (
-    <span>{session?.address}</span>
+    <div>
+      <span>{session?.address}</span>
+      <button onClick={signOut}>Sign Out</button>
+    </div>
   ) : (
-    <button onClick={() => signIn({ signer, verifier, fields })}>Sign In</button>
+    <button onClick={handleSignIn}>Sign In</button>
   );
 }
 ```

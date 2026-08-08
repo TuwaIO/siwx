@@ -93,6 +93,55 @@ const address = useSiwxSessionStore((s) => s.session?.address);
 
 ---
 
+### Satellite Connection Helpers
+
+`@tuwaio/siwx-react` includes duck-typed integration helpers for `@tuwaio/satellite-core` connections without adding hard dependencies.
+
+#### `getSatelliteSiwxFields(activeConnection, options?)`
+
+Generates exact CAIP-10 and CAIP-2 identifiers strictly from the active connection.
+
+```ts
+import { getSatelliteSiwxFields } from '@tuwaio/siwx-react';
+
+const fields = getSatelliteSiwxFields(activeConnection, {
+  statement: 'Sign in to TUWA.',
+});
+// Returns { domain, uri, statement, address: 'eip155:1:0x...', chainId: 'eip155:1' }
+```
+
+#### `createSatelliteSiwxSigner(activeConnection)`
+
+Returns the native `signMessage` callback from a Satellite active connection.
+
+```ts
+import { createSatelliteSiwxSigner } from '@tuwaio/siwx-react';
+
+const signer = await createSatelliteSiwxSigner(activeConnection);
+```
+
+#### `isSessionMatchingConnection(session, activeConnection)`
+
+Evaluates whether an active SIWX session matches an active Satellite connection (handles CAIP-10 address alignment and chainId matching).
+
+```ts
+import { isSessionMatchingConnection } from '@tuwaio/siwx-react';
+
+const isMatching = isSessionMatchingConnection(session, activeConnection);
+```
+
+#### `isSessionMatchingTarget(session, targetAddress, targetChainId?)`
+
+Re-exported from `@tuwaio/siwx-core` for convenience. Validates whether a SIWX session matches a target wallet address and optional chainId.
+
+```ts
+import { isSessionMatchingTarget } from '@tuwaio/siwx-react';
+
+const isValid = isSessionMatchingTarget(session, address, chainId);
+```
+
+---
+
 ## Session Lifecycle
 
 ```

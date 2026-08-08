@@ -75,6 +75,17 @@ if (!valid) console.error(errors);
 const { valid: isValidExpired } = validateMessage(parsedMessage, { skipExpiration: true });
 ```
 
+### `isSessionMatchingTarget(session: SiwxSessionLike | null | undefined, targetAddress: string, targetChainId?: string | number): boolean`
+
+Validates whether a SIWX session matches a target wallet address and optional chainId. Handles EVM case-insensitivity, Solana case-sensitivity, and CAIP-10/CAIP-2 normalization.
+
+```ts
+import { isSessionMatchingTarget } from '@tuwaio/siwx-core';
+
+const isMatch = isSessionMatchingTarget(session, '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', 1);
+// Handles cross-chain namespace checks (EVM vs Solana) and optional chainId matching
+```
+
 ### `generateNonce(): string`
 
 Generates a 32-character cryptographically secure hex nonce using the Web Crypto API (`globalThis.crypto.getRandomValues`). Native in Node 20+, browsers, and Edge runtimes.

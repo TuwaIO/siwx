@@ -202,3 +202,79 @@ export function generateNonce(): string {
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 }
+
+/**
+ * Minimal interface for a SIWX session or parsed CAIP-122 message.
+ */
+export interface SiwxSessionLike {
+  address: string;
+  chainId?: string;
+}
+
+/**
+ * Validates whether a SIWX session matches a target wallet address and optional chainId.
+ * Handles EVM case-insensitivity, Solana case-sensitivity, and CAIP-10/CAIP-2 normalization.
+ *
+ * @param session - Active SIWX session or parsed message
+ * @param targetAddress - Target account address (plain or CAIP-10)
+ * @param targetChainId - Target chain reference or CAIP-2 identifier
+ * @returns True if the session matches the target address and chainId; false otherwise.
+ *
+ * @example
+ * ```ts
+ * const isValid = isSessionMatchingTarget(session, '0x123...', 1);
+ * ```
+ */
+export function isSessionMatchingTarget(
+  session: SiwxSessionLike | null | undefined,
+  targetAddress: string,
+  targetChainId?: string | number,
+): boolean {
+  if (!session || !session.address || !targetAddress) {
+    return false;
+  }
+
+  const sessionCaip10 = session.address;
+  const isEvmSession = sessionCaip10.startsWith('eip155:');
+  const isSolanaSession = sessionCaip10.startsWith('solana:');
+
+  const rawTargetAddr = targetAddress.includes(':') ? targetAddress.split(':').pop()! : targetAddress;
+  const sessionAccountAddr = sessionCaip10.includes(':') ? sessionCaip10.split(':').pop()! : sessionCaip10;
+
+  const isEvmTarget = rawTargetAddr.startsWith('0x') || targetAddress.startsWith('eip155:');
+
+  // 1. Cross-chain namespace mismatch check
+  if (isEvmTarget && !isEvmSession) {
+    return false;
+  }
+  if (!isEvmTarget && !isSolanaSession) {
+    return false;
+  }
+
+  // 2. Account address equality check (case-insensitive for EVM, case-sensitive for Solana)
+  const isAddressMatch = isEvmSession
+    ? sessionAccountAddr.toLowerCase() === rawTargetAddr.toLowerCase()
+    : sessionAccountAddr === rawTargetAddr;
+
+  if (!isAddressMatch) {
+    return false;
+  }
+
+  // 3. Optional chainId alignment check
+  if (targetChainId !== undefined && targetChainId !== null) {
+    const rawTargetChain = String(targetChainId);
+    const expectedCaip2 = isEvmSession
+      ? rawTargetChain.startsWith('eip155:')
+        ? rawTargetChain
+        : `eip155:${rawTargetChain}`
+      : rawTargetChain.startsWith('solana:')
+        ? rawTargetChain
+        : `solana:${rawTargetChain}`;
+
+    if (session.chainId && session.chainId !== expectedCaip2 && session.chainId !== rawTargetChain) {
+      return false;
+    }
+  }
+
+  return true;
+}

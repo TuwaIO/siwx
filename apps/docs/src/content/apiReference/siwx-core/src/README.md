@@ -27,6 +27,7 @@ Public API barrel for @tuwaio/siwx-core.
 
 - [SiwxAdapter](interfaces/SiwxAdapter.md)
 - [SiwxMessageFields](interfaces/SiwxMessageFields.md)
+- [SiwxSessionLike](interfaces/SiwxSessionLike.md)
 - [SiwxValidationResult](interfaces/SiwxValidationResult.md)
 - [SiwxVerifyPayload](interfaces/SiwxVerifyPayload.md)
 - [SiwxVerifyResult](interfaces/SiwxVerifyResult.md)
@@ -42,5 +43,6 @@ Public API barrel for @tuwaio/siwx-core.
 
 - [buildMessage](functions/buildMessage.md)
 - [generateNonce](functions/generateNonce.md)
+- [isSessionMatchingTarget](functions/isSessionMatchingTarget.md)
 - [parseMessage](functions/parseMessage.md)
 - [validateMessage](functions/validateMessage.md)

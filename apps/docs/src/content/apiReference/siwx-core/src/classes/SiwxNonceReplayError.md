@@ -4,7 +4,7 @@
 
 # SiwxNonceReplayError
 
-Defined in: [packages/siwx-core/src/errors.ts:84](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L84)
+Defined in: [packages/siwx-core/src/errors.ts:84](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L84)
 
 Thrown when a nonce replay attack is detected, i.e., the nonce has already been used.
 
@@ -18,7 +18,7 @@ Thrown when a nonce replay attack is detected, i.e., the nonce has already been 
 
 > **new SiwxNonceReplayError**(`nonce`): `SiwxNonceReplayError`
 
-Defined in: [packages/siwx-core/src/errors.ts:88](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L88)
+Defined in: [packages/siwx-core/src/errors.ts:88](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L88)
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -92,7 +92,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **nonce**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:88](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L88)
+Defined in: [packages/siwx-core/src/errors.ts:88](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L88)
 
 The nonce that was detected as replayed.
 

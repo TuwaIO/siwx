@@ -36,9 +36,22 @@ const signer = createEvmSiwxSigner(walletClient);
 const signature = await signer('Message to sign');
 ```
 
+### `verifyEvmSignature(message, signature, options?): Promise<EvmVerifyResult>`
+
+Universal EVM signature verifier for CAIP-122 messages. Tries EIP-191 (EOA ecrecover) first; if that fails and `options.publicClient` is provided, automatically attempts EIP-1271 (`isValidSignature`) on-chain verification.
+
+```ts
+import { verifyEvmSignature } from '@tuwaio/siwx-evm';
+
+const result = await verifyEvmSignature(rawMessage, '0xsignature...', { publicClient });
+if (result.success) {
+  console.log(`Verified via ${result.method}. Address:`, result.data?.address);
+}
+```
+
 ### `verifyEip191(message, signature, options?): Promise<EvmVerifyResult>`
 
-Verifies a standard EOA wallet signature. Recovers the signer address and compares it to the CAIP-10 address embedded in the message. Accept optional `options?: EvmVerifyOptions` (e.g. `{ skipExpiration?: boolean }`).
+Verifies a standard EOA wallet signature. Recovers the signer address and compares it to the CAIP-10 address embedded in the message. Accepts optional `options?: EvmVerifyOptions` (e.g. `{ skipExpiration?: boolean }`).
 
 ```ts
 import { verifyEip191 } from '@tuwaio/siwx-evm';
@@ -49,9 +62,9 @@ if (result.success) {
 }
 ```
 
-### `verifyEip1271(message, signature, options?): Promise<EvmVerifyResult>`
+### `verifyEip1271(message, signature, options): Promise<EvmVerifyResult>`
 
-Verifies a smart contract wallet signature (Safe, Argent, Gnosis, etc.) by calling `isValidSignature` on-chain. Requires a `viem` `PublicClient` passed via `options.publicClient`. Accept optional `{ skipExpiration?: boolean }`.
+Verifies a smart contract wallet signature (Safe, Argent, Gnosis, etc.) by calling `isValidSignature` on-chain. Requires a `viem` `PublicClient` passed via `options.publicClient`. Accepts optional `{ skipExpiration?: boolean }`.
 
 ```ts
 import { verifyEip1271 } from '@tuwaio/siwx-evm';

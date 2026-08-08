@@ -123,6 +123,26 @@ const nonce = generateServerNonce();
 await redis.set(`nonce:${nonce}`, '1', 'EX', 300); // expires in 5 min
 ```
 
+### `toSession(parsed: ParsedSiwxMessage): SiwxSession`
+
+Converts a `ParsedSiwxMessage` into a lean `SiwxSession` object.
+
+```ts
+import { toSession } from '@tuwaio/siwx-server';
+
+const session = toSession(parsedMessage);
+```
+
+### `isSessionMatchingTarget(session, targetAddress, targetChainId?)`
+
+Re-exported from `@tuwaio/siwx-core` for server-side authorization checks. Validates if a session matches a target account address and optional chainId.
+
+```ts
+import { isSessionMatchingTarget } from '@tuwaio/siwx-server';
+
+const isValid = isSessionMatchingTarget(session, userAddress, chainId);
+```
+
 ---
 
 ## Nonce Replay Protection

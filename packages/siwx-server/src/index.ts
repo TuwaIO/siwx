@@ -25,3 +25,7 @@ export type {
   ServerVerifyResult,
   SiwxSession,
 } from './types';
+
+// Re-export core validators
+export type { SiwxSessionLike } from '@tuwaio/siwx-core';
+export { isSessionMatchingTarget } from '@tuwaio/siwx-core';
