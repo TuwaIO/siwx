@@ -4,7 +4,7 @@
 
 # SiwxUnsupportedNamespaceError
 
-Defined in: [packages/siwx-core/src/errors.ts:97](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L97)
+Defined in: [packages/siwx-core/src/errors.ts:97](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/errors.ts#L97)
 
 Thrown when the chain namespace in the message is not supported.
 
@@ -18,7 +18,7 @@ Thrown when the chain namespace in the message is not supported.
 
 > **new SiwxUnsupportedNamespaceError**(`namespace`): `SiwxUnsupportedNamespaceError`
 
-Defined in: [packages/siwx-core/src/errors.ts:101](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L101)
+Defined in: [packages/siwx-core/src/errors.ts:101](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/errors.ts#L101)
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -92,7 +92,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **namespace**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:101](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/errors.ts#L101)
+Defined in: [packages/siwx-core/src/errors.ts:101](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/errors.ts#L101)
 
 The unsupported namespace string extracted from the message.
 

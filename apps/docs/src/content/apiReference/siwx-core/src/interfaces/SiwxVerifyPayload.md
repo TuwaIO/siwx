@@ -4,7 +4,7 @@
 
 # SiwxVerifyPayload
 
-Defined in: [packages/siwx-core/src/types.ts:118](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/types.ts#L118)
+Defined in: [packages/siwx-core/src/types.ts:118](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/types.ts#L118)
 
 The payload submitted for signature verification.
 
@@ -14,7 +14,7 @@ The payload submitted for signature verification.
 
 > **message**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:120](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/types.ts#L120)
+Defined in: [packages/siwx-core/src/types.ts:120](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/types.ts#L120)
 
 The raw CAIP-122 compliant message string that was signed.
 
@@ -24,6 +24,6 @@ The raw CAIP-122 compliant message string that was signed.
 
 > **signature**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:122](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-core/src/types.ts#L122)
+Defined in: [packages/siwx-core/src/types.ts:122](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-core/src/types.ts#L122)
 
 The signature produced by the wallet.

@@ -4,7 +4,7 @@
 
 # SolanaSiwxSignerTarget
 
-Defined in: [packages/siwx-solana/src/signer.ts:11](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L11)
+Defined in: [packages/siwx-solana/src/signer.ts:11](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L11)
 
 Target input for the Solana SIWX signer.
 Supports Wallet Standard (`signMessages`), Web3 v2 (`modifyAndSignMessages`), and Legacy (`signMessage`) signers.
@@ -15,7 +15,7 @@ Supports Wallet Standard (`signMessages`), Web3 v2 (`modifyAndSignMessages`), an
 
 > `optional` **account?**: `unknown`
 
-Defined in: [packages/siwx-solana/src/signer.ts:14](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L14)
+Defined in: [packages/siwx-solana/src/signer.ts:14](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L14)
 
 ***
 
@@ -23,7 +23,7 @@ Defined in: [packages/siwx-solana/src/signer.ts:14](https://github.com/TuwaIO/si
 
 > `optional` **address?**: `string`
 
-Defined in: [packages/siwx-solana/src/signer.ts:12](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L12)
+Defined in: [packages/siwx-solana/src/signer.ts:12](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L12)
 
 ***
 
@@ -31,7 +31,7 @@ Defined in: [packages/siwx-solana/src/signer.ts:12](https://github.com/TuwaIO/si
 
 > `optional` **features?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:16](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L16)
+Defined in: [packages/siwx-solana/src/signer.ts:16](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L16)
 
 ***
 
@@ -39,7 +39,7 @@ Defined in: [packages/siwx-solana/src/signer.ts:16](https://github.com/TuwaIO/si
 
 > `optional` **modifyAndSignMessages?**: (`messages`) => `Promise`\<`object`[]\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:18](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L18)
+Defined in: [packages/siwx-solana/src/signer.ts:18](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L18)
 
 #### Parameters
 
@@ -57,7 +57,7 @@ Defined in: [packages/siwx-solana/src/signer.ts:18](https://github.com/TuwaIO/si
 
 > `optional` **publicKey?**: `unknown`
 
-Defined in: [packages/siwx-solana/src/signer.ts:13](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L13)
+Defined in: [packages/siwx-solana/src/signer.ts:13](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L13)
 
 ***
 
@@ -65,7 +65,7 @@ Defined in: [packages/siwx-solana/src/signer.ts:13](https://github.com/TuwaIO/si
 
 > `optional` **signMessage?**: (`message`) => `Promise`\<`Uint8Array`\<`ArrayBufferLike`\> \| \{ `signature`: `Uint8Array`; \}\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:19](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L19)
+Defined in: [packages/siwx-solana/src/signer.ts:19](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L19)
 
 #### Parameters
 
@@ -83,7 +83,7 @@ Defined in: [packages/siwx-solana/src/signer.ts:19](https://github.com/TuwaIO/si
 
 > `optional` **signMessages?**: (`messages`) => `Promise`\<`object`[]\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:17](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L17)
+Defined in: [packages/siwx-solana/src/signer.ts:17](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L17)
 
 #### Parameters
 
@@ -101,4 +101,4 @@ Defined in: [packages/siwx-solana/src/signer.ts:17](https://github.com/TuwaIO/si
 
 > `optional` **wallet?**: `unknown`
 
-Defined in: [packages/siwx-solana/src/signer.ts:15](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-solana/src/signer.ts#L15)
+Defined in: [packages/siwx-solana/src/signer.ts:15](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-solana/src/signer.ts#L15)

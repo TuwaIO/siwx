@@ -4,7 +4,7 @@
 
 # SiwxClientSession
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:15](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/sessionStore.ts#L15)
+Defined in: [packages/siwx-react/src/sessionStore.ts:15](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L15)
 
 The shape of a client-side SIWX session.
 
@@ -14,7 +14,7 @@ The shape of a client-side SIWX session.
 
 > **address**: `string`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:17](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/sessionStore.ts#L17)
+Defined in: [packages/siwx-react/src/sessionStore.ts:17](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L17)
 
 The verified CAIP-10 blockchain address.
 
@@ -24,7 +24,7 @@ The verified CAIP-10 blockchain address.
 
 > **chainId**: `string`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:19](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/sessionStore.ts#L19)
+Defined in: [packages/siwx-react/src/sessionStore.ts:19](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L19)
 
 The CAIP-2 chain ID the session is bound to.
 
@@ -34,7 +34,7 @@ The CAIP-2 chain ID the session is bound to.
 
 > **domain**: `string`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:25](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/sessionStore.ts#L25)
+Defined in: [packages/siwx-react/src/sessionStore.ts:25](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L25)
 
 The domain the session was issued for.
 
@@ -44,7 +44,7 @@ The domain the session was issued for.
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:23](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/sessionStore.ts#L23)
+Defined in: [packages/siwx-react/src/sessionStore.ts:23](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L23)
 
 ISO 8601 datetime when the session expires, if set.
 
@@ -54,6 +54,6 @@ ISO 8601 datetime when the session expires, if set.
 
 > **issuedAt**: `string`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:21](https://github.com/TuwaIO/siwx/blob/03ee15d5f21fee13ebc8527584c16767df2fe8aa/packages/siwx-react/src/sessionStore.ts#L21)
+Defined in: [packages/siwx-react/src/sessionStore.ts:21](https://github.com/TuwaIO/siwx/blob/626c94cfe8fcb8d8d8caa69ff91c81d6883a0fec/packages/siwx-react/src/sessionStore.ts#L21)
 
 ISO 8601 datetime when the session was issued.
