@@ -4,7 +4,7 @@
 
 # SiwxVerificationError
 
-Defined in: [packages/siwx-core/src/errors.ts:58](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-core/src/errors.ts#L58)
+Defined in: [packages/siwx-core/src/errors.ts:58](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L58)
 
 Thrown when a signature verification operation fails.
 Indicates the signature is invalid, the message was tampered with,
@@ -20,7 +20,7 @@ or the signer address does not match.
 
 > **new SiwxVerificationError**(`message`): `SiwxVerificationError`
 
-Defined in: [packages/siwx-core/src/errors.ts:62](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-core/src/errors.ts#L62)
+Defined in: [packages/siwx-core/src/errors.ts:62](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L62)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 

@@ -4,7 +4,7 @@
 
 # UseSiwxReturn
 
-Defined in: [packages/siwx-react/src/hooks.ts:62](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-react/src/hooks.ts#L62)
+Defined in: [packages/siwx-react/src/hooks.ts:62](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-react/src/hooks.ts#L62)
 
 Return value of the `useSiwx` hook.
 
@@ -14,7 +14,7 @@ Return value of the `useSiwx` hook.
 
 > **signIn**: (`options`) => `Promise`\<`void`\>
 
-Defined in: [packages/siwx-react/src/hooks.ts:64](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-react/src/hooks.ts#L64)
+Defined in: [packages/siwx-react/src/hooks.ts:64](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-react/src/hooks.ts#L64)
 
 Initiates the full Sign-In With X flow: build → sign → verify.
 
@@ -34,7 +34,7 @@ Initiates the full Sign-In With X flow: build → sign → verify.
 
 > **signOut**: () => `void`
 
-Defined in: [packages/siwx-react/src/hooks.ts:66](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-react/src/hooks.ts#L66)
+Defined in: [packages/siwx-react/src/hooks.ts:66](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-react/src/hooks.ts#L66)
 
 Clears the current session. Does NOT hit any logout endpoint.
 

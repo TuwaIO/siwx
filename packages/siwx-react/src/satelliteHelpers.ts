@@ -1,3 +1,5 @@
+import type { SiwxClientSession } from './sessionStore';
+
 /**
  * Duck-typed interface for a Satellite Connection to avoid strict dependency on `@tuwaio/satellite-core`.
  */
@@ -69,4 +71,34 @@ export async function createSatelliteSiwxSigner(
   }
 
   return activeConnection.signMessage;
+}
+
+/**
+ * Evaluates whether an active SIWX session matches an active Satellite connection.
+ */
+export function isSessionMatchingConnection(
+  session: SiwxClientSession | null,
+  activeConnection: MinimalSatelliteConnection | null | undefined,
+): boolean {
+  if (!session || !activeConnection?.address || !activeConnection?.chainId) {
+    return false;
+  }
+
+  try {
+    const fields = getSatelliteSiwxFields(activeConnection);
+    const sessionAddr = session.address;
+    const activeAddr = fields.address;
+
+    if (session.chainId !== fields.chainId) {
+      return false;
+    }
+
+    if (sessionAddr.startsWith('eip155:')) {
+      return sessionAddr.toLowerCase() === activeAddr.toLowerCase();
+    }
+
+    return sessionAddr === activeAddr;
+  } catch {
+    return false;
+  }
 }

@@ -37,5 +37,6 @@ Public API barrel for @tuwaio/siwx-react.
 
 - [createSatelliteSiwxSigner](functions/createSatelliteSiwxSigner.md)
 - [getSatelliteSiwxFields](functions/getSatelliteSiwxFields.md)
+- [isSessionMatchingConnection](functions/isSessionMatchingConnection.md)
 - [useSiwx](functions/useSiwx.md)
 - [useSiwxSession](functions/useSiwxSession.md)

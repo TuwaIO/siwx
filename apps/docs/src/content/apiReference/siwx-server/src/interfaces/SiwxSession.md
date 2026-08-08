@@ -4,7 +4,7 @@
 
 # SiwxSession
 
-Defined in: [packages/siwx-server/src/types.ts:48](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L48)
+Defined in: [packages/siwx-server/src/types.ts:48](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L48)
 
 Represents a serializable session object derived from a verified CAIP-122 message.
 This can be stored in a cookie or JWT payload.
@@ -15,7 +15,7 @@ This can be stored in a cookie or JWT payload.
 
 > **address**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:50](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L50)
+Defined in: [packages/siwx-server/src/types.ts:50](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L50)
 
 The verified CAIP-10 blockchain address.
 
@@ -25,7 +25,7 @@ The verified CAIP-10 blockchain address.
 
 > **chainId**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:52](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L52)
+Defined in: [packages/siwx-server/src/types.ts:52](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L52)
 
 The CAIP-2 chain ID the session is bound to.
 
@@ -35,7 +35,7 @@ The CAIP-2 chain ID the session is bound to.
 
 > **domain**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:54](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L54)
+Defined in: [packages/siwx-server/src/types.ts:54](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L54)
 
 The domain that issued the session.
 
@@ -45,7 +45,7 @@ The domain that issued the session.
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:60](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L60)
+Defined in: [packages/siwx-server/src/types.ts:60](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L60)
 
 ISO 8601 timestamp when the session expires, if set.
 
@@ -55,7 +55,7 @@ ISO 8601 timestamp when the session expires, if set.
 
 > **issuedAt**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:58](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L58)
+Defined in: [packages/siwx-server/src/types.ts:58](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L58)
 
 ISO 8601 timestamp when the session was issued.
 
@@ -65,6 +65,6 @@ ISO 8601 timestamp when the session was issued.
 
 > **nonce**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:56](https://github.com/TuwaIO/siwx/blob/ecff9ffa6386dee5a576efabec2ed72f03dde624/packages/siwx-server/src/types.ts#L56)
+Defined in: [packages/siwx-server/src/types.ts:56](https://github.com/TuwaIO/siwx/blob/167aa43449a41570492d730acd27b9779827d2e5/packages/siwx-server/src/types.ts#L56)
 
 The nonce that was used. Must be invalidated server-side after use.
