@@ -4,7 +4,7 @@
 
 # EvmVerifyOptions
 
-Defined in: [packages/siwx-evm/src/types.ts:11](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-evm/src/types.ts#L11)
+Defined in: [packages/siwx-evm/src/types.ts:11](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-evm/src/types.ts#L11)
 
 Options for the EVM signature verifier.
 
@@ -14,7 +14,7 @@ Options for the EVM signature verifier.
 
 > `optional` **publicClient?**: `object`
 
-Defined in: [packages/siwx-evm/src/types.ts:17](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-evm/src/types.ts#L17)
+Defined in: [packages/siwx-evm/src/types.ts:17](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-evm/src/types.ts#L17)
 
 A viem `PublicClient` instance connected to the appropriate network.
 Required for EIP-1271 (smart contract wallet) verification.
@@ -3381,7 +3381,7 @@ const unwatch = await client.watchPendingTransactions({
 
 > `optional` **skipExpiration?**: `boolean`
 
-Defined in: [packages/siwx-evm/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-evm/src/types.ts#L23)
+Defined in: [packages/siwx-evm/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-evm/src/types.ts#L23)
 
 If true, skips checking if the message expirationTime has passed.
 

@@ -6,7 +6,7 @@
 
 > **SiwxChainNamespace** = `"eip155"` \| `"solana"`
 
-Defined in: [packages/siwx-core/src/types.ts:12](https://github.com/TuwaIO/siwx/blob/21578d633a347019ae3f513dd601d57e4fa60138/packages/siwx-core/src/types.ts#L12)
+Defined in: [packages/siwx-core/src/types.ts:12](https://github.com/TuwaIO/siwx/blob/25e4a0067650f7a94ad6029e68a5c6fc790192ab/packages/siwx-core/src/types.ts#L12)
 
 Supported CAIP-2 chain namespace identifiers.
 Only EVM (eip155) and Solana are supported in v1.

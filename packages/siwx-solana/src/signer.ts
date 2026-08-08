@@ -11,6 +11,9 @@ import { createSignableMessage, getSignatureFromBytes, getUtf8Encoder } from 'gi
 export interface SolanaSiwxSignerTarget {
   address?: string;
   publicKey?: Uint8Array | unknown;
+  account?: unknown;
+  wallet?: unknown;
+  features?: Record<string, unknown>;
   signMessages?: (messages: Uint8Array[]) => Promise<{ signature: Uint8Array }[]>;
   modifyAndSignMessages?: (messages: unknown[]) => Promise<{ signatures: Record<string, Uint8Array> }[]>;
   signMessage?: (message: Uint8Array) => Promise<Uint8Array | { signature: Uint8Array }>;
@@ -36,8 +39,35 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
 
     let signatureBytes: Uint8Array;
 
-    // Case A: Modern Web3 v2 (MessageModifyingSigner from gill / @solana/web3.js v2)
-    if (signer.modifyAndSignMessages) {
+    const solanaSignMessageFeature =
+      (signer.features?.['solana:signMessage'] as
+        | {
+            signMessage?: (input: { message: Uint8Array; account: unknown }[]) => Promise<{ signature: Uint8Array }[]>;
+          }
+        | undefined) ??
+      ((signer.wallet as { features?: Record<string, unknown> })?.features?.['solana:signMessage'] as
+        | {
+            signMessage?: (input: { message: Uint8Array; account: unknown }[]) => Promise<{ signature: Uint8Array }[]>;
+          }
+        | undefined) ??
+      ((signer.account as { features?: Record<string, unknown> })?.features?.['solana:signMessage'] as
+        | {
+            signMessage?: (input: { message: Uint8Array; account: unknown }[]) => Promise<{ signature: Uint8Array }[]>;
+          }
+        | undefined);
+
+    // Case A: Wallet Standard (solana:signMessage feature)
+    if (solanaSignMessageFeature?.signMessage) {
+      const targetAccount = signer.account ?? (signer.address ? signer : undefined);
+      const outputs = await solanaSignMessageFeature.signMessage([{ message: messageBytes, account: targetAccount }]);
+      const output = outputs[0];
+      if (!output?.signature) {
+        throw new Error('[SIWX-SOLANA] Wallet returned invalid solana:signMessage output.');
+      }
+      signatureBytes = output.signature;
+    }
+    // Case B: Modern Web3 v2 (MessageModifyingSigner from gill / @solana/web3.js v2)
+    else if (signer.modifyAndSignMessages) {
       if (!signer.address) {
         throw new Error('[SIWX-SOLANA] modifyAndSignMessages requires signer.address to be defined.');
       }
@@ -56,7 +86,7 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
       }
       signatureBytes = signature as unknown as Uint8Array;
     }
-    // Case B: Wallet Standard (signMessages)
+    // Case C: Wallet Standard direct helper (signMessages)
     else if (signer.signMessages) {
       const outputs = await signer.signMessages([messageBytes]);
       const output = outputs[0];
@@ -65,7 +95,7 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
       }
       signatureBytes = output.signature;
     }
-    // Case C: Legacy (signMessage)
+    // Case D: Legacy (signMessage)
     else if (signer.signMessage) {
       const result = await signer.signMessage(messageBytes);
       // Some legacy wallets return an object with a signature property, others return Uint8Array directly
