@@ -7,7 +7,7 @@
 
 ---
 
-## Responsibility
+## 🏛️ Core Capabilities
 
 - **Session State Management**: A `zustand` store (with `immer` + `persist` via `sessionStorage`) tracks the complete authentication lifecycle: `idle → signing → verifying → authenticated | error`.
 - **`useSiwx()` hook**: Orchestrates the full sign-in flow: build CAIP-122 message → call your signer → call your verifier → store the session.
@@ -16,7 +16,7 @@
 
 ---
 
-## Installation
+## 💾 Installation
 
 ```bash
 pnpm add @tuwaio/siwx-react @tuwaio/siwx-core zustand immer
@@ -24,7 +24,7 @@ pnpm add @tuwaio/siwx-react @tuwaio/siwx-core zustand immer
 
 ---
 
-## API
+## 🚀 API & Module Architecture
 
 ### `useSiwx()`
 

@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "Backend utilities for @tuwaio/siwx (L2). Parses, validates, and verifies CAIP-122 payloads (EVM + Solana) on Node.js or Edge runtimes. Backend-agnostic — can be used with any framework.",
+  "description": "Layer 2 (L2) of the TUWA Ecosystem. Backend utilities for @tuwaio/siwx. Parses, validates, and verifies CAIP-122 payloads on Node.js or Edge runtimes.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

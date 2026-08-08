@@ -7,7 +7,7 @@
 
 ---
 
-## Responsibility
+## 🏛️ Core Capabilities
 
 - **`verifySiwxPayload()`**: The primary server entry point. Parses the CAIP-122 message, validates all fields, checks for nonce replay attacks, and dynamically dispatches to the correct chain verifier (`siwx-evm` or `siwx-solana`) based on the CAIP-2 namespace.
 - **`serializeCookieSession()`**: Generates a complete `Set-Cookie` header string with an `HttpOnly` session.
@@ -16,7 +16,7 @@
 
 ---
 
-## Installation
+## 💾 Installation
 
 ```bash
 pnpm add @tuwaio/siwx-server @tuwaio/siwx-core
@@ -26,7 +26,7 @@ pnpm add @tuwaio/siwx-evm @tuwaio/siwx-solana
 
 ---
 
-## API
+## 🚀 API & Module Architecture
 
 ### `createSiwxApiHandler(options?)` (Next.js App Router)
 

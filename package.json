@@ -5,7 +5,7 @@
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
   "packageManager": "pnpm@11.20.0",
-  "description": "TUWA Ecosystem — SIWX (Sign-In With X) Low-Level Core & Adapters Layer (L1/L2) enforcing the CAIP-122 standard. Multi-chain, headless, backend-agnostic.",
+  "description": "Monorepo for SIWX: Stage 1 (L1, L2) of the TUWA Ecosystem. Framework-agnostic CAIP-122 multi-chain authentication primitives.",
   "scripts": {
     "build": "pnpm --filter \"./packages/**\" build",
     "postinstall": "pnpm build",

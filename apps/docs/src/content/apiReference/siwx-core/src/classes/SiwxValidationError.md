@@ -4,7 +4,7 @@
 
 # SiwxValidationError
 
-Defined in: [packages/siwx-core/src/errors.ts:43](https://github.com/TuwaIO/siwx/blob/937790ab6674ad6603e43d2020db35b698d6f5b0/packages/siwx-core/src/errors.ts#L43)
+Defined in: [packages/siwx-core/src/errors.ts:43](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L43)
 
 Thrown when one or more fields in a SiwxMessage fail validation.
 The `errors` property contains a list of all validation failures.
@@ -19,7 +19,7 @@ The `errors` property contains a list of all validation failures.
 
 > **new SiwxValidationError**(`errors`): `SiwxValidationError`
 
-Defined in: [packages/siwx-core/src/errors.ts:47](https://github.com/TuwaIO/siwx/blob/937790ab6674ad6603e43d2020db35b698d6f5b0/packages/siwx-core/src/errors.ts#L47)
+Defined in: [packages/siwx-core/src/errors.ts:47](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L47)
 
 #### Parameters
 
@@ -55,7 +55,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/937790ab6674ad6603e43d2020db35b698d6f5b0/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -69,7 +69,7 @@ Optional machine-readable error code.
 
 > `readonly` **errors**: `string`[]
 
-Defined in: [packages/siwx-core/src/errors.ts:47](https://github.com/TuwaIO/siwx/blob/937790ab6674ad6603e43d2020db35b698d6f5b0/packages/siwx-core/src/errors.ts#L47)
+Defined in: [packages/siwx-core/src/errors.ts:47](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L47)
 
 Array of validation error descriptions.
 

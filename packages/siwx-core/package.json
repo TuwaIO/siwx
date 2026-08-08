@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "Chain-agnostic CAIP-122 message builder, parser, and validator. The L1 foundational engine of the @tuwaio/siwx ecosystem.",
+  "description": "Layer 1 (L1) of the TUWA Ecosystem. Chain-agnostic CAIP-122 message builder, parser, and validator.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

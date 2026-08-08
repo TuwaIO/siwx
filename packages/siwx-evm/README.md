@@ -7,7 +7,7 @@
 
 ---
 
-## Responsibility
+## 🏛️ Core Capabilities
 
 - **EIP-191 Verification**: Standard EOA (Externally Owned Account) signature verification using `viem`'s `recoverAddress`.
 - **EIP-1271 Verification**: Smart contract wallet verification (`isValidSignature`) via an on-chain `readContract` call using a `viem` `PublicClient`.
@@ -15,7 +15,7 @@
 
 ---
 
-## Installation
+## 💾 Installation
 
 ```bash
 pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core viem @wagmi/core
@@ -23,7 +23,7 @@ pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core viem @wagmi/core
 
 ---
 
-## API
+## 🚀 API & Module Architecture
 
 ### `createEvmSiwxSigner(target, account?)`
 

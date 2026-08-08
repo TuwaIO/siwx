@@ -12,9 +12,7 @@
 
 Modern Web3 applications require a unified, multi-chain authentication primitive. `@tuwaio/siwx` implements the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard end-to-end, providing a headless, framework-agnostic foundation for off-chain authentication across EVM, Solana, and future execution environments without framework lock-in or third-party cloud dependencies.
 
----
-
-## Architecture
+## 🏛️ Ecosystem Layer Architecture
 
 SIWX occupies the foundational **L1** and **L2** layers within the TUWA ecosystem:
 
@@ -37,9 +35,7 @@ L7: nova-uikit      → UI View Layer (consumes siwx-react)
 
 ---
 
-## Quick Start
-
-### 1. Install
+## 💾 Installation
 
 ```bash
 # Core only (chain-agnostic message building)
@@ -157,6 +153,10 @@ function LoginButton({ walletClient, address }: { walletClient: any; address: st
 
 ---
 
+## 🚀 Architectural Usage Example
+
+SIWX is completely headless, giving you full control over how you wire up the frontend and backend.
+
 ## Design Principles
 
 - **Headless**: Zero UI. Brings your own components.
@@ -166,7 +166,7 @@ function LoginButton({ walletClient, address }: { walletClient: any; address: st
 
 ---
 
-## Monorepo Development
+## ⚙️ Monorepo Development
 
 ```bash
 # Install dependencies

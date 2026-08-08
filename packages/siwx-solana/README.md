@@ -7,7 +7,7 @@
 
 ---
 
-## Responsibility
+## 🏛️ Core Capabilities
 
 - **ed25519 Verification**: Verifies Solana wallet signatures against CAIP-122 messages using the native `SubtleCrypto` API (no native module dependencies).
 - Extracts and validates Solana addresses from CAIP-10 strings using `gill`.
@@ -15,7 +15,7 @@
 
 ---
 
-## Installation
+## 💾 Installation
 
 ```bash
 pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core gill
@@ -23,7 +23,7 @@ pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core gill
 
 ---
 
-## API
+## 🚀 API & Module Architecture
 
 ### `verifyEd25519(payload, options?): Promise<SiwxVerifyResult>`
 

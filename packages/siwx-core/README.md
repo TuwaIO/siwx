@@ -8,7 +8,7 @@
 
 ---
 
-## Responsibility
+## 🏛️ Core Capabilities
 
 This package is the **core foundation**. It has one job: implementing the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) message standard faithfully.
 
@@ -20,7 +20,7 @@ This package is the **core foundation**. It has one job: implementing the [CAIP-
 
 ---
 
-## Installation
+## 💾 Installation
 
 ```bash
 pnpm add @tuwaio/siwx-core
@@ -28,7 +28,7 @@ pnpm add @tuwaio/siwx-core
 
 ---
 
-## API
+## 🚀 API & Module Architecture
 
 ### `buildMessage(fields: SiwxMessageFields): string`
 

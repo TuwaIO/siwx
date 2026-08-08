@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "React bindings for @tuwaio/siwx (L2). Provides hooks and a Zustand-powered session store for managing the full CAIP-122 authentication lifecycle, independent of any backend.",
+  "description": "Layer 2 (L2) of the TUWA Ecosystem. React bindings for @tuwaio/siwx. Provides hooks and Zustand-powered session store for managing CAIP-122 authentication.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
