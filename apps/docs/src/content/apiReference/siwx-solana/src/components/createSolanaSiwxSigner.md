@@ -4,30 +4,23 @@
 
 # createSolanaSiwxSigner()
 
-> **createSolanaSiwxSigner**(`signer`): (`message`) => `Promise`\<`string`\>
+> **createSolanaSiwxSigner**(`target`): (`message`) => `Promise`\<`string`\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:60](https://github.com/TuwaIO/siwx/blob/226309e8a8af6d2fb968b23cea6b3dc7f2a3300b/packages/siwx-solana/src/signer.ts#L60)
+Defined in: [packages/siwx-solana/src/signer.ts:160](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-solana/src/signer.ts#L160)
 
 Creates a standard SIWX signer callback for Solana chains.
 Automatically adapts to Wallet Standard, Web3 v2 (gill), or legacy Solana signers.
 
 ## Parameters
 
-### signer
+### target
 
 [`SolanaSiwxSignerTarget`](../interfaces/SolanaSiwxSignerTarget.md)
 
-A Solana signer object containing signing capabilities.
+A Solana signer target containing the raw wallet and account.
 
 ## Returns
 
 A standardized signer function accepting a message string and returning a promise with the base58 signature.
 
 (`message`) => `Promise`\<`string`\>
-
-## Example
-
-```ts
-const signer = createSolanaSiwxSigner(connectedAccount);
-const signature = await signer("Mini-Session Login: ...");
-```

@@ -2,7 +2,13 @@
  * @fileoverview Solana signer adapter for SIWX authentication.
  */
 
-import { createSignableMessage, getSignatureFromBytes, getUtf8Encoder } from 'gill';
+import {
+  createSignableMessage,
+  getSignatureFromBytes,
+  getUtf8Encoder,
+  MessageModifyingSigner,
+  SignableMessage,
+} from 'gill';
 
 export interface SolanaSignMessageInput {
   readonly account: unknown;
@@ -21,182 +27,164 @@ export interface SolanaSignMessageFeature {
   };
 }
 
-export interface StandardSignMessageFeature {
-  readonly 'standard:signMessage': {
-    readonly version: '1.0.0';
-    readonly signMessage: (...inputs: readonly SolanaSignMessageInput[]) => Promise<readonly SolanaSignMessageOutput[]>;
-  };
+/**
+ * Target input for the Solana SIWX signer.
+ * Accepts raw wallet and account objects.
+ */
+export interface SolanaSiwxSignerTarget {
+  account: any;
+  wallet: any;
+}
+
+function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
 
 /**
- * Target input for the Solana SIWX signer.
- * Supports Wallet Standard (`signMessages`), Web3 v2 (`modifyAndSignMessages`), and Legacy (`signMessage`) signers.
+ * Ported from @solana/kit (createMessageSignerFromWalletAccount).
+ * Wraps a standard Wallet Standard account or legacy adapter into a unified MessageModifyingSigner.
  */
-export interface SolanaSiwxSignerTarget {
-  address?: string;
-  name?: string;
-  publicKey?: Uint8Array | unknown;
-  account?: unknown;
-  wallet?: unknown;
-  features?: Record<string, unknown>;
-  signMessages?: (messages: Uint8Array[]) => Promise<{ signature: Uint8Array }[]>;
-  modifyAndSignMessages?: (messages: unknown[]) => Promise<{ signatures: Record<string, Uint8Array> }[]>;
-  signMessage?: (message: Uint8Array) => Promise<Uint8Array | { signature: Uint8Array }>;
+function createMessageModifyingSigner(wallet: any, account: any): MessageModifyingSigner<string> {
+  const accountAddress = account.address;
+  if (!accountAddress) {
+    throw new Error('[SIWX-SOLANA] Account address is missing.');
+  }
+
+  // Check for Wallet Standard solana:signMessage feature
+  const accountFeatures = account.features;
+  const walletFeatures = wallet.features;
+  let signMessageFeature: SolanaSignMessageFeature['solana:signMessage'] | undefined;
+
+  if (Array.isArray(accountFeatures) && accountFeatures.includes('solana:signMessage')) {
+    if (walletFeatures && typeof walletFeatures === 'object' && !Array.isArray(walletFeatures)) {
+      signMessageFeature = walletFeatures['solana:signMessage'];
+    }
+  }
+
+  const adapter = wallet?.adapter;
+  const legacySignMessage = wallet?.signMessage ?? adapter?.signMessage;
+
+  if (!signMessageFeature && !legacySignMessage) {
+    throw new Error(`[SIWX-SOLANA] Wallet lacks known message signing capabilities.`);
+  }
+
+  return {
+    address: accountAddress,
+    async modifyAndSignMessages(messages, config = {}) {
+      const abortSignal = config.abortSignal;
+      if (abortSignal?.aborted) {
+        throw new Error('Aborted'); // Or standard abort error
+      }
+
+      if (messages.length === 0) {
+        return messages;
+      }
+
+      const results: SignableMessage[] = [];
+
+      for (let i = 0; i < messages.length; i++) {
+        const originalMessage = messages[i];
+
+        let signature: Uint8Array;
+        let signedMessageBytes: Uint8Array;
+
+        // If it's a Wallet Standard feature
+        if (signMessageFeature) {
+          const inputs = [{ account, message: originalMessage.content }];
+          const outputs = await signMessageFeature.signMessage(...inputs);
+          const output = outputs[0];
+          if (!output || !output.signature) {
+            throw new Error('[SIWX-SOLANA] Wallet returned invalid signMessage output.');
+          }
+          signature = output.signature;
+          signedMessageBytes = output.signedMessage ?? originalMessage.content;
+        }
+        // Fallback to legacy adapter
+        else if (legacySignMessage) {
+          const result = await legacySignMessage.call(adapter ?? wallet, originalMessage.content);
+          signedMessageBytes = originalMessage.content;
+          if (result instanceof Uint8Array || (result && result.buffer instanceof ArrayBuffer)) {
+            signature = result as Uint8Array;
+          } else if (result && 'signature' in result) {
+            signature = result.signature as Uint8Array;
+          } else {
+            throw new Error('[SIWX-SOLANA] Unexpected legacy signMessage result format.');
+          }
+        } else {
+          throw new Error('[SIWX-SOLANA] Missing signing implementation.');
+        }
+
+        // Check if message was modified
+        const messageWasModified =
+          originalMessage.content.length !== signedMessageBytes.length ||
+          originalMessage.content.some((originalByte, ii) => originalByte !== signedMessageBytes[ii]);
+
+        // Check if signature is new
+        const originalSignature = originalMessage.signatures[accountAddress];
+        const signatureIsNew = originalSignature === undefined || !bytesEqual(originalSignature, signature);
+
+        if (!signatureIsNew && !messageWasModified) {
+          results.push(originalMessage);
+          continue;
+        }
+
+        const nextSignatureMap = messageWasModified
+          ? { [accountAddress]: signature }
+          : { ...originalMessage.signatures, [accountAddress]: signature };
+
+        results.push(
+          Object.freeze({
+            content: signedMessageBytes,
+            signatures: Object.freeze(nextSignatureMap),
+          }) as SignableMessage,
+        );
+      }
+
+      return results;
+    },
+  };
 }
 
 /**
  * Creates a standard SIWX signer callback for Solana chains.
  * Automatically adapts to Wallet Standard, Web3 v2 (gill), or legacy Solana signers.
  *
- * @param signer - A Solana signer object containing signing capabilities.
+ * @param target - A Solana signer target containing the raw wallet and account.
  * @returns A standardized signer function accepting a message string and returning a promise with the base58 signature.
- *
- * @example
- * ```ts
- * const signer = createSolanaSiwxSigner(connectedAccount);
- * const signature = await signer("Mini-Session Login: ...");
- * ```
  */
-export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
+export function createSolanaSiwxSigner(target: SolanaSiwxSignerTarget) {
   return async (message: string): Promise<string> => {
     try {
+      if (!target || !target.wallet || !target.account) {
+        throw new Error('[SIWX-SOLANA] Invalid signer target. Wallet and Account are required.');
+      }
+
       const encoder = getUtf8Encoder();
       const messageBytes = encoder.encode(message) as unknown as Uint8Array;
 
-      let signatureBytes: Uint8Array | undefined;
+      // Wrap the wallet/account into a unified MessageModifyingSigner (@solana/kit pattern)
+      const signer = createMessageModifyingSigner(target.wallet, target.account);
 
-      const getFeature = (
-        obj: unknown,
-      ): SolanaSignMessageFeature['solana:signMessage'] | StandardSignMessageFeature['standard:signMessage'] | undefined => {
-        if (!obj || typeof obj !== 'object') return undefined;
-        const feat = (obj as { features?: Record<string, unknown> }).features ?? obj;
-        if (feat && typeof feat === 'object' && !Array.isArray(feat)) {
-          const record = feat as Record<string, unknown>;
-          return (record['solana:signMessage'] ?? record['standard:signMessage']) as any;
-        }
-        return undefined;
-      };
+      const signableMessage = createSignableMessage(
+        messageBytes as unknown as Parameters<typeof createSignableMessage>[0],
+      );
 
-      const signMessageFeature =
-        getFeature(signer) ?? getFeature(signer.wallet) ?? getFeature(signer.account) ?? getFeature(signer.features);
+      const signedMessages = await signer.modifyAndSignMessages([signableMessage]);
+      const signedMessage = signedMessages[0];
 
-      const modifyAndSignMessagesFn = signer.modifyAndSignMessages ?? (signer.wallet as any)?.modifyAndSignMessages;
-      const signMessagesFn = signer.signMessages ?? (signer.wallet as any)?.signMessages;
-      const legacySignMessageFn = signer.signMessage ?? (signer.wallet as any)?.signMessage;
+      if (!signedMessage) throw new Error('[SIWX-SOLANA] No signed message returned.');
 
-      // Case A: Wallet Standard (solana:signMessage / standard:signMessage feature)
-      if (signMessageFeature && typeof signMessageFeature.signMessage === 'function') {
-        const targetAccount = signer.account ?? (signer.address ? signer : undefined);
-        if (!targetAccount) {
-          throw new Error('[SIWX-SOLANA] Account is required for standard signMessage feature.');
-        }
-
-        // Execute signMessage directly on the feature object to preserve 'this' context
-        const outputs = await signMessageFeature.signMessage({ message: messageBytes, account: targetAccount });
-        const output = outputs[0];
-
-        if (!output?.signature) {
-          throw new Error('[SIWX-SOLANA] Wallet returned invalid solana:signMessage output.');
-        }
-        signatureBytes = output.signature;
-      }
-      // Case B: Modern Web3 v2 (MessageModifyingSigner from gill / @solana/web3.js v2)
-      else if (modifyAndSignMessagesFn) {
-        if (!signer.address) {
-          throw new Error('[SIWX-SOLANA] modifyAndSignMessages requires signer.address to be defined.');
-        }
-
-        const signableMessage = createSignableMessage(
-          messageBytes as unknown as Parameters<typeof createSignableMessage>[0],
-        );
-        const signedMessages = await modifyAndSignMessagesFn([signableMessage]);
-        const signedMessage = signedMessages[0];
-
-        if (!signedMessage) throw new Error('[SIWX-SOLANA] No signed message returned.');
-
-        const signature = signedMessage.signatures[signer.address];
-        if (!signature) {
-          throw new Error(`[SIWX-SOLANA] Signature missing for address: ${signer.address}`);
-        }
-        signatureBytes = signature as unknown as Uint8Array;
-      }
-      // Case C: Wallet Standard direct helper (signMessages)
-      else if (signMessagesFn) {
-        const outputs = await signMessagesFn([messageBytes]);
-        const output = outputs[0];
-        if (!output?.signature) {
-          throw new Error('[SIWX-SOLANA] Wallet returned invalid signMessages output.');
-        }
-        signatureBytes = output.signature;
-      }
-      // Case D: Legacy (signMessage)
-      else if (legacySignMessageFn) {
-        const result = await legacySignMessageFn(messageBytes);
-        // Some legacy wallets return an object with a signature property, others return Uint8Array directly
-        if (result instanceof Uint8Array || (result && (result as any).buffer instanceof ArrayBuffer)) {
-          signatureBytes = result as Uint8Array;
-        } else if (result && 'signature' in result) {
-          signatureBytes = result.signature as Uint8Array;
-        } else {
-          throw new Error('[SIWX-SOLANA] Unexpected legacy signMessage result format.');
-        }
-      }
-      // Case E: Injected browser extension provider
-      else if (typeof window !== 'undefined') {
-        const rawWalletName =
-          (signer.wallet as { name?: string })?.name ??
-          (signer.account as { name?: string })?.name ??
-          (signer as { name?: string })?.name ??
-          '';
-        const walletName = String(rawWalletName).toLowerCase();
-
-        const win = window as unknown as Record<string, Record<string, unknown>>;
-        let provider: Record<string, unknown> | undefined = undefined;
-
-        // 1. Dynamic stripped name match (e.g. 'solflare' -> window.solflare)
-        if (walletName) {
-          const strippedName = walletName.replace(/\s+/g, '');
-          const dynamicProvider = win[strippedName] as Record<string, unknown> | undefined;
-          if (dynamicProvider && typeof dynamicProvider.signMessage === 'function') {
-            provider = dynamicProvider;
-          }
-        }
-
-        // 2. Generic fallback to window.solana only if it's explicitly phantom or no name was provided
-        if (!provider && (!walletName || walletName.includes('phantom'))) {
-          provider = win.solana as Record<string, unknown> | undefined;
-        }
-
-        if (provider && typeof provider.signMessage === 'function') {
-          const result = await (
-            provider.signMessage as (
-              msg: Uint8Array,
-              encoding?: string,
-            ) => Promise<{ signature: Uint8Array } | Uint8Array>
-          )(messageBytes, 'utf8');
-
-          if (result instanceof Uint8Array || (result && (result as any).buffer instanceof ArrayBuffer)) {
-            signatureBytes = result as Uint8Array;
-          } else if (result && 'signature' in result) {
-            signatureBytes = result.signature as Uint8Array;
-          } else {
-            throw new Error('[SIWX-SOLANA] Unexpected window provider signMessage result format.');
-          }
-        } else {
-          throw new Error(
-            `[SIWX-SOLANA] Wallet ${rawWalletName ? `"${rawWalletName}" ` : ''}lacks known message signing capabilities.`,
-          );
-        }
-      } else {
-        throw new Error('[SIWX-SOLANA] Signer lacks known message signing capabilities.');
+      const signature = signedMessage.signatures[signer.address];
+      if (!signature) {
+        throw new Error(`[SIWX-SOLANA] Signature missing for address: ${signer.address}`);
       }
 
-      if (!signatureBytes) {
-        throw new Error('[SIWX-SOLANA] Could not extract signature.');
-      }
-
-      // Convert to base58 string representation
-      return getSignatureFromBytes(signatureBytes as unknown as Parameters<typeof getSignatureFromBytes>[0]);
+      return getSignatureFromBytes(signature as unknown as Parameters<typeof getSignatureFromBytes>[0]);
     } catch (err) {
       throw new Error(`[SIWX-SOLANA] Signing failed: ${(err as Error).message}`, { cause: err });
     }
