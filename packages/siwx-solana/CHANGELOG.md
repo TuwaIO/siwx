@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.1.1...siwx-solana-v0.1.2) (2026-08-09)
+
+
+### Bug Fixes
+
+* updated solana signer ([d729ac8](https://github.com/TuwaIO/siwx/commit/d729ac88daf2c3bcf03c9e380f806310b06fdb3f))
+
 ## [0.1.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.1.0...siwx-solana-v0.1.1) (2026-08-09)
 
 
