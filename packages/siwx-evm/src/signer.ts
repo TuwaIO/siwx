@@ -27,24 +27,28 @@ export type EvmSiwxSignerTarget = Config | WalletClient;
  */
 export function createEvmSiwxSigner(target: EvmSiwxSignerTarget, account?: `0x${string}`) {
   return async (message: string): Promise<string> => {
-    // Check if target is a Wagmi Config (it has a state property)
-    if ('state' in target && 'connectors' in target) {
-      const config = target as Config;
-      return await signMessage(config, { message, account });
+    try {
+      // Check if target is a Wagmi Config (it has a state property)
+      if ('state' in target && 'connectors' in target) {
+        const config = target as Config;
+        return await signMessage(config, { message, account });
+      }
+
+      // Otherwise, treat it as a Viem WalletClient
+      const walletClient = target as WalletClient;
+
+      // Fallback to walletClient.account if explicit account is not provided
+      const targetAccount = account ?? walletClient.account;
+      if (!targetAccount) {
+        throw new Error('[SIWX-EVM] No account provided and WalletClient has no default account.');
+      }
+
+      return await walletClient.signMessage({
+        message,
+        account: targetAccount,
+      });
+    } catch (err) {
+      throw new Error(`[SIWX-EVM] Signing failed: ${(err as Error).message}`, { cause: err });
     }
-
-    // Otherwise, treat it as a Viem WalletClient
-    const walletClient = target as WalletClient;
-
-    // Fallback to walletClient.account if explicit account is not provided
-    const targetAccount = account ?? walletClient.account;
-    if (!targetAccount) {
-      throw new Error('[SIWX-EVM] No account provided and WalletClient has no default account.');
-    }
-
-    return await walletClient.signMessage({
-      message,
-      account: targetAccount,
-    });
   };
 }

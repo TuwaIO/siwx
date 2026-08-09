@@ -4,7 +4,7 @@
 
 # SiwxExpiredSessionError
 
-Defined in: [packages/siwx-core/src/errors.ts:71](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L71)
+Defined in: [packages/siwx-core/src/errors.ts:71](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-core/src/errors.ts#L71)
 
 Thrown when the session or message has expired based on the `expirationTime` field.
 
@@ -18,7 +18,7 @@ Thrown when the session or message has expired based on the `expirationTime` fie
 
 > **new SiwxExpiredSessionError**(`expirationTime`): `SiwxExpiredSessionError`
 
-Defined in: [packages/siwx-core/src/errors.ts:75](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L75)
+Defined in: [packages/siwx-core/src/errors.ts:75](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-core/src/errors.ts#L75)
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -68,7 +68,7 @@ Optional machine-readable error code.
 
 > `readonly` **expirationTime**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:75](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-core/src/errors.ts#L75)
+Defined in: [packages/siwx-core/src/errors.ts:75](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-core/src/errors.ts#L75)
 
 The ISO 8601 timestamp when the session expired.
 

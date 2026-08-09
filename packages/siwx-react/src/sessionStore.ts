@@ -6,7 +6,6 @@
 
 import type { ParsedSiwxMessage, SiwxStatus } from '@tuwaio/siwx-core';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 /**
@@ -92,52 +91,45 @@ const INITIAL_STATE: SiwxSessionState = {
  * Session validity against a backend is the responsibility of individual hooks.
  */
 export const useSiwxSessionStore = create<SiwxSessionStore>()(
-  persist(
-    immer((set) => ({
-      ...INITIAL_STATE,
+  immer((set) => ({
+    ...INITIAL_STATE,
 
-      setSigning: () =>
-        set((state) => {
-          state.status = 'signing';
-          state.error = null;
-        }),
+    setSigning: () =>
+      set((state) => {
+        state.status = 'signing';
+        state.error = null;
+      }),
 
-      setVerifying: () =>
-        set((state) => {
-          state.status = 'verifying';
-          state.error = null;
-        }),
+    setVerifying: () =>
+      set((state) => {
+        state.status = 'verifying';
+        state.error = null;
+      }),
 
-      setAuthenticated: (parsed: ParsedSiwxMessage) =>
-        set((state) => {
-          state.status = 'authenticated';
-          state.error = null;
-          state.session = {
-            address: parsed.address,
-            chainId: parsed.chainId,
-            issuedAt: parsed.issuedAt,
-            expirationTime: parsed.expirationTime,
-            domain: parsed.domain,
-          };
-        }),
+    setAuthenticated: (parsed: ParsedSiwxMessage) =>
+      set((state) => {
+        state.status = 'authenticated';
+        state.error = null;
+        state.session = {
+          address: parsed.address,
+          chainId: parsed.chainId,
+          issuedAt: parsed.issuedAt,
+          expirationTime: parsed.expirationTime,
+          domain: parsed.domain,
+        };
+      }),
 
-      setError: (error: string) =>
-        set((state) => {
-          state.status = 'error';
-          state.error = error;
-        }),
+    setError: (error: string) =>
+      set((state) => {
+        state.status = 'error';
+        state.error = error;
+      }),
 
-      reset: () =>
-        set((state) => {
-          state.status = 'idle';
-          state.session = null;
-          state.error = null;
-        }),
-    })),
-    {
-      name: 'tuwa-siwx-session',
-      storage: createJSONStorage(() => (typeof window !== 'undefined' ? sessionStorage : ({} as Storage))),
-      partialize: (state) => ({ session: state.session, status: state.status }),
-    },
-  ),
+    reset: () =>
+      set((state) => {
+        state.status = 'idle';
+        state.session = null;
+        state.error = null;
+      }),
+  })),
 );

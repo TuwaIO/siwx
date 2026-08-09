@@ -4,7 +4,7 @@
 
 # SolanaSignInAccount
 
-Defined in: [packages/siwx-solana/src/types.ts:10](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-solana/src/types.ts#L10)
+Defined in: [packages/siwx-solana/src/types.ts:10](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-solana/src/types.ts#L10)
 
 Minimal Wallet Standard account interface returned by `solana:signIn`.
 
@@ -14,7 +14,7 @@ Minimal Wallet Standard account interface returned by `solana:signIn`.
 
 > **address**: `string`
 
-Defined in: [packages/siwx-solana/src/types.ts:12](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-solana/src/types.ts#L12)
+Defined in: [packages/siwx-solana/src/types.ts:12](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-solana/src/types.ts#L12)
 
 Base58 encoded wallet address.
 
@@ -24,6 +24,6 @@ Base58 encoded wallet address.
 
 > `optional` **publicKey?**: `Uint8Array`\<`ArrayBufferLike`\>
 
-Defined in: [packages/siwx-solana/src/types.ts:14](https://github.com/TuwaIO/siwx/blob/9e00d3ba85452b84c97c3a62abd4327d95c89ec5/packages/siwx-solana/src/types.ts#L14)
+Defined in: [packages/siwx-solana/src/types.ts:14](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-solana/src/types.ts#L14)
 
 Raw public key bytes.
