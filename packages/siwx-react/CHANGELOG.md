@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.1.0...siwx-react-v0.1.1) (2026-08-09)
+
+
+### Bug Fixes
+
+* solana signer logic ([49fda63](https://github.com/TuwaIO/siwx/commit/49fda630d83513d24178bea08b1c695f35c7a608))
+
 ## [0.1.0](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.0.1...siwx-react-v0.1.0) (2026-08-08)
 
 
