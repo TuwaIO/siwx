@@ -4,6 +4,30 @@
 
 import { createSignableMessage, getSignatureFromBytes, getUtf8Encoder } from 'gill';
 
+export interface SolanaSignMessageInput {
+  readonly account: unknown;
+  readonly message: Uint8Array;
+}
+
+export interface SolanaSignMessageOutput {
+  readonly signedMessage: Uint8Array;
+  readonly signature: Uint8Array;
+}
+
+export interface SolanaSignMessageFeature {
+  readonly 'solana:signMessage': {
+    readonly version: '1.0.0';
+    readonly signMessage: (...inputs: readonly SolanaSignMessageInput[]) => Promise<readonly SolanaSignMessageOutput[]>;
+  };
+}
+
+export interface StandardSignMessageFeature {
+  readonly 'standard:signMessage': {
+    readonly version: '1.0.0';
+    readonly signMessage: (...inputs: readonly SolanaSignMessageInput[]) => Promise<readonly SolanaSignMessageOutput[]>;
+  };
+}
+
 /**
  * Target input for the Solana SIWX signer.
  * Supports Wallet Standard (`signMessages`), Web3 v2 (`modifyAndSignMessages`), and Legacy (`signMessage`) signers.
@@ -39,45 +63,38 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
       const encoder = getUtf8Encoder();
       const messageBytes = encoder.encode(message) as unknown as Uint8Array;
 
-      let signatureBytes: Uint8Array;
+      let signatureBytes: Uint8Array | undefined;
 
-      const getFeature = (obj: unknown) => {
+      const getFeature = (
+        obj: unknown,
+      ): SolanaSignMessageFeature['solana:signMessage'] | StandardSignMessageFeature['standard:signMessage'] | undefined => {
         if (!obj || typeof obj !== 'object') return undefined;
         const feat = (obj as { features?: Record<string, unknown> }).features ?? obj;
         if (feat && typeof feat === 'object' && !Array.isArray(feat)) {
           const record = feat as Record<string, unknown>;
-          return record['solana:signMessage'] ?? record['standard:signMessage'];
+          return (record['solana:signMessage'] ?? record['standard:signMessage']) as any;
         }
         return undefined;
       };
 
-      const solanaSignMessageFeature =
+      const signMessageFeature =
         getFeature(signer) ?? getFeature(signer.wallet) ?? getFeature(signer.account) ?? getFeature(signer.features);
-
-      const signFn =
-        typeof solanaSignMessageFeature === 'function'
-          ? (solanaSignMessageFeature as unknown as (
-              input: { message: Uint8Array; account: unknown }[],
-            ) => Promise<{ signature: Uint8Array }[]>)
-          : typeof (solanaSignMessageFeature as { signMessage?: unknown })?.signMessage === 'function'
-            ? (
-                solanaSignMessageFeature as {
-                  signMessage: (
-                    input: { message: Uint8Array; account: unknown }[],
-                  ) => Promise<{ signature: Uint8Array }[]>;
-                }
-              ).signMessage
-            : undefined;
 
       const modifyAndSignMessagesFn = signer.modifyAndSignMessages ?? (signer.wallet as any)?.modifyAndSignMessages;
       const signMessagesFn = signer.signMessages ?? (signer.wallet as any)?.signMessages;
       const legacySignMessageFn = signer.signMessage ?? (signer.wallet as any)?.signMessage;
 
       // Case A: Wallet Standard (solana:signMessage / standard:signMessage feature)
-      if (signFn) {
+      if (signMessageFeature && typeof signMessageFeature.signMessage === 'function') {
         const targetAccount = signer.account ?? (signer.address ? signer : undefined);
-        const outputs = await signFn([{ message: messageBytes, account: targetAccount }]);
+        if (!targetAccount) {
+          throw new Error('[SIWX-SOLANA] Account is required for standard signMessage feature.');
+        }
+
+        // Execute signMessage directly on the feature object to preserve 'this' context
+        const outputs = await signMessageFeature.signMessage({ message: messageBytes, account: targetAccount });
         const output = outputs[0];
+
         if (!output?.signature) {
           throw new Error('[SIWX-SOLANA] Wallet returned invalid solana:signMessage output.');
         }
@@ -136,21 +153,8 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
         const win = window as unknown as Record<string, Record<string, unknown>>;
         let provider: Record<string, unknown> | undefined = undefined;
 
-        // 1. Specific provider names
-        if (walletName.includes('phantom')) {
-          provider = win.phantom?.solana as Record<string, unknown> | undefined;
-        } else if (walletName.includes('solflare')) {
-          provider = win.solflare as Record<string, unknown> | undefined;
-        } else if (walletName.includes('backpack')) {
-          provider = win.backpack as Record<string, unknown> | undefined;
-        } else if (walletName.includes('glow')) {
-          provider = win.glow as Record<string, unknown> | undefined;
-        } else if (walletName.includes('trust')) {
-          provider = win.trustwallet as Record<string, unknown> | undefined;
-        }
-
-        // 2. Dynamic stripped name fallback
-        if (!provider && walletName) {
+        // 1. Dynamic stripped name match (e.g. 'solflare' -> window.solflare)
+        if (walletName) {
           const strippedName = walletName.replace(/\s+/g, '');
           const dynamicProvider = win[strippedName] as Record<string, unknown> | undefined;
           if (dynamicProvider && typeof dynamicProvider.signMessage === 'function') {
@@ -158,8 +162,8 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
           }
         }
 
-        // 3. Generic fallback
-        if (!provider) {
+        // 2. Generic fallback to window.solana only if it's explicitly phantom or no name was provided
+        if (!provider && (!walletName || walletName.includes('phantom'))) {
           provider = win.solana as Record<string, unknown> | undefined;
         }
 
@@ -185,6 +189,10 @@ export function createSolanaSiwxSigner(signer: SolanaSiwxSignerTarget) {
         }
       } else {
         throw new Error('[SIWX-SOLANA] Signer lacks known message signing capabilities.');
+      }
+
+      if (!signatureBytes) {
+        throw new Error('[SIWX-SOLANA] Could not extract signature.');
       }
 
       // Convert to base58 string representation

@@ -6,7 +6,7 @@
 
 > **verifySiwxPayload**(`payload`, `options?`): `Promise`\<[`ServerVerifyResult`](../interfaces/ServerVerifyResult.md)\>
 
-Defined in: [packages/siwx-server/src/server.ts:47](https://github.com/TuwaIO/siwx/blob/488faa95116da4d0322aa135f4e3d31118aa51c6/packages/siwx-server/src/server.ts#L47)
+Defined in: [packages/siwx-server/src/server.ts:47](https://github.com/TuwaIO/siwx/blob/226309e8a8af6d2fb968b23cea6b3dc7f2a3300b/packages/siwx-server/src/server.ts#L47)
 
 Parses and validates a raw CAIP-122 payload (message + signature) on the server side.
 Dynamically routes verification to the correct chain adapter based on the CAIP-2 namespace.
