@@ -4,7 +4,7 @@
 
 # SiwxIssuedAtFutureError
 
-Defined in: [packages/siwx-core/src/errors.ts:181](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L181)
+Defined in: [packages/siwx-core/src/errors.ts:181](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L181)
 
 Thrown when the message issuedAt timestamp is in the future beyond acceptable clock skew.
 
@@ -18,7 +18,7 @@ Thrown when the message issuedAt timestamp is in the future beyond acceptable cl
 
 > **new SiwxIssuedAtFutureError**(`issuedAt`, `clockSkewSeconds`): `SiwxIssuedAtFutureError`
 
-Defined in: [packages/siwx-core/src/errors.ts:182](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L182)
+Defined in: [packages/siwx-core/src/errors.ts:182](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L182)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **clockSkewSeconds**: `number`
 
-Defined in: [packages/siwx-core/src/errors.ts:184](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L184)
+Defined in: [packages/siwx-core/src/errors.ts:184](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L184)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [packages/siwx-core/src/errors.ts:184](https://github.com/TuwaIO/siw
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -78,7 +78,7 @@ Optional machine-readable error code.
 
 > `readonly` **issuedAt**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:183](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L183)
+Defined in: [packages/siwx-core/src/errors.ts:183](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L183)
 
 ***
 

@@ -4,7 +4,7 @@
 
 # SiwxParseError
 
-Defined in: [packages/siwx-core/src/errors.ts:29](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L29)
+Defined in: [packages/siwx-core/src/errors.ts:29](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L29)
 
 Thrown when a CAIP-122 message string cannot be parsed.
 This indicates the message is malformed or not CAIP-122 compliant.
@@ -19,7 +19,7 @@ This indicates the message is malformed or not CAIP-122 compliant.
 
 > **new SiwxParseError**(`message`): `SiwxParseError`
 
-Defined in: [packages/siwx-core/src/errors.ts:33](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L33)
+Defined in: [packages/siwx-core/src/errors.ts:33](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L33)
 
 #### Parameters
 
@@ -55,7 +55,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 

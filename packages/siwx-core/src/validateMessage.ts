@@ -172,7 +172,14 @@ export function validatePolicy(
 
   // 3. Allowed chain IDs
   if (policy.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
-    if (!policy.allowedChainIds.includes(fields.chainId)) {
+    const fieldChainStr = String(fields.chainId);
+    const fieldRawChain = fieldChainStr.includes(':') ? fieldChainStr.split(':').pop()! : fieldChainStr;
+    const isChainAllowed = policy.allowedChainIds.some((allowed) => {
+      const allowedStr = String(allowed);
+      const allowedRaw = allowedStr.includes(':') ? allowedStr.split(':').pop()! : allowedStr;
+      return allowedStr === fieldChainStr || allowedRaw === fieldRawChain;
+    });
+    if (!isChainAllowed) {
       errors.push(`Chain ID "${fields.chainId}" is not allowed. Allowed: [${policy.allowedChainIds.join(', ')}]`);
     }
   }

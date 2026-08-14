@@ -6,12 +6,10 @@ import { verifyEd25519 } from '../verify';
 /** Helper to convert Uint8Array to Base58 string. */
 function bytesToBase58(bytes: Uint8Array): string {
   const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-  let num = BigInt(
-    '0x' +
-      Array.from(bytes)
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join(''),
-  );
+  let num = 0n;
+  for (const byte of bytes) {
+    num = (num << 8n) + BigInt(byte);
+  }
   let result = '';
   while (num > 0n) {
     const remainder = Number(num % 58n);

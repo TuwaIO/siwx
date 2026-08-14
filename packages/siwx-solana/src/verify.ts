@@ -24,21 +24,37 @@ function base58ToBytes(base58: string): Uint8Array {
   const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   const alphabetMap = new Map(ALPHABET.split('').map((c, i) => [c, BigInt(i)]));
 
-  let result = BigInt(0);
+  let num = 0n;
   for (const char of base58) {
     const value = alphabetMap.get(char);
     if (value === undefined) {
       throw new SiwxVerificationError(`Invalid base58 character: "${char}"`);
     }
-    result = result * BigInt(58) + value;
+    num = num * 58n + value;
   }
 
-  const hex = result.toString(16).padStart(64, '0');
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+  let hex = num.toString(16);
+  if (hex.length % 2 !== 0) {
+    hex = '0' + hex;
   }
-  return bytes;
+
+  const rawBytes: number[] = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    rawBytes.push(parseInt(hex.slice(i, i + 2), 16));
+  }
+
+  let leadingZeros = 0;
+  for (const char of base58) {
+    if (char === '1') {
+      leadingZeros++;
+    } else {
+      break;
+    }
+  }
+
+  const result = new Uint8Array(leadingZeros + rawBytes.length);
+  result.set(rawBytes, leadingZeros);
+  return result;
 }
 
 /**

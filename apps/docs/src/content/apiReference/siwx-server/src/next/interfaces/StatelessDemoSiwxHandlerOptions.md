@@ -4,7 +4,7 @@
 
 # StatelessDemoSiwxHandlerOptions
 
-Defined in: [packages/siwx-server/src/next.ts:58](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L58)
+Defined in: [packages/siwx-server/src/next.ts:58](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L58)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/siwx-server/src/next.ts:58](https://github.com/TuwaIO/siwx
 
 > `optional` **cookieOptions?**: [`CookieOptions`](../../interfaces/CookieOptions.md)
 
-Defined in: [packages/siwx-server/src/next.ts:73](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L73)
+Defined in: [packages/siwx-server/src/next.ts:73](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L73)
 
 Cookie configuration options.
 
@@ -22,7 +22,7 @@ Cookie configuration options.
 
 > `optional` **demoLimits?**: [`StatelessDemoLimits`](../../interfaces/StatelessDemoLimits.md)
 
-Defined in: [packages/siwx-server/src/next.ts:78](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L78)
+Defined in: [packages/siwx-server/src/next.ts:78](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L78)
 
 Demo limits (payload size, max requests).
 
@@ -32,7 +32,7 @@ Demo limits (payload size, max requests).
 
 > `optional` **policy?**: [`SiwxVerificationPolicy`](../../interfaces/SiwxVerificationPolicy.md)
 
-Defined in: [packages/siwx-server/src/next.ts:68](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L68)
+Defined in: [packages/siwx-server/src/next.ts:68](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L68)
 
 Verification policy to enforce.
 
@@ -42,7 +42,7 @@ Verification policy to enforce.
 
 > **signingSecret**: `string`
 
-Defined in: [packages/siwx-server/src/next.ts:63](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L63)
+Defined in: [packages/siwx-server/src/next.ts:63](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L63)
 
 Server-only cryptographic secret for HMAC signing (minimum 32 characters).
 MUST NEVER be exposed to the browser or client-side bundles.
@@ -53,7 +53,7 @@ MUST NEVER be exposed to the browser or client-side bundles.
 
 > `optional` **ttlSeconds?**: `number`
 
-Defined in: [packages/siwx-server/src/next.ts:88](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L88)
+Defined in: [packages/siwx-server/src/next.ts:88](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L88)
 
 Session TTL in seconds for demo profile (defaults to 1800s = 30 minutes).
 
@@ -63,6 +63,6 @@ Session TTL in seconds for demo profile (defaults to 1800s = 30 minutes).
 
 > `optional` **verifyOptions?**: `Omit`\<[`ServerVerifyOptions`](../../interfaces/ServerVerifyOptions.md), `"policy"`\>
 
-Defined in: [packages/siwx-server/src/next.ts:83](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L83)
+Defined in: [packages/siwx-server/src/next.ts:83](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L83)
 
 Additional verification options.

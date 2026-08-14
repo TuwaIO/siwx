@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { getSatelliteSiwxFields } from '../satelliteHelpers';
 
 describe('getSatelliteSiwxFields', () => {
-  it('should generate fields for EVM connection', () => {
+  it('should generate fields for EVM connection with default expirationTime', () => {
     const activeConnection = {
       address: '0x123abc',
       chainId: 1,
@@ -15,6 +15,21 @@ describe('getSatelliteSiwxFields', () => {
     expect(fields.address).toBe('eip155:1:0x123abc');
     expect(fields.chainId).toBe('eip155:1');
     expect(fields.domain).toBe('example.com');
+    expect(fields.expirationTime).toBeDefined();
+    expect(new Date(fields.expirationTime!).getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it('should support custom expirationSeconds', () => {
+    const activeConnection = {
+      address: '0x123abc',
+      chainId: 1,
+      isConnected: true,
+    };
+
+    const fields = getSatelliteSiwxFields(activeConnection, { expirationSeconds: 600 });
+    const expiresAt = new Date(fields.expirationTime!).getTime();
+    const expected = Date.now() + 600 * 1000;
+    expect(Math.abs(expiresAt - expected)).toBeLessThan(5000);
   });
 
   it('should generate fields for Solana connection', () => {
@@ -29,6 +44,7 @@ describe('getSatelliteSiwxFields', () => {
     expect(fields.address).toBe('solana:mainnet:4sGjM');
     expect(fields.chainId).toBe('solana:mainnet');
     expect(fields.uri).toBe('https://test.com');
+    expect(fields.expirationTime).toBeDefined();
   });
 
   it('should throw if missing address or chainId', () => {

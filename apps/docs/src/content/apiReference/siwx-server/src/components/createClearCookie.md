@@ -6,7 +6,7 @@
 
 > **createClearCookie**(`opts?`): `string`
 
-Defined in: [packages/siwx-server/src/server.ts:294](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L294)
+Defined in: [packages/siwx-server/src/server.ts:294](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/server.ts#L294)
 
 Creates a clear/destroy Set-Cookie header value.
 

@@ -4,7 +4,7 @@
 
 # SiwxSessionRecord
 
-Defined in: [packages/siwx-server/src/types.ts:70](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L70)
+Defined in: [packages/siwx-server/src/types.ts:70](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L70)
 
 Represents a stored session record in a durable session store.
 
@@ -14,7 +14,7 @@ Represents a stored session record in a durable session store.
 
 > **createdAt**: `number`
 
-Defined in: [packages/siwx-server/src/types.ts:78](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L78)
+Defined in: [packages/siwx-server/src/types.ts:78](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L78)
 
 Timestamp in milliseconds when the session record was created.
 
@@ -24,7 +24,7 @@ Timestamp in milliseconds when the session record was created.
 
 > **expiresAt**: `number`
 
-Defined in: [packages/siwx-server/src/types.ts:80](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L80)
+Defined in: [packages/siwx-server/src/types.ts:80](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L80)
 
 Timestamp in milliseconds when the session record expires.
 
@@ -34,7 +34,7 @@ Timestamp in milliseconds when the session record expires.
 
 > **id**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:72](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L72)
+Defined in: [packages/siwx-server/src/types.ts:72](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L72)
 
 Unique opaque session identifier (e.g. secure random UUID).
 
@@ -44,7 +44,7 @@ Unique opaque session identifier (e.g. secure random UUID).
 
 > **session**: [`SiwxSession`](SiwxSession.md)
 
-Defined in: [packages/siwx-server/src/types.ts:74](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L74)
+Defined in: [packages/siwx-server/src/types.ts:74](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L74)
 
 The verified SIWX session data.
 
@@ -54,6 +54,6 @@ The verified SIWX session data.
 
 > `optional` **subjectId?**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:76](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L76)
+Defined in: [packages/siwx-server/src/types.ts:76](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L76)
 
 Optional subject ID (e.g., Payload User ID or internal database ID) bound to this session.

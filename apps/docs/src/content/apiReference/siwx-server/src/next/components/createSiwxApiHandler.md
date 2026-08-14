@@ -6,7 +6,7 @@
 
 > **createSiwxApiHandler**(`options`): `object`
 
-Defined in: [packages/siwx-server/src/next.ts:113](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/next.ts#L113)
+Defined in: [packages/siwx-server/src/next.ts:113](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/next.ts#L113)
 
 Creates a standard production Next.js App Router route handler for SIWX with durable storage.
 Requires persistent session and nonce stores (Redis, PostgreSQL, etc.).

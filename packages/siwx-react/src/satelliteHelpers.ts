@@ -22,6 +22,11 @@ export interface SatelliteSiwxFieldOptions {
   domain?: string;
   uri?: string;
   statement?: string;
+  expirationTime?: string;
+  expirationSeconds?: number;
+  notBefore?: string;
+  requestId?: string;
+  resources?: string[];
 }
 
 /**
@@ -51,10 +56,21 @@ export function getSatelliteSiwxFields(
   const caip2ChainId = isEvm ? `eip155:${chainRef}` : `solana:${chainRef}`;
   const caip10Address = `${caip2ChainId}:${accountAddr}`;
 
+  const now = Date.now();
+  const expirationTime =
+    options?.expirationTime ??
+    (options?.expirationSeconds !== undefined
+      ? new Date(now + options.expirationSeconds * 1000).toISOString()
+      : new Date(now + 24 * 60 * 60 * 1000).toISOString());
+
   return {
     domain: options?.domain ?? (typeof window !== 'undefined' ? window.location.host : ''),
     uri: options?.uri ?? (typeof window !== 'undefined' ? window.location.href : ''),
     statement: options?.statement,
+    expirationTime,
+    notBefore: options?.notBefore,
+    requestId: options?.requestId,
+    resources: options?.resources,
     address: caip10Address,
     chainId: caip2ChainId as never,
   };

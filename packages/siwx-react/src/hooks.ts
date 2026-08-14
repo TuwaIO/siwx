@@ -111,12 +111,14 @@ export function useSiwx(): UseSiwxReturn {
 
         const nonce = fields.nonce ?? generateNonce();
         const issuedAt = fields.issuedAt ?? new Date().toISOString();
+        const expirationTime = fields.expirationTime ?? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
         const message = buildMessage({
           ...fields,
           version: '1',
           nonce,
           issuedAt,
+          expirationTime,
         });
 
         const signature = await signer(message);

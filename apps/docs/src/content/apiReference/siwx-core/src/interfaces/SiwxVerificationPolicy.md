@@ -4,7 +4,7 @@
 
 # SiwxVerificationPolicy
 
-Defined in: [packages/siwx-core/src/types.ts:104](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L104)
+Defined in: [packages/siwx-core/src/types.ts:104](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L104)
 
 Policy parameters for server-side CAIP-122 message verification.
 Enforces strict security constraints including domain, URI, chain ID, and timing windows.
@@ -15,7 +15,7 @@ Enforces strict security constraints including domain, URI, chain ID, and timing
 
 > `optional` **allowedChainIds?**: `string`[]
 
-Defined in: [packages/siwx-core/src/types.ts:118](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L118)
+Defined in: [packages/siwx-core/src/types.ts:118](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L118)
 
 List of allowed CAIP-2 chain IDs (e.g. ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK"]).
 
@@ -25,7 +25,7 @@ List of allowed CAIP-2 chain IDs (e.g. ["eip155:1", "solana:5eykt4UsFv8P8NJdTREp
 
 > `optional` **clockSkewSeconds?**: `number`
 
-Defined in: [packages/siwx-core/src/types.ts:142](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L142)
+Defined in: [packages/siwx-core/src/types.ts:142](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L142)
 
 Allowed clock skew in seconds when validating timestamps.
 
@@ -41,7 +41,7 @@ Allowed clock skew in seconds when validating timestamps.
 
 > `optional` **enforceNotBefore?**: `boolean`
 
-Defined in: [packages/siwx-core/src/types.ts:148](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L148)
+Defined in: [packages/siwx-core/src/types.ts:148](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L148)
 
 Whether to enforce the `notBefore` timestamp if present in the message.
 
@@ -57,7 +57,7 @@ true
 
 > `optional` **expectedDomain?**: `string` \| `string`[]
 
-Defined in: [packages/siwx-core/src/types.ts:108](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L108)
+Defined in: [packages/siwx-core/src/types.ts:108](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L108)
 
 Expected domain(s) requesting sign-in (e.g. "tuwa.io" or ["tuwa.io", "staging.tuwa.io"]).
 
@@ -67,7 +67,7 @@ Expected domain(s) requesting sign-in (e.g. "tuwa.io" or ["tuwa.io", "staging.tu
 
 > `optional` **expectedUri?**: `string` \| `string`[]
 
-Defined in: [packages/siwx-core/src/types.ts:113](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L113)
+Defined in: [packages/siwx-core/src/types.ts:113](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L113)
 
 Expected RFC 3986 URI(s) subject of sign-in (e.g. "https://tuwa.io").
 
@@ -77,7 +77,7 @@ Expected RFC 3986 URI(s) subject of sign-in (e.g. "https://tuwa.io").
 
 > `optional` **maxIssuedAtAgeSeconds?**: `number`
 
-Defined in: [packages/siwx-core/src/types.ts:131](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L131)
+Defined in: [packages/siwx-core/src/types.ts:131](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L131)
 
 Maximum allowed age of the message's `issuedAt` in seconds.
 Prevents accepting stale sign-in messages.
@@ -94,7 +94,7 @@ Prevents accepting stale sign-in messages.
 
 > `optional` **maxSessionLifetimeSeconds?**: `number`
 
-Defined in: [packages/siwx-core/src/types.ts:136](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L136)
+Defined in: [packages/siwx-core/src/types.ts:136](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L136)
 
 Maximum allowed session lifetime in seconds (expirationTime - issuedAt).
 
@@ -104,7 +104,7 @@ Maximum allowed session lifetime in seconds (expirationTime - issuedAt).
 
 > `optional` **requireExpirationTime?**: `boolean`
 
-Defined in: [packages/siwx-core/src/types.ts:124](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L124)
+Defined in: [packages/siwx-core/src/types.ts:124](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L124)
 
 Whether the CAIP-122 message MUST include an `expirationTime`.
 Strongly recommended for zero-infrastructure stateless demo profiles.
