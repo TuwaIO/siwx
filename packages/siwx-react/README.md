@@ -9,10 +9,13 @@
 
 ## 🏛️ Core Capabilities
 
-- **Session State Management**: A `zustand` store (with `immer` + `persist` via `sessionStorage`) tracks the complete authentication lifecycle: `idle → signing → verifying → authenticated | error`.
-- **`useSiwx()` hook**: Orchestrates the full sign-in flow: build CAIP-122 message → call your signer → call your verifier → store the session.
-- **`useSiwxSession()` hook**: A lightweight selector for reading the current auth state in any component.
-- **Backend-agnostic**: Works with any signer (wagmi, Wallet Standard) and any verifier.
+- **Session State Management**: A `zustand` store (with `immer` + `persist` via `sessionStorage`) tracks the client-side authentication lifecycle: `idle → building → signing → verifying → authenticated | error`.
+- **`useSiwx()` Hook**: Orchestrates the sign-in flow: requests challenge nonce → builds CAIP-122 message → triggers wallet signer → verifies with backend → sets verified session.
+- **`useSiwxSession()` Hook**: Lightweight selector for reading the current authentication state and active account details in any component.
+- **Satellite Helpers**: Duck-typed integration helpers for `@tuwaio/satellite-core` connections.
+- **Backend Agnostic**: Works with any EVM or Solana signer (`wagmi`, `viem`, `gill`, Wallet Standard) and any backend endpoint.
+
+> **Important**: Client-side session state in Zustand reflects UI parity only. Server actions and API routes must never trust client-provided session state as proof of identity and must always verify the server-issued `HttpOnly` session cookie or authorization token.
 
 ---
 
@@ -24,26 +27,26 @@ pnpm add @tuwaio/siwx-react @tuwaio/siwx-core zustand immer
 
 ---
 
-## 🚀 API & Module Architecture
+## 🚀 API & Usage Examples
 
-### `useSiwx()`
+### 1. `useSiwx()` Hook
 
-Provides `signIn` and `signOut` actions.
+Orchestrates wallet signing and backend verification.
 
 ```tsx
 import { useSiwx } from '@tuwaio/siwx-react';
 import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
 
-function LoginButton({ address }: { address: string }) {
+function LoginButton({ walletClient, address }: { walletClient: any; address: string }) {
   const { signIn, signOut } = useSiwx();
 
-  const handleLogin = () =>
-    signIn({
-      // 1. Your wallet signing function (using the standard adapter)
+  const handleLogin = async () => {
+    await signIn({
+      // 1. Chain-specific signer adapter
       signer: createEvmSiwxSigner(walletClient),
-      // 2. Your backend verifier (returns session or null)
+
+      // 2. Backend verifier calling your Next.js route handler
       verifier: async (payload) => {
-        // You can easily create this endpoint using @tuwaio/siwx-server/next
         const res = await fetch('/api/siwx/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -51,6 +54,7 @@ function LoginButton({ address }: { address: string }) {
         });
         return res.ok ? res.json() : null;
       },
+
       // 3. CAIP-122 message fields
       fields: {
         domain: window.location.host,
@@ -60,46 +64,59 @@ function LoginButton({ address }: { address: string }) {
         statement: 'Sign in to TUWA.',
       },
     });
+  };
 
   return <button onClick={handleLogin}>Sign In</button>;
 }
 ```
 
-### `useSiwxSession()`
+### 2. `useSiwxSession()` Hook
 
-Reads the current session state.
+Reads the authenticated user session in React components.
 
 ```tsx
 import { useSiwxSession } from '@tuwaio/siwx-react';
 
-function UserAvatar() {
+function UserProfile() {
   const { isAuthenticated, session, status, error } = useSiwxSession();
 
-  if (!isAuthenticated) return null;
-  return <span>{session?.address}</span>;
+  if (status === 'signing' || status === 'verifying') {
+    return <span>Authenticating...</span>;
+  }
+
+  if (!isAuthenticated || !session) {
+    return <span>Not signed in</span>;
+  }
+
+  return (
+    <div>
+      <p>Address: {session.address}</p>
+      <p>Chain ID: {session.chainId}</p>
+    </div>
+  );
 }
 ```
 
-### `useSiwxSessionStore`
+### 3. `useSiwxSessionStore`
 
-Direct Zustand store access for advanced use cases.
+Direct store access for subscribing to specific state slices.
 
 ```ts
 import { useSiwxSessionStore } from '@tuwaio/siwx-react';
 
-// Subscribe to specific slice
+// Subscribe to address slice
 const address = useSiwxSessionStore((s) => s.session?.address);
 ```
 
 ---
 
-### Satellite Connection Helpers
+## 🛰️ Satellite Connection Helpers
 
-`@tuwaio/siwx-react` includes duck-typed integration helpers for `@tuwaio/satellite-core` connections without adding hard dependencies.
+Integration helpers for applications using `@tuwaio/satellite-core`.
 
-#### `getSatelliteSiwxFields(activeConnection, options?)`
+### `getSatelliteSiwxFields(activeConnection, options?)`
 
-Generates exact CAIP-10 and CAIP-2 identifiers strictly from the active connection.
+Extracts normalized CAIP-10 and CAIP-2 identifiers directly from the active connection.
 
 ```ts
 import { getSatelliteSiwxFields } from '@tuwaio/siwx-react';
@@ -107,12 +124,11 @@ import { getSatelliteSiwxFields } from '@tuwaio/siwx-react';
 const fields = getSatelliteSiwxFields(activeConnection, {
   statement: 'Sign in to TUWA.',
 });
-// Returns { domain, uri, statement, address: 'eip155:1:0x...', chainId: 'eip155:1' }
 ```
 
-#### `createSatelliteSiwxSigner(activeConnection)`
+### `createSatelliteSiwxSigner(activeConnection)`
 
-Returns the native `signMessage` callback from a Satellite active connection.
+Returns the standardized message signer callback from the active connection.
 
 ```ts
 import { createSatelliteSiwxSigner } from '@tuwaio/siwx-react';
@@ -120,9 +136,9 @@ import { createSatelliteSiwxSigner } from '@tuwaio/siwx-react';
 const signer = await createSatelliteSiwxSigner(activeConnection);
 ```
 
-#### `isSessionMatchingConnection(session, activeConnection)`
+### `isSessionMatchingConnection(session, activeConnection)`
 
-Evaluates whether an active SIWX session matches an active Satellite connection (handles CAIP-10 address alignment and chainId matching).
+Evaluates whether the active SIWX session matches the current wallet connection.
 
 ```ts
 import { isSessionMatchingConnection } from '@tuwaio/siwx-react';
@@ -130,27 +146,18 @@ import { isSessionMatchingConnection } from '@tuwaio/siwx-react';
 const isMatching = isSessionMatchingConnection(session, activeConnection);
 ```
 
-#### `isSessionMatchingTarget(session, targetAddress, targetChainId?)`
-
-Re-exported from `@tuwaio/siwx-core` for convenience. Validates whether a SIWX session matches a target wallet address and optional chainId.
-
-```ts
-import { isSessionMatchingTarget } from '@tuwaio/siwx-react';
-
-const isValid = isSessionMatchingTarget(session, address, chainId);
-```
-
 ---
 
-## Session Lifecycle
+## 🔄 Session Lifecycle
 
 ```
 idle
  └─ signIn() called
-     └─ signing     (wallet prompt shown)
-         └─ verifying (payload sent to backend)
-             ├─ authenticated ✅ (session stored in sessionStorage)
-             └─ error ❌ (error message stored)
+     └─ building    (requesting challenge nonce & assembling fields)
+         └─ signing     (wallet signing prompt)
+             └─ verifying   (backend verification)
+                 ├─ authenticated ✅ (session persisted to sessionStorage)
+                 └─ error ❌ (error message recorded)
 ```
 
 ---

@@ -12,27 +12,61 @@ Public API barrel for @tuwaio/siwx-server.
 
 [Repository](https://github.com/TuwaIO/siwx)
 
+## Classes
+
+- [MemorySiwxNonceStore](classes/MemorySiwxNonceStore.md)
+- [MemorySiwxSessionStore](classes/MemorySiwxSessionStore.md)
+
 ## Interfaces
 
 - [CookieOptions](interfaces/CookieOptions.md)
-- [SerializedCookieSession](interfaces/SerializedCookieSession.md)
 - [ServerVerifyOptions](interfaces/ServerVerifyOptions.md)
 - [ServerVerifyResult](interfaces/ServerVerifyResult.md)
+- [SiwxNonceStore](interfaces/SiwxNonceStore.md)
 - [SiwxSession](interfaces/SiwxSession.md)
+- [SiwxSessionRecord](interfaces/SiwxSessionRecord.md)
+- [SiwxSessionStore](interfaces/SiwxSessionStore.md)
+- [SiwxVerificationPolicy](interfaces/SiwxVerificationPolicy.md)
+- [StatelessDemoLimits](interfaces/StatelessDemoLimits.md)
+- [StatelessDemoTokenPayload](interfaces/StatelessDemoTokenPayload.md)
+- [ValidateMessageOptions](interfaces/ValidateMessageOptions.md)
 
 ## Functions
 
-- [deserializeCookieSession](functions/deserializeCookieSession.md)
+- [createClearCookie](functions/createClearCookie.md)
+- [createSessionCookie](functions/createSessionCookie.md)
 - [generateServerNonce](functions/generateServerNonce.md)
-- [serializeCookieSession](functions/serializeCookieSession.md)
+- [parseCookie](functions/parseCookie.md)
+- [signStatelessDemoSession](functions/signStatelessDemoSession.md)
 - [toSession](functions/toSession.md)
+- [validateMessage](functions/validateMessage.md)
+- [validatePolicy](functions/validatePolicy.md)
 - [verifySiwxPayload](functions/verifySiwxPayload.md)
+- [verifyStatelessDemoSession](functions/verifyStatelessDemoSession.md)
 
 ## References
+
+### generateNonce
+
+Renames and re-exports [generateServerNonce](functions/generateServerNonce.md)
+
+***
 
 ### isSessionMatchingTarget
 
 Re-exports [isSessionMatchingTarget](../../siwx-react/src/functions/isSessionMatchingTarget.md)
+
+***
+
+### ParsedSiwxMessage
+
+Re-exports [ParsedSiwxMessage](../../siwx-react/src/type-aliases/ParsedSiwxMessage.md)
+
+***
+
+### SiwxMessageFields
+
+Re-exports [SiwxMessageFields](../../siwx-react/src/interfaces/SiwxMessageFields.md)
 
 ***
 

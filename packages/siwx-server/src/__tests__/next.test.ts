@@ -1,50 +1,71 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createSiwxApiHandler } from '../next';
+import { createSiwxApiHandler, createStatelessDemoSiwxHandler } from '../next';
 import * as serverModule from '../server';
+import { MemorySiwxNonceStore, MemorySiwxSessionStore } from '../server';
 
-vi.mock('../server', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../server')>();
-  return {
-    ...actual,
-    verifySiwxPayload: vi.fn(),
-    serializeCookieSession: vi.fn(),
-    deserializeCookieSession: vi.fn(),
-    toSession: vi.fn(),
-  };
-});
+const TEST_SECRET = '0123456789abcdef0123456789abcdef'; // 32 characters
 
-describe('createSiwxApiHandler', () => {
+describe('createSiwxApiHandler (Durable Profile)', () => {
+  it('throws error if sessionStore or nonceStore is missing', () => {
+    // @ts-expect-error test missing params
+    expect(() => createSiwxApiHandler({})).toThrow('requires both `sessionStore` and `nonceStore`');
+  });
+
+  const sessionStore = new MemorySiwxSessionStore();
+  const nonceStore = new MemorySiwxNonceStore();
+
   const handler = createSiwxApiHandler({
-    cookieOptions: { name: 'test-cookie' },
+    sessionStore,
+    nonceStore,
+    cookieOptions: { name: 'siwx-test-session' },
   });
 
   const { GET, POST, DELETE } = handler;
 
   describe('GET /session', () => {
     it('returns null if no session cookie exists', async () => {
-      const req = new Request('http://localhost/api/siwx/session', {
-        method: 'GET',
-      });
+      const req = new Request('http://localhost/api/siwx/session', { method: 'GET' });
       const response = await GET(req);
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data).toBeNull();
     });
 
-    it('returns deserialized session if cookie exists', async () => {
-      const mockSession = { address: '0x123', chainId: 'eip155:1' };
-      vi.mocked(serverModule.deserializeCookieSession).mockReturnValueOnce(mockSession as any);
+    it('returns stored session if valid session cookie exists', async () => {
+      const record = await sessionStore.create({
+        session: {
+          address: 'eip155:1:0x123',
+          chainId: 'eip155:1',
+          domain: 'tuwa.io',
+          nonce: '12345678',
+          issuedAt: new Date().toISOString(),
+        },
+        ttlSeconds: 300,
+      });
 
       const req = new Request('http://localhost/api/siwx/session', {
         method: 'GET',
-        headers: { Cookie: 'test-cookie=mock_value' },
+        headers: { Cookie: `siwx-test-session=${record.id}` },
       });
       const response = await GET(req);
       expect(response.status).toBe(200);
       const data = await response.json();
-      expect(data).toEqual(mockSession);
-      expect(serverModule.deserializeCookieSession).toHaveBeenCalledWith('mock_value');
+      expect(data?.address).toBe('eip155:1:0x123');
+    });
+  });
+
+  describe('POST /nonce', () => {
+    it('generates and registers a nonce in nonceStore', async () => {
+      const req = new Request('http://localhost/api/siwx/nonce', { method: 'POST' });
+      const response = await POST(req);
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.nonce).toHaveLength(32);
+
+      // Verify that the issued nonce can be consumed once
+      const consumed = await nonceStore.consume({ nonce: data.nonce });
+      expect(consumed).toBe(true);
     });
   });
 
@@ -58,10 +79,34 @@ describe('createSiwxApiHandler', () => {
       expect(response.status).toBe(400);
     });
 
-    it('returns 401 if verification fails', async () => {
-      vi.mocked(serverModule.verifySiwxPayload).mockResolvedValueOnce({
+    it('returns 401 if payload verification fails', async () => {
+      vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
         success: false,
-        error: 'Invalid signature',
+        error: 'Signature invalid',
+      });
+
+      const req = new Request('http://localhost/api/siwx/verify', {
+        method: 'POST',
+        body: JSON.stringify({ message: 'msg', signature: 'sig' }),
+      });
+      const response = await POST(req);
+      expect(response.status).toBe(401);
+    });
+
+    it('returns 401 if nonce replay is detected (consume returns false)', async () => {
+      const mockParsed = {
+        nonce: 'replayed_nonce',
+        address: 'eip155:1:0x123',
+        chainId: 'eip155:1' as const,
+        domain: 'tuwa.io',
+        uri: 'https://tuwa.io',
+        version: '1' as const,
+        issuedAt: new Date().toISOString(),
+      };
+
+      vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
+        success: true,
+        data: mockParsed,
       });
 
       const req = new Request('http://localhost/api/siwx/verify', {
@@ -71,22 +116,26 @@ describe('createSiwxApiHandler', () => {
       const response = await POST(req);
       expect(response.status).toBe(401);
       const data = await response.json();
-      expect(data.error).toBe('Invalid signature');
+      expect(data.error).toContain('Nonce replay');
     });
 
-    it('returns 200 and sets cookie on successful verification', async () => {
-      const mockData = { nonce: '123', address: '0x123' };
-      const mockSession = { address: '0x123' };
+    it('returns 200, saves to store, and sets HttpOnly cookie on success', async () => {
+      const validNonce = 'valid_nonce_12345';
+      await nonceStore.issue({ nonce: validNonce, ttlSeconds: 60 });
 
-      vi.mocked(serverModule.verifySiwxPayload).mockResolvedValueOnce({
+      const mockParsed = {
+        nonce: validNonce,
+        address: 'eip155:1:0x123',
+        chainId: 'eip155:1' as const,
+        domain: 'tuwa.io',
+        uri: 'https://tuwa.io',
+        version: '1' as const,
+        issuedAt: new Date().toISOString(),
+      };
+
+      vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
         success: true,
-        data: mockData as any,
-      });
-      vi.mocked(serverModule.toSession).mockReturnValueOnce(mockSession as any);
-      vi.mocked(serverModule.serializeCookieSession).mockReturnValueOnce({
-        cookieHeader: 'test-cookie=new_value; HttpOnly',
-        session: mockSession as any,
-        cookieValue: 'new_value',
+        data: mockParsed,
       });
 
       const req = new Request('http://localhost/api/siwx/verify', {
@@ -94,45 +143,102 @@ describe('createSiwxApiHandler', () => {
         body: JSON.stringify({ message: 'msg', signature: 'sig' }),
       });
       const response = await POST(req);
-
       expect(response.status).toBe(200);
-      expect(response.headers.get('Set-Cookie')).toBe('test-cookie=new_value; HttpOnly');
 
-      const data = await response.json();
-      expect(data).toEqual(mockSession);
-      expect(serverModule.toSession).toHaveBeenCalledWith(mockData);
+      const cookieHeader = response.headers.get('Set-Cookie');
+      expect(cookieHeader).toContain('siwx-test-session=');
+      expect(cookieHeader).toContain('HttpOnly');
     });
   });
 
   describe('DELETE /session', () => {
-    it('destroys session by returning expired cookie', async () => {
+    it('revokes session in store and clears cookie', async () => {
+      const record = await sessionStore.create({
+        session: {
+          address: 'eip155:1:0x123',
+          chainId: 'eip155:1' as const,
+          domain: 'tuwa.io',
+          nonce: '12345678',
+          issuedAt: new Date().toISOString(),
+        },
+        ttlSeconds: 300,
+      });
+
       const req = new Request('http://localhost/api/siwx/session', {
         method: 'DELETE',
+        headers: { Cookie: `siwx-test-session=${record.id}` },
       });
       const response = await DELETE(req);
       expect(response.status).toBe(200);
 
-      const setCookie = response.headers.get('Set-Cookie');
-      expect(setCookie).toContain('test-cookie=;');
-      expect(setCookie).toContain('Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+      const clearCookie = response.headers.get('Set-Cookie');
+      expect(clearCookie).toContain('Max-Age=0');
+
+      // Verify revoked
+      const fetched = await sessionStore.get(record.id);
+      expect(fetched).toBeNull();
     });
   });
+});
 
-  describe('Routing (URL parsing)', () => {
-    it('routes correctly based on URL path', async () => {
-      const req = new Request('http://localhost/api/siwx/session', {
-        method: 'GET',
-      });
-      const response = await GET(req);
-      expect(response.status).toBe(200);
+describe('createStatelessDemoSiwxHandler (Stateless Demo Profile)', () => {
+  it('throws error if signingSecret is too short', () => {
+    expect(() => createStatelessDemoSiwxHandler({ signingSecret: 'short' })).toThrow('at least 32 characters');
+  });
+
+  const demoHandler = createStatelessDemoSiwxHandler({
+    signingSecret: TEST_SECRET,
+    cookieOptions: { name: 'siwx-demo-session' },
+  });
+
+  const { GET, POST, DELETE } = demoHandler;
+
+  it('handles full demo sign-in and session retrieval flow without DB/Redis', async () => {
+    const mockParsed = {
+      nonce: 'demo_nonce_123',
+      address: 'eip155:1:0xDemoAccount',
+      chainId: 'eip155:1' as const,
+      domain: 'tuwa.io',
+      uri: 'https://tuwa.io',
+      version: '1' as const,
+      issuedAt: new Date().toISOString(),
+      expirationTime: new Date(Date.now() + 1800 * 1000).toISOString(),
+    };
+
+    vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
+      success: true,
+      data: mockParsed,
     });
 
-    it('returns 404 for unknown actions', async () => {
-      const req = new Request('http://localhost/api/siwx/unknown', {
-        method: 'GET',
-      });
-      const response = await GET(req);
-      expect(response.status).toBe(404);
+    const verifyReq = new Request('http://localhost/api/siwx/verify', {
+      method: 'POST',
+      body: JSON.stringify({ message: 'msg', signature: 'sig' }),
     });
+    const verifyRes = await POST(verifyReq);
+    expect(verifyRes.status).toBe(200);
+
+    const setCookie = verifyRes.headers.get('Set-Cookie');
+    expect(setCookie).toContain('siwx-demo-session=');
+    expect(setCookie).toContain('HttpOnly');
+
+    const tokenMatch = setCookie?.match(/siwx-demo-session=([^;]+)/);
+    const token = tokenMatch?.[1];
+    expect(token).toBeTruthy();
+
+    // Now call GET /session with that token
+    const sessionReq = new Request('http://localhost/api/siwx/session', {
+      method: 'GET',
+      headers: { Cookie: `siwx-demo-session=${token}` },
+    });
+    const sessionRes = await GET(sessionReq);
+    expect(sessionRes.status).toBe(200);
+    const sessionData = await sessionRes.json();
+    expect(sessionData?.address).toBe('eip155:1:0xDemoAccount');
+
+    // Now call DELETE /session
+    const logoutReq = new Request('http://localhost/api/siwx/session', { method: 'DELETE' });
+    const logoutRes = await DELETE(logoutReq);
+    expect(logoutRes.status).toBe(200);
+    expect(logoutRes.headers.get('Set-Cookie')).toContain('Max-Age=0');
   });
 });

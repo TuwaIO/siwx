@@ -228,4 +228,84 @@ describe('generateNonce()', () => {
     });
     expect(result.valid).toBe(true);
   });
+
+  describe('policy enforcement', () => {
+    it('validates expectedDomain string and array', () => {
+      const valid = validateMessage(VALID_FIELDS, {
+        policy: { expectedDomain: 'app.tuwa.io' },
+      });
+      expect(valid.valid).toBe(true);
+
+      const invalid = validateMessage(VALID_FIELDS, {
+        policy: { expectedDomain: 'other.domain.com' },
+      });
+      expect(invalid.valid).toBe(false);
+      expect(invalid.errors.some((e) => e.includes('Domain mismatch'))).toBe(true);
+
+      const validArray = validateMessage(VALID_FIELDS, {
+        policy: { expectedDomain: ['auth.tuwa.io', 'app.tuwa.io'] },
+      });
+      expect(validArray.valid).toBe(true);
+    });
+
+    it('validates expectedUri', () => {
+      const valid = validateMessage(VALID_FIELDS, {
+        policy: { expectedUri: 'https://app.tuwa.io' },
+      });
+      expect(valid.valid).toBe(true);
+
+      const invalid = validateMessage(VALID_FIELDS, {
+        policy: { expectedUri: 'https://other.tuwa.io' },
+      });
+      expect(invalid.valid).toBe(false);
+      expect(invalid.errors.some((e) => e.includes('URI mismatch'))).toBe(true);
+    });
+
+    it('validates allowedChainIds', () => {
+      const valid = validateMessage(VALID_FIELDS, {
+        policy: { allowedChainIds: ['eip155:1', 'solana:mainnet'] },
+      });
+      expect(valid.valid).toBe(true);
+
+      const invalid = validateMessage(VALID_FIELDS, {
+        policy: { allowedChainIds: ['eip155:137', 'solana:mainnet'] },
+      });
+      expect(invalid.valid).toBe(false);
+      expect(invalid.errors.some((e) => e.includes('Chain ID "eip155:1" is not allowed'))).toBe(true);
+    });
+
+    it('enforces requireExpirationTime', () => {
+      const withoutExp = { ...VALID_FIELDS, expirationTime: undefined };
+      const res = validateMessage(withoutExp, {
+        policy: { requireExpirationTime: true },
+      });
+      expect(res.valid).toBe(false);
+      expect(res.errors.some((e) => e.includes('expirationTime is required'))).toBe(true);
+    });
+
+    it('enforces maxIssuedAtAgeSeconds', () => {
+      const staleFields = {
+        ...VALID_FIELDS,
+        issuedAt: new Date(Date.now() - 600 * 1000).toISOString(),
+      };
+      const res = validateMessage(staleFields, {
+        policy: { maxIssuedAtAgeSeconds: 300, clockSkewSeconds: 0 },
+      });
+      expect(res.valid).toBe(false);
+      expect(res.errors.some((e) => e.includes('older than the allowed max age'))).toBe(true);
+    });
+
+    it('enforces maxSessionLifetimeSeconds', () => {
+      const longSessionFields = {
+        ...VALID_FIELDS,
+        issuedAt: '2026-08-06T08:00:00.000Z',
+        expirationTime: '2026-08-06T09:00:00.000Z', // 3600 seconds
+      };
+      const res = validateMessage(longSessionFields, {
+        policy: { maxSessionLifetimeSeconds: 1800 },
+      });
+      expect(res.valid).toBe(false);
+      expect(res.errors.some((e) => e.includes('exceeds maximum allowed lifetime'))).toBe(true);
+    });
+  });
 });

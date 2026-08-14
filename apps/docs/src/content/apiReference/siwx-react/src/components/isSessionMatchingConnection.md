@@ -6,7 +6,7 @@
 
 > **isSessionMatchingConnection**(`session`, `activeConnection`): `boolean`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:79](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-react/src/satelliteHelpers.ts#L79)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:79](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-react/src/satelliteHelpers.ts#L79)
 
 Evaluates whether an active SIWX session matches an active Satellite connection.
 

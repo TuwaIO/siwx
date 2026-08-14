@@ -74,38 +74,101 @@ const message = buildMessage({
 
 ### 3. Verify on the Server
 
-You can use the high-level Next.js route handler from `@tuwaio/siwx-server/next`:
+#### Option A: Production Standard (Durable Redis Session & Nonce Store)
+
+First, define your persistent stores:
+
+```ts
+// lib/authStores.ts
+import type { SiwxNonceStore, SiwxSession, SiwxSessionRecord, SiwxSessionStore } from '@tuwaio/siwx-server';
+import { generateServerNonce } from '@tuwaio/siwx-server';
+import Redis from 'ioredis';
+
+const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+export const sessionStore: SiwxSessionStore = {
+  async create({ session, ttlSeconds }: { session: SiwxSession; ttlSeconds: number }): Promise<SiwxSessionRecord> {
+    const id = generateServerNonce();
+    const createdAt = Date.now();
+    const expiresAt = createdAt + ttlSeconds * 1000;
+    const record: SiwxSessionRecord = { id, session, createdAt, expiresAt };
+
+    await redis.set(`siwx:session:${id}`, JSON.stringify(record), 'EX', ttlSeconds);
+    return record;
+  },
+
+  async get(id: string): Promise<SiwxSessionRecord | null> {
+    const data = await redis.get(`siwx:session:${id}`);
+    return data ? JSON.parse(data) : null;
+  },
+
+  async bindSubject(id: string, subjectId: string): Promise<boolean> {
+    const record = await this.get(id);
+    if (!record) return false;
+    record.subjectId = subjectId;
+    const ttl = Math.max(1, Math.floor((record.expiresAt - Date.now()) / 1000));
+    await redis.set(`siwx:session:${id}`, JSON.stringify(record), 'EX', ttl);
+    return true;
+  },
+
+  async revoke(id: string): Promise<void> {
+    await redis.del(`siwx:session:${id}`);
+  },
+};
+
+export const nonceStore: SiwxNonceStore = {
+  async issue({ nonce, ttlSeconds }: { nonce: string; ttlSeconds: number }): Promise<void> {
+    await redis.set(`siwx:nonce:${nonce}`, '1', 'EX', ttlSeconds);
+  },
+
+  async consume({ nonce }: { nonce: string }): Promise<boolean> {
+    const value = await redis.getdel(`siwx:nonce:${nonce}`);
+    return value !== null;
+  },
+};
+```
+
+##### In-Memory Alternative for Local Testing / Prototyping (No Redis Needed):
+
+```ts
+// lib/authStores.dev.ts (Zero Dependencies / In-Memory)
+import { MemorySiwxNonceStore, MemorySiwxSessionStore } from '@tuwaio/siwx-server';
+
+// Built-in in-memory stores for local testing (fails closed in production by default)
+export const sessionStore = new MemorySiwxSessionStore();
+export const nonceStore = new MemorySiwxNonceStore();
+```
+
+Then create the Next.js App Router handler:
 
 ```ts
 // app/api/siwx/[...siwx]/route.ts
 import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+import { nonceStore, sessionStore } from '@/lib/authStores';
 
 const handler = createSiwxApiHandler({
-  cookieOptions: { name: 'siwx-session', secure: process.env.NODE_ENV === 'production' },
+  sessionStore,
+  nonceStore,
+  policy: { expectedDomain: 'app.tuwa.io' },
 });
 
 export const { GET, POST, DELETE } = handler;
 ```
 
-Or manually verify payloads with low-level utilities:
+#### Option B: Stateless Demo Profile (Zero-Infrastructure Demonstration & Prototyping)
+
+For sandbox testing, integration demos, or environments running without a database or Redis:
 
 ```ts
-import { verifySiwxPayload, serializeCookieSession, toSession } from '@tuwaio/siwx-server';
+// app/api/siwx/[...siwx]/route.ts
+import { createStatelessDemoSiwxHandler } from '@tuwaio/siwx-server/next';
 
-export async function POST(request: Request) {
-  const { message, signature } = await request.json();
+const handler = createStatelessDemoSiwxHandler({
+  signingSecret: process.env.SIWX_DEMO_SIGNING_SECRET!, // Minimum 32 characters
+  policy: { expectedDomain: 'demo.tuwa.io', requireExpirationTime: true },
+});
 
-  const result = await verifySiwxPayload({ message, signature });
-
-  if (result.success && result.data) {
-    const { cookieHeader } = serializeCookieSession(toSession(result.data));
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: { 'Set-Cookie': cookieHeader, 'Content-Type': 'application/json' },
-    });
-  }
-
-  return new Response(JSON.stringify({ error: result.error }), { status: 400 });
-}
+export const { GET, POST, DELETE } = handler;
 ```
 
 ### 4. Use in React

@@ -2,7 +2,7 @@
  * @fileoverview Server-side types for the @tuwaio/siwx-server package.
  */
 
-import type { ParsedSiwxMessage, SiwxVerifyResult } from '@tuwaio/siwx-core';
+import type { ParsedSiwxMessage, SiwxVerificationPolicy, SiwxVerifyResult } from '@tuwaio/siwx-core';
 
 /**
  * Options for the `verifySiwxPayload` function.
@@ -11,7 +11,7 @@ export interface ServerVerifyOptions {
   /**
    * A set of nonces that have already been used.
    * If the payload's nonce is found in this set, verification will fail
-   * to prevent replay attacks. You should populate this from your session store or cache.
+   * to prevent replay attacks.
    */
   usedNonces?: Set<string>;
 
@@ -21,6 +21,11 @@ export interface ServerVerifyOptions {
    * @default false
    */
   skipExpiration?: boolean;
+
+  /**
+   * Optional verification policy to enforce on the message fields.
+   */
+  policy?: SiwxVerificationPolicy;
 
   /**
    * Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wallet) verification.
@@ -43,7 +48,6 @@ export interface ServerVerifyResult extends SiwxVerifyResult {
 
 /**
  * Represents a serializable session object derived from a verified CAIP-122 message.
- * This can be stored in a cookie or JWT payload.
  */
 export interface SiwxSession {
   /** The verified CAIP-10 blockchain address. */
@@ -61,16 +65,110 @@ export interface SiwxSession {
 }
 
 /**
+ * Represents a stored session record in a durable session store.
+ */
+export interface SiwxSessionRecord {
+  /** Unique opaque session identifier (e.g. secure random UUID). */
+  id: string;
+  /** The verified SIWX session data. */
+  session: SiwxSession;
+  /** Optional subject ID (e.g., Payload User ID or internal database ID) bound to this session. */
+  subjectId?: string;
+  /** Timestamp in milliseconds when the session record was created. */
+  createdAt: number;
+  /** Timestamp in milliseconds when the session record expires. */
+  expiresAt: number;
+}
+
+/**
+ * Durable session store interface for production environments.
+ */
+export interface SiwxSessionStore {
+  /**
+   * Creates and stores a new session record.
+   * @param input.session - The verified session data.
+   * @param input.ttlSeconds - Time-to-live in seconds.
+   * @returns The created session record with unique ID.
+   */
+  create(input: { session: SiwxSession; ttlSeconds: number }): Promise<SiwxSessionRecord>;
+
+  /**
+   * Retrieves a session record by its opaque ID.
+   * @param id - The session ID.
+   * @returns The session record, or null if not found or expired.
+   */
+  get(id: string): Promise<SiwxSessionRecord | null>;
+
+  /**
+   * Atomically binds a user/subject identifier to the session.
+   * @param id - The session ID.
+   * @param subjectId - The user or subject ID.
+   * @returns True if binding succeeded, false if session not found.
+   */
+  bindSubject(id: string, subjectId: string): Promise<boolean>;
+
+  /**
+   * Revokes and removes a session record.
+   * @param id - The session ID.
+   */
+  revoke(id: string): Promise<void>;
+}
+
+/**
+ * Durable nonce store interface for single-use nonce issuance and atomic consumption.
+ */
+export interface SiwxNonceStore {
+  /**
+   * Issues and stores a new challenge nonce with TTL.
+   * @param input.nonce - The unique nonce string.
+   * @param input.ttlSeconds - Time-to-live in seconds (typically 300s).
+   */
+  issue(input: { nonce: string; ttlSeconds: number }): Promise<void>;
+
+  /**
+   * Atomically consumes a nonce, guaranteeing single-use.
+   * @param input.nonce - The nonce string to consume.
+   * @returns True if the nonce was valid and consumed, false if already consumed or expired.
+   */
+  consume(input: { nonce: string }): Promise<boolean>;
+}
+
+/**
+ * Compact payload structure for stateless demo session tokens.
+ */
+export interface StatelessDemoTokenPayload {
+  version: 1;
+  address: string;
+  chainId: string;
+  domain: string;
+  nonce: string;
+  issuedAt: string;
+  expirationTime?: string;
+  sessionId: string;
+  mode: 'demo';
+}
+
+/**
+ * Limits for stateless demo profile.
+ */
+export interface StatelessDemoLimits {
+  /** Maximum transaction payload size in bytes. */
+  maxTransactionPayloadBytes?: number;
+  /** Advisory request cap per session. */
+  maxRequestsPerSession?: number;
+}
+
+/**
  * Options for cookie session serialization.
  */
 export interface CookieOptions {
   /**
    * The name of the cookie.
-   * @default "siwx-session"
+   * @default "siwx-session-v2"
    */
   name?: string;
   /**
-   * Max age in seconds. Defaults to 7 days.
+   * Max age in seconds. Defaults to 7 days for durable, 30 minutes for demo.
    * @default 604800
    */
   maxAge?: number;
@@ -93,18 +191,6 @@ export interface CookieOptions {
    * @default "Strict"
    */
   sameSite?: 'Strict' | 'Lax' | 'None';
-}
-
-/**
- * The serialized cookie string and session data together.
- */
-export interface SerializedCookieSession {
-  /** The full `Set-Cookie` header value. */
-  cookieHeader: string;
-  /** The session data embedded in the cookie. */
-  session: SiwxSession;
-  /** The base64url-encoded session payload (the cookie value). */
-  cookieValue: string;
 }
 
 /**

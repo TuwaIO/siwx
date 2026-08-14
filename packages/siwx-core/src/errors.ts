@@ -103,3 +103,116 @@ export class SiwxUnsupportedNamespaceError extends SiwxError {
     this.name = 'SiwxUnsupportedNamespaceError';
   }
 }
+
+/**
+ * Thrown when a verification policy rule is violated.
+ */
+export class SiwxPolicyViolationError extends SiwxError {
+  /**
+   * @param message - Human-readable description of policy violation.
+   * @param code - Specific policy violation error code.
+   */
+  constructor(message: string, code: string = 'SIWX_POLICY_VIOLATION') {
+    super(message, code);
+    this.name = 'SiwxPolicyViolationError';
+  }
+}
+
+/**
+ * Thrown when the message domain does not match the expected domain policy.
+ */
+export class SiwxDomainMismatchError extends SiwxPolicyViolationError {
+  constructor(
+    public readonly expected: string | string[],
+    public readonly received: string,
+  ) {
+    const expectedStr = Array.isArray(expected) ? expected.join(', ') : expected;
+    super(`Domain mismatch. Expected: [${expectedStr}], Received: "${received}"`, 'SIWX_DOMAIN_MISMATCH');
+    this.name = 'SiwxDomainMismatchError';
+  }
+}
+
+/**
+ * Thrown when the message URI does not match the expected URI policy.
+ */
+export class SiwxUriMismatchError extends SiwxPolicyViolationError {
+  constructor(
+    public readonly expected: string | string[],
+    public readonly received: string,
+  ) {
+    const expectedStr = Array.isArray(expected) ? expected.join(', ') : expected;
+    super(`URI mismatch. Expected: [${expectedStr}], Received: "${received}"`, 'SIWX_URI_MISMATCH');
+    this.name = 'SiwxUriMismatchError';
+  }
+}
+
+/**
+ * Thrown when the message chain ID is not in the allowed list of chain IDs.
+ */
+export class SiwxChainNotAllowedError extends SiwxPolicyViolationError {
+  constructor(
+    public readonly allowedChainIds: string[],
+    public readonly received: string,
+  ) {
+    super(`Chain ID "${received}" is not allowed. Allowed: [${allowedChainIds.join(', ')}]`, 'SIWX_CHAIN_NOT_ALLOWED');
+    this.name = 'SiwxChainNotAllowedError';
+  }
+}
+
+/**
+ * Thrown when the message issuedAt timestamp is older than allowed by policy.
+ */
+export class SiwxIssuedAtStaleError extends SiwxPolicyViolationError {
+  constructor(
+    public readonly issuedAt: string,
+    public readonly maxAgeSeconds: number,
+  ) {
+    super(
+      `Message issuedAt "${issuedAt}" is older than the allowed max age of ${maxAgeSeconds} seconds`,
+      'SIWX_ISSUED_AT_STALE',
+    );
+    this.name = 'SiwxIssuedAtStaleError';
+  }
+}
+
+/**
+ * Thrown when the message issuedAt timestamp is in the future beyond acceptable clock skew.
+ */
+export class SiwxIssuedAtFutureError extends SiwxPolicyViolationError {
+  constructor(
+    public readonly issuedAt: string,
+    public readonly clockSkewSeconds: number,
+  ) {
+    super(
+      `Message issuedAt "${issuedAt}" is in the future beyond allowed clock skew of ${clockSkewSeconds} seconds`,
+      'SIWX_ISSUED_AT_FUTURE',
+    );
+    this.name = 'SiwxIssuedAtFutureError';
+  }
+}
+
+/**
+ * Thrown when the message notBefore timestamp has not yet been reached.
+ */
+export class SiwxNotBeforeError extends SiwxPolicyViolationError {
+  constructor(public readonly notBefore: string) {
+    super(`Message not valid before ${notBefore}`, 'SIWX_NOT_BEFORE');
+    this.name = 'SiwxNotBeforeError';
+  }
+}
+
+/**
+ * Thrown when the message session duration exceeds the max allowed session lifetime.
+ */
+export class SiwxSessionLifetimeExceededError extends SiwxPolicyViolationError {
+  constructor(
+    public readonly lifetimeSeconds: number,
+    public readonly maxLifetimeSeconds: number,
+  ) {
+    super(
+      `Session lifetime of ${lifetimeSeconds} seconds exceeds maximum allowed lifetime of ${maxLifetimeSeconds} seconds`,
+      'SIWX_SESSION_LIFETIME_EXCEEDED',
+    );
+    this.name = 'SiwxSessionLifetimeExceededError';
+  }
+}

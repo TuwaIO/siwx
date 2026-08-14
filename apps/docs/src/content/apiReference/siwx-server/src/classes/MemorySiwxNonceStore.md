@@ -1,0 +1,99 @@
+[**API Reference — @tuwaio/siwx (CAIP-122 Authentication Layer)**](../../../README.md)
+
+***
+
+# MemorySiwxNonceStore
+
+Defined in: [packages/siwx-server/src/server.ts:384](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/server.ts#L384)
+
+In-memory implementation of SiwxNonceStore.
+STRICTLY for local development, prototyping, and unit testing.
+Fails closed in production environments.
+
+## Implements
+
+- [`SiwxNonceStore`](../interfaces/SiwxNonceStore.md)
+
+## Constructors
+
+### Constructor
+
+> **new MemorySiwxNonceStore**(`options?`): `MemorySiwxNonceStore`
+
+Defined in: [packages/siwx-server/src/server.ts:387](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/server.ts#L387)
+
+#### Parameters
+
+##### options?
+
+###### allowInProduction?
+
+`boolean`
+
+#### Returns
+
+`MemorySiwxNonceStore`
+
+## Methods
+
+### consume()
+
+> **consume**(`input`): `Promise`\<`boolean`\>
+
+Defined in: [packages/siwx-server/src/server.ts:403](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/server.ts#L403)
+
+Atomically consumes a nonce, guaranteeing single-use.
+
+#### Parameters
+
+##### input
+
+###### nonce
+
+`string`
+
+The nonce string to consume.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+True if the nonce was valid and consumed, false if already consumed or expired.
+
+#### Implementation of
+
+[`SiwxNonceStore`](../interfaces/SiwxNonceStore.md).[`consume`](../interfaces/SiwxNonceStore.md#consume)
+
+***
+
+### issue()
+
+> **issue**(`input`): `Promise`\<`void`\>
+
+Defined in: [packages/siwx-server/src/server.ts:398](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/server.ts#L398)
+
+Issues and stores a new challenge nonce with TTL.
+
+#### Parameters
+
+##### input
+
+###### nonce
+
+`string`
+
+The unique nonce string.
+
+###### ttlSeconds
+
+`number`
+
+Time-to-live in seconds (typically 300s).
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Implementation of
+
+[`SiwxNonceStore`](../interfaces/SiwxNonceStore.md).[`issue`](../interfaces/SiwxNonceStore.md#issue)

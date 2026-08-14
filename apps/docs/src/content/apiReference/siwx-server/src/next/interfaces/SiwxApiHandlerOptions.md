@@ -4,7 +4,7 @@
 
 # SiwxApiHandlerOptions
 
-Defined in: [packages/siwx-server/src/next.ts:8](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-server/src/next.ts#L8)
+Defined in: [packages/siwx-server/src/next.ts:26](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L26)
 
 ## Properties
 
@@ -12,16 +12,56 @@ Defined in: [packages/siwx-server/src/next.ts:8](https://github.com/TuwaIO/siwx/
 
 > `optional` **cookieOptions?**: [`CookieOptions`](../../interfaces/CookieOptions.md)
 
-Defined in: [packages/siwx-server/src/next.ts:12](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-server/src/next.ts#L12)
+Defined in: [packages/siwx-server/src/next.ts:45](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L45)
 
-Options for cookie serialization.
+Cookie configuration options (name, secure, path, domain, maxAge).
+
+***
+
+### nonceStore
+
+> **nonceStore**: [`SiwxNonceStore`](../../interfaces/SiwxNonceStore.md)
+
+Defined in: [packages/siwx-server/src/next.ts:35](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L35)
+
+Durable single-use nonce store instance (e.g. RedisSiwxNonceStore or MemorySiwxNonceStore for tests).
+
+***
+
+### policy?
+
+> `optional` **policy?**: [`SiwxVerificationPolicy`](../../interfaces/SiwxVerificationPolicy.md)
+
+Defined in: [packages/siwx-server/src/next.ts:40](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L40)
+
+Verification policy to enforce (expected domains, URIs, allowed chains, expiration limits).
+
+***
+
+### sessionStore
+
+> **sessionStore**: [`SiwxSessionStore`](../../interfaces/SiwxSessionStore.md)
+
+Defined in: [packages/siwx-server/src/next.ts:30](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L30)
+
+Durable session store instance (e.g. RedisSiwxSessionStore or MemorySiwxSessionStore for tests).
+
+***
+
+### ttlSeconds?
+
+> `optional` **ttlSeconds?**: `number`
+
+Defined in: [packages/siwx-server/src/next.ts:55](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L55)
+
+Session time-to-live in seconds (defaults to 7 days = 604800s).
 
 ***
 
 ### verifyOptions?
 
-> `optional` **verifyOptions?**: [`ServerVerifyOptions`](../../interfaces/ServerVerifyOptions.md)
+> `optional` **verifyOptions?**: `Omit`\<[`ServerVerifyOptions`](../../interfaces/ServerVerifyOptions.md), `"policy"` \| `"usedNonces"`\>
 
-Defined in: [packages/siwx-server/src/next.ts:16](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-server/src/next.ts#L16)
+Defined in: [packages/siwx-server/src/next.ts:50](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L50)
 
-Options for server-side payload verification (e.g. nonce replays, public client).
+Additional verification options (e.g. custom public client).

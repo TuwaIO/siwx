@@ -13,11 +13,19 @@
 
 export { buildMessage } from './buildMessage';
 export {
+  SiwxChainNotAllowedError,
+  SiwxDomainMismatchError,
   SiwxError,
   SiwxExpiredSessionError,
+  SiwxIssuedAtFutureError,
+  SiwxIssuedAtStaleError,
   SiwxNonceReplayError,
+  SiwxNotBeforeError,
   SiwxParseError,
+  SiwxPolicyViolationError,
+  SiwxSessionLifetimeExceededError,
   SiwxUnsupportedNamespaceError,
+  SiwxUriMismatchError,
   SiwxValidationError,
   SiwxVerificationError,
 } from './errors';
@@ -30,8 +38,10 @@ export type {
   SiwxMessageFields,
   SiwxStatus,
   SiwxValidationResult,
+  SiwxVerificationPolicy,
   SiwxVerifyPayload,
   SiwxVerifyResult,
+  ValidateMessageOptions,
 } from './types';
 export type { SiwxSessionLike } from './validateMessage';
-export { generateNonce, isSessionMatchingTarget, validateMessage } from './validateMessage';
+export { generateNonce, isSessionMatchingTarget, validateMessage, validatePolicy } from './validateMessage';

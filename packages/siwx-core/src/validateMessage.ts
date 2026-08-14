@@ -3,7 +3,7 @@
  * Provides individual validators and a composite `validateMessage` function.
  */
 
-import type { SiwxMessageFields, SiwxValidationResult } from './types';
+import type { SiwxMessageFields, SiwxValidationResult, SiwxVerificationPolicy, ValidateMessageOptions } from './types';
 
 /** Regex for RFC 3986 URI validation (basic subset). */
 const URI_REGEX = /^https?:\/\/.+/;
@@ -106,17 +106,117 @@ function validateIsoDatetime(value: string, fieldName: string): string | undefin
  * Validates that the message's `expirationTime`, if present, has not yet passed.
  *
  * @param expirationTime - The ISO 8601 expiration datetime string.
+ * @param now - Optional reference date (defaults to current date).
+ * @param clockSkewSeconds - Allowed clock skew in seconds (defaults to 0).
  * @returns An error string if the session is expired, or undefined if valid.
  */
-function validateExpiration(expirationTime: string): string | undefined {
+function validateExpiration(
+  expirationTime: string,
+  now: Date = new Date(),
+  clockSkewSeconds: number = 0,
+): string | undefined {
   const expiresAt = new Date(expirationTime);
   if (isNaN(expiresAt.getTime())) {
     return `expirationTime is not a valid date: "${expirationTime}"`;
   }
-  if (expiresAt < new Date()) {
+  if (expiresAt.getTime() + clockSkewSeconds * 1000 < now.getTime()) {
     return `Message has expired. expirationTime was: ${expirationTime}`;
   }
   return undefined;
+}
+
+/**
+ * Validates a CAIP-122 message object against an optional verification policy.
+ *
+ * @param fields - The message fields to validate.
+ * @param policy - The verification policy to enforce.
+ * @param now - Reference date for timestamp validations (defaults to new Date()).
+ * @returns An array of policy violation error messages.
+ */
+export function validatePolicy(
+  fields: SiwxMessageFields,
+  policy?: SiwxVerificationPolicy,
+  now: Date = new Date(),
+): string[] {
+  if (!policy) return [];
+  const errors: string[] = [];
+
+  // 1. Domain match
+  if (policy.expectedDomain !== undefined) {
+    const expected = Array.isArray(policy.expectedDomain) ? policy.expectedDomain : [policy.expectedDomain];
+    const isDomainMatch = expected.some((d) => d.toLowerCase() === fields.domain.toLowerCase());
+    if (!isDomainMatch) {
+      errors.push(`Domain mismatch. Expected: [${expected.join(', ')}], Received: "${fields.domain}"`);
+    }
+  }
+
+  // 2. URI match
+  if (policy.expectedUri !== undefined) {
+    const expected = Array.isArray(policy.expectedUri) ? policy.expectedUri : [policy.expectedUri];
+    const isUriMatch = expected.includes(fields.uri);
+    if (!isUriMatch) {
+      errors.push(`URI mismatch. Expected: [${expected.join(', ')}], Received: "${fields.uri}"`);
+    }
+  }
+
+  // 3. Allowed chain IDs
+  if (policy.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
+    if (!policy.allowedChainIds.includes(fields.chainId)) {
+      errors.push(`Chain ID "${fields.chainId}" is not allowed. Allowed: [${policy.allowedChainIds.join(', ')}]`);
+    }
+  }
+
+  // 4. Require expirationTime
+  if (policy.requireExpirationTime && !fields.expirationTime) {
+    errors.push('expirationTime is required by verification policy.');
+  }
+
+  const clockSkew = policy.clockSkewSeconds ?? 60;
+  const issuedAtDate = new Date(fields.issuedAt);
+
+  if (!isNaN(issuedAtDate.getTime())) {
+    // 5. Max issuedAt age
+    if (policy.maxIssuedAtAgeSeconds !== undefined) {
+      const ageSeconds = (now.getTime() - issuedAtDate.getTime()) / 1000;
+      if (ageSeconds > policy.maxIssuedAtAgeSeconds + clockSkew) {
+        errors.push(
+          `Message issuedAt "${fields.issuedAt}" is older than the allowed max age of ${policy.maxIssuedAtAgeSeconds} seconds`,
+        );
+      }
+    }
+
+    // 6. Future issuedAt beyond clock skew
+    if (issuedAtDate.getTime() - now.getTime() > clockSkew * 1000) {
+      errors.push(
+        `Message issuedAt "${fields.issuedAt}" is in the future beyond allowed clock skew of ${clockSkew} seconds`,
+      );
+    }
+  }
+
+  // 7. NotBefore enforcement
+  if (fields.notBefore && policy.enforceNotBefore !== false) {
+    const notBeforeDate = new Date(fields.notBefore);
+    if (!isNaN(notBeforeDate.getTime())) {
+      if (notBeforeDate.getTime() - now.getTime() > clockSkew * 1000) {
+        errors.push(`Message not valid before ${fields.notBefore}`);
+      }
+    }
+  }
+
+  // 8. Max session lifetime
+  if (policy.maxSessionLifetimeSeconds !== undefined && fields.expirationTime) {
+    const expiresAtDate = new Date(fields.expirationTime);
+    if (!isNaN(expiresAtDate.getTime()) && !isNaN(issuedAtDate.getTime())) {
+      const lifetimeSeconds = (expiresAtDate.getTime() - issuedAtDate.getTime()) / 1000;
+      if (lifetimeSeconds > policy.maxSessionLifetimeSeconds) {
+        errors.push(
+          `Session lifetime of ${lifetimeSeconds} seconds exceeds maximum allowed lifetime of ${policy.maxSessionLifetimeSeconds} seconds`,
+        );
+      }
+    }
+  }
+
+  return errors;
 }
 
 /**
@@ -124,20 +224,20 @@ function validateExpiration(expirationTime: string): string | undefined {
  * Collects all errors and returns them together rather than failing on the first.
  *
  * @param fields - The message fields to validate.
+ * @param options - Optional validation options or verification policy.
  * @returns A `SiwxValidationResult` with `valid: true` or a list of errors.
  *
  * @example
  * ```ts
- * const result = validateMessage(parsedMessage);
+ * const result = validateMessage(parsedMessage, {
+ *   policy: { expectedDomain: 'tuwa.io', requireExpirationTime: true },
+ * });
  * if (!result.valid) {
  *   console.error(result.errors);
  * }
  * ```
  */
-export function validateMessage(
-  fields: SiwxMessageFields,
-  options?: { skipExpiration?: boolean },
-): SiwxValidationResult {
+export function validateMessage(fields: SiwxMessageFields, options?: ValidateMessageOptions): SiwxValidationResult {
   const errors: string[] = [];
 
   const domainError = validateDomain(fields.domain);
@@ -162,12 +262,14 @@ export function validateMessage(
   const issuedAtError = validateIsoDatetime(fields.issuedAt, 'issuedAt');
   if (issuedAtError) errors.push(issuedAtError);
 
+  const clockSkew = options?.policy?.clockSkewSeconds ?? 60;
+
   if (fields.expirationTime) {
     const expirationFormatError = validateIsoDatetime(fields.expirationTime, 'expirationTime');
     if (expirationFormatError) {
       errors.push(expirationFormatError);
     } else if (!options?.skipExpiration) {
-      const expirationError = validateExpiration(fields.expirationTime);
+      const expirationError = validateExpiration(fields.expirationTime, new Date(), clockSkew);
       if (expirationError) errors.push(expirationError);
     }
   }
@@ -179,6 +281,12 @@ export function validateMessage(
 
   if (fields.statement && fields.statement.includes('\n')) {
     errors.push('statement must not contain newline characters.');
+  }
+
+  // Enforce policy if supplied
+  if (options?.policy) {
+    const policyErrors = validatePolicy(fields, options.policy);
+    errors.push(...policyErrors);
   }
 
   return { valid: errors.length === 0, errors };

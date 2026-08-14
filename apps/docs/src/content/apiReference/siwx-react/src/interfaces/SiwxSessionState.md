@@ -4,7 +4,7 @@
 
 # SiwxSessionState
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:30](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-react/src/sessionStore.ts#L30)
+Defined in: [packages/siwx-react/src/sessionStore.ts:30](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-react/src/sessionStore.ts#L30)
 
 The shape of the siwx session Zustand store state.
 
@@ -14,7 +14,7 @@ The shape of the siwx session Zustand store state.
 
 > **error**: `string` \| `null`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:36](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-react/src/sessionStore.ts#L36)
+Defined in: [packages/siwx-react/src/sessionStore.ts:36](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-react/src/sessionStore.ts#L36)
 
 The last error message, present when `status` is 'error'.
 
@@ -24,7 +24,7 @@ The last error message, present when `status` is 'error'.
 
 > **session**: [`SiwxClientSession`](SiwxClientSession.md) \| `null`
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:34](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-react/src/sessionStore.ts#L34)
+Defined in: [packages/siwx-react/src/sessionStore.ts:34](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-react/src/sessionStore.ts#L34)
 
 The active session, present when `status` is 'authenticated'.
 
@@ -34,6 +34,6 @@ The active session, present when `status` is 'authenticated'.
 
 > **status**: [`SiwxStatus`](../type-aliases/SiwxStatus.md)
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:32](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-react/src/sessionStore.ts#L32)
+Defined in: [packages/siwx-react/src/sessionStore.ts:32](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-react/src/sessionStore.ts#L32)
 
 Current authentication status.

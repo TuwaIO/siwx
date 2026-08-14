@@ -1,88 +1,159 @@
 /**
  * @fileoverview Next.js App Router (Route Handlers) API helper for SIWX.
+ * Provides durable production handler and stateless demo handler.
  */
 
-import { deserializeCookieSession, serializeCookieSession, toSession, verifySiwxPayload } from './server';
-import { CookieOptions, ServerVerifyOptions } from './types';
+import type { SiwxVerificationPolicy } from '@tuwaio/siwx-core';
+import { generateNonce } from '@tuwaio/siwx-core';
+
+import {
+  createClearCookie,
+  createSessionCookie,
+  parseCookie,
+  signStatelessDemoSession,
+  toSession,
+  verifySiwxPayload,
+  verifyStatelessDemoSession,
+} from './server';
+import type {
+  CookieOptions,
+  ServerVerifyOptions,
+  SiwxNonceStore,
+  SiwxSessionStore,
+  StatelessDemoLimits,
+} from './types';
 
 export interface SiwxApiHandlerOptions {
   /**
-   * Options for cookie serialization.
+   * Durable session store instance (e.g. RedisSiwxSessionStore or MemorySiwxSessionStore for tests).
+   */
+  sessionStore: SiwxSessionStore;
+
+  /**
+   * Durable single-use nonce store instance (e.g. RedisSiwxNonceStore or MemorySiwxNonceStore for tests).
+   */
+  nonceStore: SiwxNonceStore;
+
+  /**
+   * Verification policy to enforce (expected domains, URIs, allowed chains, expiration limits).
+   */
+  policy?: SiwxVerificationPolicy;
+
+  /**
+   * Cookie configuration options (name, secure, path, domain, maxAge).
    */
   cookieOptions?: CookieOptions;
+
   /**
-   * Options for server-side payload verification (e.g. nonce replays, public client).
+   * Additional verification options (e.g. custom public client).
    */
-  verifyOptions?: ServerVerifyOptions;
+  verifyOptions?: Omit<ServerVerifyOptions, 'policy' | 'usedNonces'>;
+
+  /**
+   * Session time-to-live in seconds (defaults to 7 days = 604800s).
+   */
+  ttlSeconds?: number;
+}
+
+export interface StatelessDemoSiwxHandlerOptions {
+  /**
+   * Server-only cryptographic secret for HMAC signing (minimum 32 characters).
+   * MUST NEVER be exposed to the browser or client-side bundles.
+   */
+  signingSecret: string;
+
+  /**
+   * Verification policy to enforce.
+   */
+  policy?: SiwxVerificationPolicy;
+
+  /**
+   * Cookie configuration options.
+   */
+  cookieOptions?: CookieOptions;
+
+  /**
+   * Demo limits (payload size, max requests).
+   */
+  demoLimits?: StatelessDemoLimits;
+
+  /**
+   * Additional verification options.
+   */
+  verifyOptions?: Omit<ServerVerifyOptions, 'policy'>;
+
+  /**
+   * Session TTL in seconds for demo profile (defaults to 1800s = 30 minutes).
+   */
+  ttlSeconds?: number;
 }
 
 /**
- * Creates a ready-to-use Next.js App Router route handler for SIWX operations.
- * Exposes GET, POST, and DELETE methods that handle session verification, fetching, and logout.
+ * Creates a standard production Next.js App Router route handler for SIWX with durable storage.
+ * Requires persistent session and nonce stores (Redis, PostgreSQL, etc.).
  *
- * Works purely with the standard Web `Request` and `Response` objects natively
- * supported by Next.js Route Handlers.
- *
- * @param options - Optional configuration for cookies and verification.
- * @returns An object with `GET`, `POST`, and `DELETE` handlers.
+ * @param options - Configuration including sessionStore, nonceStore, and policy.
+ * @returns Object with `GET`, `POST`, and `DELETE` HTTP route handlers.
  *
  * @example
  * ```ts
  * // app/api/siwx/[...siwx]/route.ts
  * import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+ * import { sessionStore, nonceStore } from '@/lib/authStores';
  *
- * const handler = createSiwxApiHandler();
+ * const handler = createSiwxApiHandler({
+ *   sessionStore,
+ *   nonceStore,
+ *   policy: { expectedDomain: 'app.tuwa.io' },
+ * });
+ *
  * export const { GET, POST, DELETE } = handler;
  * ```
  */
-export function createSiwxApiHandler(options: SiwxApiHandlerOptions = {}) {
-  const cookieName = options.cookieOptions?.name || 'siwx-session';
+export function createSiwxApiHandler(options: SiwxApiHandlerOptions) {
+  if (!options?.sessionStore || !options?.nonceStore) {
+    throw new Error(
+      '[SIWX-SERVER] createSiwxApiHandler requires both `sessionStore` and `nonceStore`. For zero-infrastructure demos without storage, use `createStatelessDemoSiwxHandler`.',
+    );
+  }
 
-  /**
-   * Universal handler that routes requests based on the URL path.
-   */
+  const cookieName = options.cookieOptions?.name || 'siwx-session-v2';
+  const ttlSeconds = options.ttlSeconds ?? (options.cookieOptions?.maxAge || 60 * 60 * 24 * 7);
+
   const universalHandler = async (req: Request) => {
     try {
-      // Determine action from URL path segments or context params (for Next.js catch-all routes)
-      let action = '';
-
-      // Since context is a promise in Next.js 15+, we should await it if it's a promise, but for compatibility
-      // with older versions we check if it has a .then. Actually, context is passed synchronously in Next 13-14,
-      // but in Next 15 `context.params` is a promise.
-      // To be safe, we rely on the URL parsing which is foolproof and framework agnostic.
       const url = new URL(req.url);
       const pathParts = url.pathname.split('/').filter(Boolean);
-      action = pathParts[pathParts.length - 1] || '';
+      const action = pathParts[pathParts.length - 1] || '';
 
-      // 1. GET /session -> Return current session
+      // 1. GET /session -> Return current session from store
       if (req.method === 'GET' && action === 'session') {
-        const cookieHeader = req.headers.get('cookie') || '';
-        const cookies = Object.fromEntries(
-          cookieHeader
-            .split('; ')
-            .filter(Boolean)
-            .map((c) => {
-              const parts = c.split('=');
-              return [parts[0].trim(), parts.slice(1).join('=')];
-            }),
-        );
-        const sessionCookie = cookies[cookieName];
-
-        if (!sessionCookie) {
+        const sessionId = parseCookie(req.headers.get('cookie'), cookieName);
+        if (!sessionId) {
           return new Response(JSON.stringify(null), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
           });
         }
 
-        const session = deserializeCookieSession(sessionCookie);
-        return new Response(JSON.stringify(session), {
+        const record = await options.sessionStore.get(sessionId);
+        return new Response(JSON.stringify(record?.session ?? null), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
         });
       }
 
-      // 2. POST /verify -> Validate payload and create session
+      // 2. GET/POST /nonce -> Issue a new challenge nonce with atomic store registration
+      if ((req.method === 'GET' || req.method === 'POST') && action === 'nonce') {
+        const nonce = generateNonce();
+        await options.nonceStore.issue({ nonce, ttlSeconds: 300 });
+        return new Response(JSON.stringify({ nonce }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      // 3. POST /verify -> Validate payload, atomically consume nonce, issue durable session
       if (req.method === 'POST' && action === 'verify') {
         const payload = await req.json();
 
@@ -93,24 +164,35 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions = {}) {
           });
         }
 
-        const result = await verifySiwxPayload(payload, options.verifyOptions);
+        const result = await verifySiwxPayload(payload, {
+          ...options.verifyOptions,
+          policy: options.policy,
+        });
 
-        if (!result.success) {
-          return new Response(JSON.stringify({ error: result.error }), {
+        if (!result.success || !result.data) {
+          return new Response(JSON.stringify({ error: result.error || 'Verification failed' }), {
             status: 401,
             headers: { 'Content-Type': 'application/json' },
           });
         }
 
-        // Successfully verified, issue session cookie
-        if (!result.data) {
-          return new Response(JSON.stringify({ error: 'Verification succeeded but returned no data' }), {
-            status: 500,
+        // Atomically consume nonce
+        const nonceConsumed = await options.nonceStore.consume({ nonce: result.data.nonce });
+        if (!nonceConsumed) {
+          return new Response(JSON.stringify({ error: 'Nonce replay detected or nonce expired' }), {
+            status: 401,
             headers: { 'Content-Type': 'application/json' },
           });
         }
 
-        const { cookieHeader, session } = serializeCookieSession(toSession(result.data), options.cookieOptions);
+        const session = toSession(result.data);
+        const record = await options.sessionStore.create({ session, ttlSeconds });
+
+        const cookieHeader = createSessionCookie(record.id, {
+          ...options.cookieOptions,
+          name: cookieName,
+          maxAge: ttlSeconds,
+        });
 
         return new Response(JSON.stringify(session), {
           status: 200,
@@ -121,13 +203,18 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions = {}) {
         });
       }
 
-      // 3. DELETE /session (or POST /logout) -> Destroy session
+      // 4. DELETE /session (or POST /logout) -> Revoke session in store and clear cookie
       if ((req.method === 'DELETE' && action === 'session') || (req.method === 'POST' && action === 'logout')) {
+        const sessionId = parseCookie(req.headers.get('cookie'), cookieName);
+        if (sessionId) {
+          await options.sessionStore.revoke(sessionId);
+        }
+
         return new Response(JSON.stringify({ success: true }), {
           status: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Set-Cookie': `${cookieName}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict`,
+            'Set-Cookie': createClearCookie({ ...options.cookieOptions, name: cookieName }),
           },
         });
       }
@@ -137,7 +224,146 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions = {}) {
         headers: { 'Content-Type': 'application/json' },
       });
     } catch (error) {
-      console.error('[SIWX-SERVER] API Handler error:', error);
+      console.error('[SIWX-SERVER] Durable Handler error:', error);
+      return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  };
+
+  return {
+    GET: universalHandler,
+    POST: universalHandler,
+    DELETE: universalHandler,
+  };
+}
+
+/**
+ * Creates a stateless demo Next.js App Router route handler for SIWX.
+ * Uses authenticated HMAC-SHA256 tokens in HttpOnly cookies without requiring Redis or a database.
+ *
+ * Intended STRICTLY for zero-infrastructure demonstration apps and website prototypes.
+ *
+ * @param options - Configuration including server signingSecret, policy, and demoLimits.
+ * @returns Object with `GET`, `POST`, and `DELETE` HTTP route handlers.
+ *
+ * @example
+ * ```ts
+ * // app/api/siwx/[...siwx]/route.ts
+ * import { createStatelessDemoSiwxHandler } from '@tuwaio/siwx-server/next';
+ *
+ * const handler = createStatelessDemoSiwxHandler({
+ *   signingSecret: process.env.SIWX_DEMO_SIGNING_SECRET!,
+ *   policy: {
+ *     expectedDomain: 'tuwa.io',
+ *     requireExpirationTime: true,
+ *   },
+ * });
+ *
+ * export const { GET, POST, DELETE } = handler;
+ * ```
+ */
+export function createStatelessDemoSiwxHandler(options: StatelessDemoSiwxHandlerOptions) {
+  if (!options?.signingSecret || options.signingSecret.length < 32) {
+    throw new Error(
+      '[SIWX-SERVER] createStatelessDemoSiwxHandler requires a `signingSecret` of at least 32 characters.',
+    );
+  }
+
+  const cookieName = options.cookieOptions?.name || 'siwx-session-v2';
+  const ttlSeconds = options.ttlSeconds ?? (options.cookieOptions?.maxAge || 1800); // 30 minutes default
+
+  const universalHandler = async (req: Request) => {
+    try {
+      const url = new URL(req.url);
+      const pathParts = url.pathname.split('/').filter(Boolean);
+      const action = pathParts[pathParts.length - 1] || '';
+
+      // 1. GET /session -> Verify signed cookie and return session
+      if (req.method === 'GET' && action === 'session') {
+        const token = parseCookie(req.headers.get('cookie'), cookieName);
+        if (!token) {
+          return new Response(JSON.stringify(null), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        const session = await verifyStatelessDemoSession(token, options.signingSecret, options.policy);
+        return new Response(JSON.stringify(session), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      // 2. GET/POST /nonce -> Return a random nonce
+      if ((req.method === 'GET' || req.method === 'POST') && action === 'nonce') {
+        const nonce = generateNonce();
+        return new Response(JSON.stringify({ nonce }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      // 3. POST /verify -> Validate payload and issue signed demo token
+      if (req.method === 'POST' && action === 'verify') {
+        const payload = await req.json();
+
+        if (!payload.message || !payload.signature) {
+          return new Response(JSON.stringify({ error: 'Missing message or signature' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        const result = await verifySiwxPayload(payload, {
+          ...options.verifyOptions,
+          policy: options.policy,
+        });
+
+        if (!result.success || !result.data) {
+          return new Response(JSON.stringify({ error: result.error || 'Verification failed' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        const session = toSession(result.data);
+        const signedToken = await signStatelessDemoSession(session, options.signingSecret, ttlSeconds);
+
+        const cookieHeader = createSessionCookie(signedToken, {
+          ...options.cookieOptions,
+          name: cookieName,
+          maxAge: ttlSeconds,
+        });
+
+        return new Response(JSON.stringify(session), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Set-Cookie': cookieHeader,
+          },
+        });
+      }
+
+      // 4. DELETE /session (or POST /logout) -> Clear cookie
+      if ((req.method === 'DELETE' && action === 'session') || (req.method === 'POST' && action === 'logout')) {
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Set-Cookie': createClearCookie({ ...options.cookieOptions, name: cookieName }),
+          },
+        });
+      }
+
+      return new Response(JSON.stringify({ error: 'Not Found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      console.error('[SIWX-SERVER] Stateless Demo Handler error:', error);
       return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },

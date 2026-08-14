@@ -4,7 +4,7 @@
 
 # SiwxError
 
-Defined in: [packages/siwx-core/src/errors.ts:10](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-core/src/errors.ts#L10)
+Defined in: [packages/siwx-core/src/errors.ts:10](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/errors.ts#L10)
 
 Base error class for all siwx-related errors.
 Extends the native Error with an optional error code for programmatic handling.
@@ -18,6 +18,7 @@ Extends the native Error with an optional error code for programmatic handling.
 - [`SiwxExpiredSessionError`](SiwxExpiredSessionError.md)
 - [`SiwxNonceReplayError`](SiwxNonceReplayError.md)
 - [`SiwxParseError`](SiwxParseError.md)
+- [`SiwxPolicyViolationError`](SiwxPolicyViolationError.md)
 - [`SiwxUnsupportedNamespaceError`](SiwxUnsupportedNamespaceError.md)
 - [`SiwxValidationError`](SiwxValidationError.md)
 - [`SiwxVerificationError`](SiwxVerificationError.md)
@@ -28,7 +29,7 @@ Extends the native Error with an optional error code for programmatic handling.
 
 > **new SiwxError**(`message`, `code?`): `SiwxError`
 
-Defined in: [packages/siwx-core/src/errors.ts:15](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-core/src/errors.ts#L15)
+Defined in: [packages/siwx-core/src/errors.ts:15](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/errors.ts#L15)
 
 #### Parameters
 
@@ -70,7 +71,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 

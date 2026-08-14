@@ -4,33 +4,30 @@
 
 # createSiwxApiHandler()
 
-> **createSiwxApiHandler**(`options?`): `object`
+> **createSiwxApiHandler**(`options`): `object`
 
-Defined in: [packages/siwx-server/src/next.ts:38](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-server/src/next.ts#L38)
+Defined in: [packages/siwx-server/src/next.ts:113](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-server/src/next.ts#L113)
 
-Creates a ready-to-use Next.js App Router route handler for SIWX operations.
-Exposes GET, POST, and DELETE methods that handle session verification, fetching, and logout.
-
-Works purely with the standard Web `Request` and `Response` objects natively
-supported by Next.js Route Handlers.
+Creates a standard production Next.js App Router route handler for SIWX with durable storage.
+Requires persistent session and nonce stores (Redis, PostgreSQL, etc.).
 
 ## Parameters
 
-### options?
+### options
 
-[`SiwxApiHandlerOptions`](../interfaces/SiwxApiHandlerOptions.md) = `{}`
+[`SiwxApiHandlerOptions`](../interfaces/SiwxApiHandlerOptions.md)
 
-Optional configuration for cookies and verification.
+Configuration including sessionStore, nonceStore, and policy.
 
 ## Returns
 
-An object with `GET`, `POST`, and `DELETE` handlers.
+`object`
+
+Object with `GET`, `POST`, and `DELETE` HTTP route handlers.
 
 ### DELETE
 
 > **DELETE**: (`req`) => `Promise`\<`Response`\> = `universalHandler`
-
-Universal handler that routes requests based on the URL path.
 
 #### Parameters
 
@@ -46,8 +43,6 @@ Universal handler that routes requests based on the URL path.
 
 > **GET**: (`req`) => `Promise`\<`Response`\> = `universalHandler`
 
-Universal handler that routes requests based on the URL path.
-
 #### Parameters
 
 ##### req
@@ -61,8 +56,6 @@ Universal handler that routes requests based on the URL path.
 ### POST
 
 > **POST**: (`req`) => `Promise`\<`Response`\> = `universalHandler`
-
-Universal handler that routes requests based on the URL path.
 
 #### Parameters
 
@@ -79,7 +72,13 @@ Universal handler that routes requests based on the URL path.
 ```ts
 // app/api/siwx/[...siwx]/route.ts
 import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+import { sessionStore, nonceStore } from '@/lib/authStores';
 
-const handler = createSiwxApiHandler();
+const handler = createSiwxApiHandler({
+  sessionStore,
+  nonceStore,
+  policy: { expectedDomain: 'app.tuwa.io' },
+});
+
 export const { GET, POST, DELETE } = handler;
 ```

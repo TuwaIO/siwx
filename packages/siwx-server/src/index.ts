@@ -5,27 +5,42 @@
  * @module @tuwaio/siwx-server
  *
  * Backend utilities for the TUWA Sign-In With X (SIWX) ecosystem.
- * Provides server-side CAIP-122 payload verification, session serialization,
- * and nonce generation. Fully backend-agnostic — works with Next.js, NestJS, Hono, and more.
+ * Provides server-side CAIP-122 payload verification, durable session store abstractions,
+ * authenticated stateless demo handlers, and single-use nonce generation.
  *
  * @see {@link https://github.com/TuwaIO/siwx Repository}
  */
 
 export {
-  deserializeCookieSession,
+  createClearCookie,
+  createSessionCookie,
   generateServerNonce,
-  serializeCookieSession,
+  MemorySiwxNonceStore,
+  MemorySiwxSessionStore,
+  parseCookie,
+  signStatelessDemoSession,
   toSession,
   verifySiwxPayload,
+  verifyStatelessDemoSession,
 } from './server';
 export type {
   CookieOptions,
-  SerializedCookieSession,
   ServerVerifyOptions,
   ServerVerifyResult,
+  SiwxNonceStore,
   SiwxSession,
+  SiwxSessionRecord,
+  SiwxSessionStore,
+  StatelessDemoLimits,
+  StatelessDemoTokenPayload,
 } from './types';
 
-// Re-export core validators
-export type { SiwxSessionLike } from '@tuwaio/siwx-core';
-export { isSessionMatchingTarget } from '@tuwaio/siwx-core';
+// Re-export core types & helpers
+export type {
+  ParsedSiwxMessage,
+  SiwxMessageFields,
+  SiwxSessionLike,
+  SiwxVerificationPolicy,
+  ValidateMessageOptions,
+} from '@tuwaio/siwx-core';
+export { generateNonce, isSessionMatchingTarget, validateMessage, validatePolicy } from '@tuwaio/siwx-core';

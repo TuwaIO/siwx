@@ -6,7 +6,7 @@
 
 > **generateServerNonce**(): `string`
 
-Defined in: packages/siwx-core/dist/index.d.ts:300
+Defined in: packages/siwx-core/dist/index.d.ts:432
 
 Generates a cryptographically secure random nonce string suitable for CAIP-122 messages.
 Produces a 16-byte random hex string (32 characters).

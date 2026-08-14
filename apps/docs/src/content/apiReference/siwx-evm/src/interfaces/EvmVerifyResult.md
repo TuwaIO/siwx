@@ -4,7 +4,7 @@
 
 # EvmVerifyResult
 
-Defined in: [packages/siwx-evm/src/types.ts:38](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-evm/src/types.ts#L38)
+Defined in: [packages/siwx-evm/src/types.ts:38](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-evm/src/types.ts#L38)
 
 Result of an EIP-1271 contract signature check, indicating which verification path was used.
 
@@ -18,7 +18,7 @@ Result of an EIP-1271 contract signature check, indicating which verification pa
 
 > `optional` **data?**: [`SiwxMessageFields`](../../../siwx-react/src/interfaces/SiwxMessageFields.md)
 
-Defined in: packages/siwx-core/dist/index.d.ts:116
+Defined in: packages/siwx-core/dist/index.d.ts:173
 
 The parsed message fields if verification succeeded.
 Present only when `success` is true.
@@ -33,7 +33,7 @@ Present only when `success` is true.
 
 > `optional` **error?**: `string`
 
-Defined in: packages/siwx-core/dist/index.d.ts:121
+Defined in: packages/siwx-core/dist/index.d.ts:178
 
 A human-readable error if verification failed.
 Present only when `success` is false.
@@ -48,7 +48,7 @@ Present only when `success` is false.
 
 > `optional` **method?**: `"eip191"` \| `"eip1271"`
 
-Defined in: [packages/siwx-evm/src/types.ts:44](https://github.com/TuwaIO/siwx/blob/bac8be290114bb4720f42e8f92d70040e76d06fe/packages/siwx-evm/src/types.ts#L44)
+Defined in: [packages/siwx-evm/src/types.ts:44](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-evm/src/types.ts#L44)
 
 The method used for verification.
 - `eip191`: Standard EOA signature recovery.
@@ -60,7 +60,7 @@ The method used for verification.
 
 > **success**: `boolean`
 
-Defined in: packages/siwx-core/dist/index.d.ts:111
+Defined in: packages/siwx-core/dist/index.d.ts:168
 
 Whether the signature is valid and the message is authentic.
 

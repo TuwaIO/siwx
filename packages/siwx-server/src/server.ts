@@ -1,6 +1,6 @@
 /**
  * @fileoverview Server-side CAIP-122 payload verification and session utilities.
- * Backend-agnostic — compatible with any Node.js or Edge runtime (Next.js, NestJS, Hono, etc.).
+ * Backend-agnostic — compatible with Node.js 20+ and Edge runtimes (Cloudflare Workers, Next.js, Fastify).
  */
 
 import type { SiwxVerifyPayload } from '@tuwaio/siwx-core';
@@ -15,10 +15,13 @@ import {
 
 import type {
   CookieOptions,
-  SerializedCookieSession,
   ServerVerifyOptions,
   ServerVerifyResult,
+  SiwxNonceStore,
   SiwxSession,
+  SiwxSessionRecord,
+  SiwxSessionStore,
+  StatelessDemoTokenPayload,
 } from './types';
 import { toSession } from './types';
 
@@ -26,23 +29,9 @@ import { toSession } from './types';
  * Parses and validates a raw CAIP-122 payload (message + signature) on the server side.
  * Dynamically routes verification to the correct chain adapter based on the CAIP-2 namespace.
  *
- * This function is the primary entry point for server-side authentication.
- * It handles EVM (eip155) and Solana chains.
- *
  * @param payload - The `{ message, signature }` payload sent by the client.
- * @param options - Optional server-side verification options (nonce replay protection, etc.).
+ * @param options - Server-side verification options (policy, nonce replay protection, etc.).
  * @returns A `ServerVerifyResult` with `success: true` and the parsed session data, or an error.
- *
- * @example
- * ```ts
- * // In a Next.js API route or NestJS controller:
- * const result = await verifySiwxPayload({ message, signature }, {
- *   usedNonces: await redis.smembers('used_nonces'),
- * });
- * if (result.success) {
- *   // Session is valid — issue a cookie or JWT
- * }
- * ```
  */
 export async function verifySiwxPayload(
   payload: SiwxVerifyPayload,
@@ -51,7 +40,10 @@ export async function verifySiwxPayload(
   try {
     const parsed = parseMessage(payload.message);
 
-    const validation = validateMessage(parsed, { skipExpiration: options.skipExpiration });
+    const validation = validateMessage(parsed, {
+      skipExpiration: options.skipExpiration,
+      policy: options.policy,
+    });
     if (!validation.valid) {
       return { success: false, error: `Validation failed: ${validation.errors.join(', ')}` };
     }
@@ -74,7 +66,7 @@ export async function verifySiwxPayload(
       throw new SiwxUnsupportedNamespaceError(namespace ?? 'unknown');
     }
 
-    // Dynamically import the appropriate chain adapter to keep this package dependency-free
+    // Dynamically import the appropriate chain adapter
     if (namespace === 'eip155') {
       const { verifyEvmSignature } = await import('@tuwaio/siwx-evm');
       const result = await verifyEvmSignature(payload.message, payload.signature as `0x${string}`, {
@@ -90,7 +82,6 @@ export async function verifySiwxPayload(
       return { ...result, namespace };
     }
 
-    // This branch is unreachable due to the namespace check above, but satisfies TypeScript.
     return { success: false, error: 'Unsupported namespace.' };
   } catch (error) {
     if (
@@ -105,8 +96,7 @@ export async function verifySiwxPayload(
 }
 
 /**
- * Encodes a string to base64url format without Node.js Buffer dependency.
- * Compatible with Node.js 20+ and Edge runtimes (Cloudflare Workers, Vercel Edge).
+ * Encodes string to base64url.
  * @internal
  */
 function encodeBase64Url(value: string): string {
@@ -114,7 +104,7 @@ function encodeBase64Url(value: string): string {
 }
 
 /**
- * Decodes a base64url-encoded string back to plain text.
+ * Decodes base64url string.
  * @internal
  */
 function decodeBase64Url(value: string): string {
@@ -123,88 +113,308 @@ function decodeBase64Url(value: string): string {
 }
 
 /**
- * Serializes a `SiwxSession` into an `HttpOnly` cookie string.
- * The session data is base64url-encoded (not encrypted — use a signed cookie or JWT for production).
- *
- * This utility is intentionally simple. For production use, wrap the session
- * in a signed/encrypted format using a library like `iron-session` or `jose`.
- *
- * @param session - The verified session data to serialize.
- * @param opts - Cookie options (name, maxAge, secure, SameSite, etc.).
- * @returns A `SerializedCookieSession` containing the `Set-Cookie` header value and session data.
- *
- * @example
- * ```ts
- * const { cookieHeader } = serializeCookieSession(session);
- * return new Response(null, { headers: { 'Set-Cookie': cookieHeader } });
- * ```
+ * Converts Uint8Array to base64url.
+ * @internal
  */
-export function serializeCookieSession(session: SiwxSession, opts: CookieOptions = {}): SerializedCookieSession {
-  const {
-    name = 'siwx-session',
-    maxAge = 60 * 60 * 24 * 7, // 7 days
-    path = '/',
-    domain,
-    secure = true,
-    sameSite = 'Strict',
-  } = opts;
-
-  const cookieValue = encodeBase64Url(JSON.stringify(session));
-
-  const parts = [`${name}=${cookieValue}`, `Max-Age=${maxAge}`, `Path=${path}`, `HttpOnly`, `SameSite=${sameSite}`];
-
-  if (secure) parts.push('Secure');
-  if (domain) parts.push(`Domain=${domain}`);
-
-  return {
-    cookieHeader: parts.join('; '),
-    session,
-    cookieValue,
-  };
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 /**
- * Deserializes a `SiwxSession` from a base64url-encoded cookie value.
- * This is the inverse of `serializeCookieSession`.
- *
- * @param cookieValue - The raw cookie value string (not the full header).
- * @returns The deserialized `SiwxSession`, or `null` if the value is invalid or malformed.
- *
- * @example
- * ```ts
- * const session = deserializeCookieSession(request.cookies.get('siwx-session'));
- * if (session) console.log('Session address:', session.address);
- * ```
+ * Converts base64url to Uint8Array.
+ * @internal
  */
-export function deserializeCookieSession(cookieValue: string): SiwxSession | null {
+function base64UrlToBytes(base64url: string): Uint8Array {
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/**
+ * Imports an HMAC-SHA256 CryptoKey using Web Crypto API.
+ * @internal
+ */
+async function getCryptoKey(secret: string): Promise<CryptoKey> {
+  const encoder = new TextEncoder();
+  return globalThis.crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
+    'sign',
+    'verify',
+  ]);
+}
+
+/**
+ * Signs a stateless demo session into an authenticated compact token.
+ * Uses Web Crypto HMAC-SHA256.
+ *
+ * @param session - The verified session to sign.
+ * @param secret - Server-only signing secret (minimum 32 bytes).
+ * @param ttlSeconds - Maximum session validity in seconds (default 1800 = 30m).
+ * @returns Authenticated compact token in `${payload}.${signature}` format.
+ */
+export async function signStatelessDemoSession(
+  session: SiwxSession,
+  secret: string,
+  ttlSeconds: number = 1800,
+): Promise<string> {
+  if (!secret || secret.length < 32) {
+    throw new Error('[SIWX-SERVER] Stateless demo signing secret must be at least 32 characters long.');
+  }
+
+  const now = Date.now();
+  const expiresAt = now + ttlSeconds * 1000;
+  const payload: StatelessDemoTokenPayload = {
+    version: 1,
+    address: session.address,
+    chainId: session.chainId,
+    domain: session.domain,
+    nonce: session.nonce,
+    issuedAt: session.issuedAt,
+    expirationTime: session.expirationTime ?? new Date(expiresAt).toISOString(),
+    sessionId: generateNonce(),
+    mode: 'demo',
+  };
+
+  const payloadJson = JSON.stringify(payload);
+  const payloadBase64 = encodeBase64Url(payloadJson);
+  const key = await getCryptoKey(secret);
+  const encoder = new TextEncoder();
+  const signature = await globalThis.crypto.subtle.sign('HMAC', key, encoder.encode(payloadBase64));
+  const signatureBase64 = bytesToBase64Url(new Uint8Array(signature));
+
+  return `${payloadBase64}.${signatureBase64}`;
+}
+
+/**
+ * Verifies an authenticated stateless demo session token.
+ * Performs constant-time cryptographic verification and validates expiration and policy.
+ *
+ * @param token - Compact token from cookie (`${payload}.${signature}`).
+ * @param secret - Server-only signing secret.
+ * @param policy - Optional verification policy to enforce.
+ * @returns The verified SiwxSession, or null if invalid, expired, or tampered.
+ */
+export async function verifyStatelessDemoSession(
+  token: string | null | undefined,
+  secret: string,
+  policy?: import('@tuwaio/siwx-core').SiwxVerificationPolicy,
+): Promise<SiwxSession | null> {
+  if (!token || typeof token !== 'string' || !secret) return null;
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+  const [payloadBase64, signatureBase64] = parts;
+
   try {
-    const json = decodeBase64Url(cookieValue);
-    return JSON.parse(json) as SiwxSession;
+    const key = await getCryptoKey(secret);
+    const signatureBytes = base64UrlToBytes(signatureBase64);
+    const encoder = new TextEncoder();
+
+    const isValid = await globalThis.crypto.subtle.verify(
+      'HMAC',
+      key,
+      signatureBytes as unknown as BufferSource,
+      encoder.encode(payloadBase64),
+    );
+    if (!isValid) return null;
+
+    const json = decodeBase64Url(payloadBase64);
+    const payload = JSON.parse(json) as StatelessDemoTokenPayload;
+
+    if (payload.version !== 1 || payload.mode !== 'demo') return null;
+
+    // Check expiration
+    if (payload.expirationTime) {
+      const expiresAt = new Date(payload.expirationTime).getTime();
+      const clockSkew = (policy?.clockSkewSeconds ?? 60) * 1000;
+      if (isNaN(expiresAt) || expiresAt + clockSkew < Date.now()) {
+        return null;
+      }
+    }
+
+    // Check domain policy
+    if (policy?.expectedDomain !== undefined) {
+      const expected = Array.isArray(policy.expectedDomain) ? policy.expectedDomain : [policy.expectedDomain];
+      if (!expected.some((d) => d.toLowerCase() === payload.domain.toLowerCase())) {
+        return null;
+      }
+    }
+
+    // Check allowed chains
+    if (policy?.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
+      if (!policy.allowedChainIds.includes(payload.chainId)) {
+        return null;
+      }
+    }
+
+    return {
+      address: payload.address,
+      chainId: payload.chainId,
+      domain: payload.domain,
+      nonce: payload.nonce,
+      issuedAt: payload.issuedAt,
+      expirationTime: payload.expirationTime,
+    };
   } catch {
     return null;
   }
 }
 
 /**
- * Re-exports `generateNonce` from `@tuwaio/siwx-core` for convenience.
- * Use this on the server to generate a nonce before sending it to the client.
- *
- * @returns A 32-character cryptographically secure hex nonce string.
- *
- * @example
- * ```ts
- * const nonce = generateServerNonce();
- * // Store in Redis or session, then send to client
- * await redis.set(`nonce:${nonce}`, '1', 'EX', 300);
- * ```
+ * Creates an HttpOnly Set-Cookie header value for a session.
+ */
+export function createSessionCookie(value: string, opts: CookieOptions = {}): string {
+  const {
+    name = 'siwx-session-v2',
+    maxAge = 60 * 60 * 24 * 7,
+    path = '/',
+    domain,
+    secure = true,
+    sameSite = 'Strict',
+  } = opts;
+
+  const parts = [`${name}=${value}`, `Max-Age=${maxAge}`, `Path=${path}`, `HttpOnly`, `SameSite=${sameSite}`];
+
+  if (secure) parts.push('Secure');
+  if (domain) parts.push(`Domain=${domain}`);
+
+  return parts.join('; ');
+}
+
+/**
+ * Creates a clear/destroy Set-Cookie header value.
+ */
+export function createClearCookie(opts: CookieOptions = {}): string {
+  const { name = 'siwx-session-v2', path = '/', domain } = opts;
+  const parts = [
+    `${name}=`,
+    `Path=${path}`,
+    `Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+    `Max-Age=0`,
+    `HttpOnly`,
+    `SameSite=Strict`,
+  ];
+  if (domain) parts.push(`Domain=${domain}`);
+  return parts.join('; ');
+}
+
+/**
+ * Extracts a cookie value by name from a raw Cookie header string.
+ */
+export function parseCookie(cookieHeader: string | null | undefined, name: string): string | null {
+  if (!cookieHeader) return null;
+  const cookies = Object.fromEntries(
+    cookieHeader
+      .split('; ')
+      .filter(Boolean)
+      .map((c) => {
+        const parts = c.split('=');
+        return [parts[0].trim(), parts.slice(1).join('=')];
+      }),
+  );
+  return cookies[name] ?? null;
+}
+
+/**
+ * In-memory implementation of SiwxSessionStore.
+ * STRICTLY for local development, prototyping, and unit testing.
+ * Fails closed in production environments.
+ */
+export class MemorySiwxSessionStore implements SiwxSessionStore {
+  private records = new Map<string, SiwxSessionRecord>();
+
+  constructor(options?: { allowInProduction?: boolean }) {
+    const isProduction =
+      typeof globalThis !== 'undefined' &&
+      (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === 'production';
+    if (isProduction && !options?.allowInProduction) {
+      throw new Error(
+        '[SIWX-SERVER] MemorySiwxSessionStore must not be used in production. Connect Redis or a durable store.',
+      );
+    }
+  }
+
+  async create(input: { session: SiwxSession; ttlSeconds: number }): Promise<SiwxSessionRecord> {
+    const id = generateNonce();
+    const createdAt = Date.now();
+    const expiresAt = createdAt + input.ttlSeconds * 1000;
+    const record: SiwxSessionRecord = {
+      id,
+      session: input.session,
+      createdAt,
+      expiresAt,
+    };
+    this.records.set(id, record);
+    return record;
+  }
+
+  async get(id: string): Promise<SiwxSessionRecord | null> {
+    const record = this.records.get(id);
+    if (!record) return null;
+    if (record.expiresAt < Date.now()) {
+      this.records.delete(id);
+      return null;
+    }
+    return record;
+  }
+
+  async bindSubject(id: string, subjectId: string): Promise<boolean> {
+    const record = await this.get(id);
+    if (!record) return false;
+    record.subjectId = subjectId;
+    return true;
+  }
+
+  async revoke(id: string): Promise<void> {
+    this.records.delete(id);
+  }
+}
+
+/**
+ * In-memory implementation of SiwxNonceStore.
+ * STRICTLY for local development, prototyping, and unit testing.
+ * Fails closed in production environments.
+ */
+export class MemorySiwxNonceStore implements SiwxNonceStore {
+  private nonces = new Map<string, number>();
+
+  constructor(options?: { allowInProduction?: boolean }) {
+    const isProduction =
+      typeof globalThis !== 'undefined' &&
+      (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === 'production';
+    if (isProduction && !options?.allowInProduction) {
+      throw new Error(
+        '[SIWX-SERVER] MemorySiwxNonceStore must not be used in production. Connect Redis or a durable store.',
+      );
+    }
+  }
+
+  async issue(input: { nonce: string; ttlSeconds: number }): Promise<void> {
+    const expiresAt = Date.now() + input.ttlSeconds * 1000;
+    this.nonces.set(input.nonce, expiresAt);
+  }
+
+  async consume(input: { nonce: string }): Promise<boolean> {
+    const expiresAt = this.nonces.get(input.nonce);
+    if (!expiresAt) return false;
+    this.nonces.delete(input.nonce);
+    if (expiresAt < Date.now()) return false;
+    return true;
+  }
+}
+
+/**
+ * Re-exports `generateNonce` from `@tuwaio/siwx-core` for server challenge generation.
  */
 export { generateNonce as generateServerNonce };
 
 /**
  * Converts a `ParsedSiwxMessage` to a lean `SiwxSession` object.
- * Useful for custom verification flows where you call chain adapters directly.
- *
- * @param parsed - The parsed and verified CAIP-122 message.
- * @returns A `SiwxSession` ready to be serialized.
  */
 export { toSession };

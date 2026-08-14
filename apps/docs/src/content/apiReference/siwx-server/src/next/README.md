@@ -7,7 +7,9 @@
 ## Interfaces
 
 - [SiwxApiHandlerOptions](interfaces/SiwxApiHandlerOptions.md)
+- [StatelessDemoSiwxHandlerOptions](interfaces/StatelessDemoSiwxHandlerOptions.md)
 
 ## Functions
 
 - [createSiwxApiHandler](functions/createSiwxApiHandler.md)
+- [createStatelessDemoSiwxHandler](functions/createStatelessDemoSiwxHandler.md)

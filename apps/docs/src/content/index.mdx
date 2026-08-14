@@ -53,14 +53,16 @@ SIWX is designed with strict separation of concerns within the TUWA layer model:
 ```
 Client                          Wallet          Your Backend
   │                               │                  │
-  │── generateNonce() ──────────> │                  │
+  │── GET /api/siwx/nonce ──────────────────────────> │ (issues challenge nonce)
+  │<── { nonce } ─────────────────────────────────── │
   │── buildMessage(fields) ──>    │                  │
   │── signMessage(message) ──>    │                  │
   │<── signature ─────────────── │                  │
   │── POST /api/siwx/verify ──────────────────────────> │
   │                                                  │── verifySiwxPayload()
-  │                                                  │── serializeCookieSession()
-  │<── Set-Cookie: siwx-session ─────────────────── │
+  │                                                  │── nonceStore.consume()
+  │                                                  │── sessionStore.create()
+  │<── Set-Cookie: siwx-session-v2 ───────────────── │
   │── useSiwxSession() shows authenticated           │
 ```
 
@@ -70,14 +72,94 @@ SIWX is completely headless, giving you full control over how you wire up the fr
 
 ### 1. Backend (Next.js Example)
 
-For Next.js App Router, `@tuwaio/siwx-server/next` provides a ready-to-use API handler that implements the verification and session management endpoints.
+#### Option A: Production Standard (Durable Redis Session & Nonce Store)
+
+```ts
+// lib/authStores.ts
+import type { SiwxNonceStore, SiwxSession, SiwxSessionRecord, SiwxSessionStore } from '@tuwaio/siwx-server';
+import { generateServerNonce } from '@tuwaio/siwx-server';
+import Redis from 'ioredis';
+
+const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+export const sessionStore: SiwxSessionStore = {
+  async create({ session, ttlSeconds }: { session: SiwxSession; ttlSeconds: number }): Promise<SiwxSessionRecord> {
+    const id = generateServerNonce();
+    const createdAt = Date.now();
+    const expiresAt = createdAt + ttlSeconds * 1000;
+    const record: SiwxSessionRecord = { id, session, createdAt, expiresAt };
+
+    await redis.set(`siwx:session:${id}`, JSON.stringify(record), 'EX', ttlSeconds);
+    return record;
+  },
+
+  async get(id: string): Promise<SiwxSessionRecord | null> {
+    const data = await redis.get(`siwx:session:${id}`);
+    return data ? JSON.parse(data) : null;
+  },
+
+  async bindSubject(id: string, subjectId: string): Promise<boolean> {
+    const record = await this.get(id);
+    if (!record) return false;
+    record.subjectId = subjectId;
+    const ttl = Math.max(1, Math.floor((record.expiresAt - Date.now()) / 1000));
+    await redis.set(`siwx:session:${id}`, JSON.stringify(record), 'EX', ttl);
+    return true;
+  },
+
+  async revoke(id: string): Promise<void> {
+    await redis.del(`siwx:session:${id}`);
+  },
+};
+
+export const nonceStore: SiwxNonceStore = {
+  async issue({ nonce, ttlSeconds }: { nonce: string; ttlSeconds: number }): Promise<void> {
+    await redis.set(`siwx:nonce:${nonce}`, '1', 'EX', ttlSeconds);
+  },
+
+  async consume({ nonce }: { nonce: string }): Promise<boolean> {
+    const value = await redis.getdel(`siwx:nonce:${nonce}`);
+    return value !== null;
+  },
+};
+```
+
+##### In-Memory Alternative for Local Testing / Prototyping (No Redis Needed):
+
+```ts
+// lib/authStores.dev.ts (Zero Dependencies / In-Memory)
+import { MemorySiwxNonceStore, MemorySiwxSessionStore } from '@tuwaio/siwx-server';
+
+// Built-in in-memory stores for local testing (fails closed in production by default)
+export const sessionStore = new MemorySiwxSessionStore();
+export const nonceStore = new MemorySiwxNonceStore();
+```
+
+Route handler setup:
 
 ```tsx
 // app/api/siwx/[...siwx]/route.ts
 import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+import { sessionStore, nonceStore } from '@/lib/authStores';
 
 const handler = createSiwxApiHandler({
-  cookieOptions: { name: 'siwx-session' },
+  sessionStore,
+  nonceStore,
+  policy: { expectedDomain: 'app.tuwa.io' },
+});
+
+export const { GET, POST, DELETE } = handler;
+```
+
+#### Option B: Stateless Demo Profile (Zero-Infrastructure Demonstration & Prototyping)
+
+```tsx
+// app/api/siwx/[...siwx]/route.ts
+import { createStatelessDemoSiwxHandler } from '@tuwaio/siwx-server/next';
+
+const handler = createStatelessDemoSiwxHandler({
+  signingSecret: process.env.SIWX_DEMO_SIGNING_SECRET!, // Minimum 32 characters
+  policy: { expectedDomain: 'demo.tuwa.io', requireExpirationTime: true },
 });
 
 export const { GET, POST, DELETE } = handler;
@@ -86,8 +168,9 @@ export const { GET, POST, DELETE } = handler;
 This creates standard endpoints natively compatible with the React state store:
 
 - `GET /api/siwx/session` (Retrieves the active session)
-- `POST /api/siwx/verify` (Verifies a signature and issues a session cookie)
-- `DELETE /api/siwx/logout` (Destroys the session cookie)
+- `GET/POST /api/siwx/nonce` (Issues challenge nonces)
+- `POST /api/siwx/verify` (Verifies signature, consumes nonce atomically, and issues session cookie)
+- `DELETE /api/siwx/session` or `POST /api/siwx/logout` (Revokes session in store and clears cookie)
 
 ### 2. Frontend (React Example)
 
