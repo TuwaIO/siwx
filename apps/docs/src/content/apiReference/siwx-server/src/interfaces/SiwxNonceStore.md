@@ -4,7 +4,7 @@
 
 # SiwxNonceStore
 
-Defined in: [packages/siwx-server/src/types.ts:120](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L120)
+Defined in: [packages/siwx-server/src/types.ts:120](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L120)
 
 Durable nonce store interface for single-use nonce issuance and atomic consumption.
 
@@ -14,7 +14,7 @@ Durable nonce store interface for single-use nonce issuance and atomic consumpti
 
 > **consume**(`input`): `Promise`\<`boolean`\>
 
-Defined in: [packages/siwx-server/src/types.ts:133](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L133)
+Defined in: [packages/siwx-server/src/types.ts:133](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L133)
 
 Atomically consumes a nonce, guaranteeing single-use.
 
@@ -40,7 +40,7 @@ True if the nonce was valid and consumed, false if already consumed or expired.
 
 > **issue**(`input`): `Promise`\<`void`\>
 
-Defined in: [packages/siwx-server/src/types.ts:126](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L126)
+Defined in: [packages/siwx-server/src/types.ts:126](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L126)
 
 Issues and stores a new challenge nonce with TTL.
 

@@ -4,7 +4,7 @@
 
 # StatelessDemoTokenPayload
 
-Defined in: [packages/siwx-server/src/types.ts:139](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L139)
+Defined in: [packages/siwx-server/src/types.ts:139](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L139)
 
 Compact payload structure for stateless demo session tokens.
 
@@ -14,7 +14,7 @@ Compact payload structure for stateless demo session tokens.
 
 > **address**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:141](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L141)
+Defined in: [packages/siwx-server/src/types.ts:141](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L141)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/siwx-server/src/types.ts:141](https://github.com/TuwaIO/si
 
 > **chainId**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:142](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L142)
+Defined in: [packages/siwx-server/src/types.ts:142](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L142)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/siwx-server/src/types.ts:142](https://github.com/TuwaIO/si
 
 > **domain**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:143](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L143)
+Defined in: [packages/siwx-server/src/types.ts:143](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L143)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/siwx-server/src/types.ts:143](https://github.com/TuwaIO/si
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:146](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L146)
+Defined in: [packages/siwx-server/src/types.ts:146](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L146)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/siwx-server/src/types.ts:146](https://github.com/TuwaIO/si
 
 > **issuedAt**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:145](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L145)
+Defined in: [packages/siwx-server/src/types.ts:145](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L145)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [packages/siwx-server/src/types.ts:145](https://github.com/TuwaIO/si
 
 > **mode**: `"demo"`
 
-Defined in: [packages/siwx-server/src/types.ts:148](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L148)
+Defined in: [packages/siwx-server/src/types.ts:148](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L148)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [packages/siwx-server/src/types.ts:148](https://github.com/TuwaIO/si
 
 > **nonce**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:144](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L144)
+Defined in: [packages/siwx-server/src/types.ts:144](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L144)
 
 ***
 
@@ -70,7 +70,7 @@ Defined in: [packages/siwx-server/src/types.ts:144](https://github.com/TuwaIO/si
 
 > **sessionId**: `string`
 
-Defined in: [packages/siwx-server/src/types.ts:147](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L147)
+Defined in: [packages/siwx-server/src/types.ts:147](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L147)
 
 ***
 
@@ -78,4 +78,4 @@ Defined in: [packages/siwx-server/src/types.ts:147](https://github.com/TuwaIO/si
 
 > **version**: `1`
 
-Defined in: [packages/siwx-server/src/types.ts:140](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L140)
+Defined in: [packages/siwx-server/src/types.ts:140](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/types.ts#L140)

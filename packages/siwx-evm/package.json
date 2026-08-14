@@ -60,7 +60,7 @@
     "@tuwaio/siwx-core": "workspace:*",
     "@wagmi/core": "^3.6.4",
     "tsup": "^8.5.1",
-    "typescript": "^6.0.3",
-    "viem": "^2.55.11"
+    "typescript": "6.0.3",
+    "viem": "^2.55.16"
   }
 }

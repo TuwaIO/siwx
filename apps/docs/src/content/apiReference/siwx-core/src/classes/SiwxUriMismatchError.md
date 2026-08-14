@@ -4,7 +4,7 @@
 
 # SiwxUriMismatchError
 
-Defined in: [packages/siwx-core/src/errors.ts:138](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L138)
+Defined in: [packages/siwx-core/src/errors.ts:138](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L138)
 
 Thrown when the message URI does not match the expected URI policy.
 
@@ -18,7 +18,7 @@ Thrown when the message URI does not match the expected URI policy.
 
 > **new SiwxUriMismatchError**(`expected`, `received`): `SiwxUriMismatchError`
 
-Defined in: [packages/siwx-core/src/errors.ts:139](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L139)
+Defined in: [packages/siwx-core/src/errors.ts:139](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L139)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -70,7 +70,7 @@ Optional machine-readable error code.
 
 > `readonly` **expected**: `string` \| `string`[]
 
-Defined in: [packages/siwx-core/src/errors.ts:140](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L140)
+Defined in: [packages/siwx-core/src/errors.ts:140](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L140)
 
 ***
 
@@ -102,7 +102,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **received**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:141](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L141)
+Defined in: [packages/siwx-core/src/errors.ts:141](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/errors.ts#L141)
 
 ***
 

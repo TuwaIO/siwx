@@ -4,7 +4,7 @@
 
 # EvmVerifyOptions
 
-Defined in: [packages/siwx-evm/src/types.ts:11](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-evm/src/types.ts#L11)
+Defined in: [packages/siwx-evm/src/types.ts:11](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-evm/src/types.ts#L11)
 
 Options for the EVM signature verifier.
 
@@ -14,7 +14,7 @@ Options for the EVM signature verifier.
 
 > `optional` **publicClient?**: `object`
 
-Defined in: [packages/siwx-evm/src/types.ts:17](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-evm/src/types.ts#L17)
+Defined in: [packages/siwx-evm/src/types.ts:17](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-evm/src/types.ts#L17)
 
 A viem `PublicClient` instance connected to the appropriate network.
 Required for EIP-1271 (smart contract wallet) verification.
@@ -3113,6 +3113,44 @@ const transactionReceipt = await client.waitForTransactionReceipt({
 })
 ```
 
+#### watchBlockHeaders
+
+> **watchBlockHeaders**: (`args`) => `WatchBlockHeadersReturnType`
+
+Watches and returns incoming block headers without fetching full blocks.
+
+- Docs: https://viem.sh/docs/actions/public/watchBlockHeaders
+- JSON-RPC Methods: Uses a WebSocket or IPC subscription via [`eth_subscribe`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_subscribe) and the `"newHeads"` event.
+
+##### Parameters
+
+###### args
+
+`never`
+
+WatchBlockHeadersParameters
+
+##### Returns
+
+`WatchBlockHeadersReturnType`
+
+A function that can be invoked to stop watching for new block headers. WatchBlockHeadersReturnType
+
+##### Example
+
+```ts
+import { createPublicClient, webSocket } from 'viem'
+import { mainnet } from 'viem/chains'
+
+const client = createPublicClient({
+  chain: mainnet,
+  transport: webSocket(),
+})
+const unwatch = client.watchBlockHeaders({
+  onBlockHeader: (blockHeader) => console.log(blockHeader),
+})
+```
+
 #### watchBlockNumber
 
 > **watchBlockNumber**: (`args`) => `WatchBlockNumberReturnType`
@@ -3381,7 +3419,7 @@ const unwatch = await client.watchPendingTransactions({
 
 > `optional` **skipExpiration?**: `boolean`
 
-Defined in: [packages/siwx-evm/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-evm/src/types.ts#L23)
+Defined in: [packages/siwx-evm/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-evm/src/types.ts#L23)
 
 If true, skips checking if the message expirationTime has passed.
 

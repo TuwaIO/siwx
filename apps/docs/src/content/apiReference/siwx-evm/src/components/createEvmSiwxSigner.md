@@ -6,7 +6,7 @@
 
 > **createEvmSiwxSigner**(`target`, `account?`): (`message`) => `Promise`\<`string`\>
 
-Defined in: [packages/siwx-evm/src/signer.ts:28](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-evm/src/signer.ts#L28)
+Defined in: [packages/siwx-evm/src/signer.ts:28](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-evm/src/signer.ts#L28)
 
 Creates a standard SIWX signer callback for EVM chains.
 Automatically adapts to either a Wagmi Config or a Viem WalletClient.

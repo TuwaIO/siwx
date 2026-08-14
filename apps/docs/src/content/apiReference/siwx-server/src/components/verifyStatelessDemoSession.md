@@ -6,7 +6,7 @@
 
 > **verifyStatelessDemoSession**(`token`, `secret`, `policy?`): `Promise`\<[`SiwxSession`](../interfaces/SiwxSession.md) \| `null`\>
 
-Defined in: [packages/siwx-server/src/server.ts:205](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L205)
+Defined in: [packages/siwx-server/src/server.ts:205](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L205)
 
 Verifies an authenticated stateless demo session token.
 Performs constant-time cryptographic verification and validates expiration and policy.

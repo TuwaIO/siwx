@@ -4,7 +4,7 @@
 
 # ValidateMessageOptions
 
-Defined in: [packages/siwx-core/src/types.ts:154](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/types.ts#L154)
+Defined in: [packages/siwx-core/src/types.ts:154](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L154)
 
 Options for validating a CAIP-122 message object.
 
@@ -14,7 +14,7 @@ Options for validating a CAIP-122 message object.
 
 > `optional` **policy?**: [`SiwxVerificationPolicy`](SiwxVerificationPolicy.md)
 
-Defined in: [packages/siwx-core/src/types.ts:164](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/types.ts#L164)
+Defined in: [packages/siwx-core/src/types.ts:164](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L164)
 
 Optional verification policy to enforce on the message fields.
 
@@ -24,7 +24,7 @@ Optional verification policy to enforce on the message fields.
 
 > `optional` **skipExpiration?**: `boolean`
 
-Defined in: [packages/siwx-core/src/types.ts:159](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/types.ts#L159)
+Defined in: [packages/siwx-core/src/types.ts:159](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-core/src/types.ts#L159)
 
 If true, skips the `expirationTime` validation check.
 Not recommended for production use.

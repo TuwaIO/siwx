@@ -6,7 +6,7 @@
 
 > **signStatelessDemoSession**(`session`, `secret`, `ttlSeconds?`): `Promise`\<`string`\>
 
-Defined in: [packages/siwx-server/src/server.ts:163](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L163)
+Defined in: [packages/siwx-server/src/server.ts:163](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L163)
 
 Signs a stateless demo session into an authenticated compact token.
 Uses Web Crypto HMAC-SHA256.

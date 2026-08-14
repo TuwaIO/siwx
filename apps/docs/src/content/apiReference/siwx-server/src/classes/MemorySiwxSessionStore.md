@@ -4,7 +4,7 @@
 
 # MemorySiwxSessionStore
 
-Defined in: [packages/siwx-server/src/server.ts:331](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L331)
+Defined in: [packages/siwx-server/src/server.ts:331](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L331)
 
 In-memory implementation of SiwxSessionStore.
 STRICTLY for local development, prototyping, and unit testing.
@@ -20,7 +20,7 @@ Fails closed in production environments.
 
 > **new MemorySiwxSessionStore**(`options?`): `MemorySiwxSessionStore`
 
-Defined in: [packages/siwx-server/src/server.ts:334](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L334)
+Defined in: [packages/siwx-server/src/server.ts:334](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L334)
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: [packages/siwx-server/src/server.ts:334](https://github.com/TuwaIO/s
 
 > **bindSubject**(`id`, `subjectId`): `Promise`\<`boolean`\>
 
-Defined in: [packages/siwx-server/src/server.ts:369](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L369)
+Defined in: [packages/siwx-server/src/server.ts:369](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L369)
 
 Atomically binds a user/subject identifier to the session.
 
@@ -74,7 +74,7 @@ True if binding succeeded, false if session not found.
 
 > **create**(`input`): `Promise`\<[`SiwxSessionRecord`](../interfaces/SiwxSessionRecord.md)\>
 
-Defined in: [packages/siwx-server/src/server.ts:345](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L345)
+Defined in: [packages/siwx-server/src/server.ts:345](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L345)
 
 Creates and stores a new session record.
 
@@ -110,7 +110,7 @@ The created session record with unique ID.
 
 > **get**(`id`): `Promise`\<[`SiwxSessionRecord`](../interfaces/SiwxSessionRecord.md) \| `null`\>
 
-Defined in: [packages/siwx-server/src/server.ts:359](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L359)
+Defined in: [packages/siwx-server/src/server.ts:359](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L359)
 
 Retrieves a session record by its opaque ID.
 
@@ -138,7 +138,7 @@ The session record, or null if not found or expired.
 
 > **revoke**(`id`): `Promise`\<`void`\>
 
-Defined in: [packages/siwx-server/src/server.ts:376](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L376)
+Defined in: [packages/siwx-server/src/server.ts:376](https://github.com/TuwaIO/siwx/blob/5afdbf8444bc2b94d7f938774996543e40e8ee51/packages/siwx-server/src/server.ts#L376)
 
 Revokes and removes a session record.
 
