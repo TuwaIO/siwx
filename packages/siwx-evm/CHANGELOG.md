@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.1.1...siwx-evm-v0.2.0) (2026-08-14)
+
+
+### Features
+
+* updated security logic ([3734560](https://github.com/TuwaIO/siwx/commit/373456067828708e00b66b1f40ba6bc0bd37fcf6))
+
 ## [0.1.1](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.1.0...siwx-evm-v0.1.1) (2026-08-09)
 
 ### Bug Fixes
