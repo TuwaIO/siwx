@@ -6,7 +6,7 @@
 
 > **isSessionMatchingTarget**(`session`, `targetAddress`, `targetChainId?`): `boolean`
 
-Defined in: [packages/siwx-core/src/validateMessage.ts:336](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/validateMessage.ts#L336)
+Defined in: [packages/siwx-core/src/validateMessage.ts:336](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/validateMessage.ts#L336)
 
 Validates whether a SIWX session matches a target wallet address and optional chainId.
 Handles EVM case-insensitivity, Solana case-sensitivity, and CAIP-10/CAIP-2 normalization.

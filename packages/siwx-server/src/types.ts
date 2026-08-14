@@ -194,6 +194,47 @@ export interface CookieOptions {
 }
 
 /**
+ * Options for the `getSiwxServerSession` helper function.
+ */
+export interface GetSiwxServerSessionOptions {
+  /**
+   * Cookie source:
+   * - A raw Cookie string (e.g. `req.headers.get('cookie')` or `"siwx-session-v2=xyz"`)
+   * - A Next.js ReadonlyRequestCookies object (from `await cookies()`)
+   * - A Web API `Request` or `Headers` object
+   * - Any object with a `get(name)` method
+   */
+  cookieSource:
+    | string
+    | Request
+    | Headers
+    | { get(name: string): { value: string } | string | undefined | null }
+    | null
+    | undefined;
+
+  /**
+   * The name of the cookie.
+   * @default "siwx-session-v2"
+   */
+  cookieName?: string;
+
+  /**
+   * Durable session store (for production durable sessions).
+   */
+  sessionStore?: SiwxSessionStore;
+
+  /**
+   * Server HMAC secret key (for stateless demo sessions).
+   */
+  signingSecret?: string;
+
+  /**
+   * Optional verification policy to validate the session.
+   */
+  policy?: SiwxVerificationPolicy;
+}
+
+/**
  * Converts a ParsedSiwxMessage to a lean SiwxSession object.
  * @internal
  */

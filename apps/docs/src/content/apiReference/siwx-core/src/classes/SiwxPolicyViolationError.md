@@ -4,7 +4,7 @@
 
 # SiwxPolicyViolationError
 
-Defined in: [packages/siwx-core/src/errors.ts:110](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/errors.ts#L110)
+Defined in: [packages/siwx-core/src/errors.ts:110](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L110)
 
 Thrown when a verification policy rule is violated.
 
@@ -28,7 +28,7 @@ Thrown when a verification policy rule is violated.
 
 > **new SiwxPolicyViolationError**(`message`, `code?`): `SiwxPolicyViolationError`
 
-Defined in: [packages/siwx-core/src/errors.ts:115](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/errors.ts#L115)
+Defined in: [packages/siwx-core/src/errors.ts:115](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L115)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/bbc740ccb7f405b75bd0d4e5a1bc973b1e131514/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 

@@ -377,3 +377,6 @@ export function createStatelessDemoSiwxHandler(options: StatelessDemoSiwxHandler
     DELETE: universalHandler,
   };
 }
+
+export { getSiwxServerSession } from './server';
+export type { GetSiwxServerSessionOptions } from './types';

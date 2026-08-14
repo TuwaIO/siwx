@@ -165,6 +165,31 @@ const handler = createStatelessDemoSiwxHandler({
 export const { GET, POST, DELETE } = handler;
 ```
 
+#### Option C: Server Actions Session Verification (`getSiwxServerSession`)
+
+```ts
+// app/actions/myAction.ts
+'use server';
+
+import { cookies } from 'next/headers';
+import { getSiwxServerSession } from '@tuwaio/siwx-server';
+import { isSessionMatchingTarget } from '@tuwaio/siwx-core';
+import { sessionStore } from '@/lib/authStores';
+
+export async function myAction(targetAddress: string) {
+  const session = await getSiwxServerSession({
+    cookieSource: await cookies(),
+    sessionStore, // Or signingSecret for demo profile
+  });
+
+  if (!session || !isSessionMatchingTarget(session, targetAddress)) {
+    throw new Error('Unauthorized');
+  }
+
+  return { success: true };
+}
+```
+
 This creates standard endpoints natively compatible with the React state store:
 
 - `GET /api/siwx/session` (Retrieves the active session)

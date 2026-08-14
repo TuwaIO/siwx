@@ -20,6 +20,7 @@ Public API barrel for @tuwaio/siwx-server.
 ## Interfaces
 
 - [CookieOptions](interfaces/CookieOptions.md)
+- [GetSiwxServerSessionOptions](interfaces/GetSiwxServerSessionOptions.md)
 - [ServerVerifyOptions](interfaces/ServerVerifyOptions.md)
 - [ServerVerifyResult](interfaces/ServerVerifyResult.md)
 - [SiwxNonceStore](interfaces/SiwxNonceStore.md)
@@ -36,6 +37,7 @@ Public API barrel for @tuwaio/siwx-server.
 - [createClearCookie](functions/createClearCookie.md)
 - [createSessionCookie](functions/createSessionCookie.md)
 - [generateServerNonce](functions/generateServerNonce.md)
+- [getSiwxServerSession](functions/getSiwxServerSession.md)
 - [parseCookie](functions/parseCookie.md)
 - [signStatelessDemoSession](functions/signStatelessDemoSession.md)
 - [toSession](functions/toSession.md)

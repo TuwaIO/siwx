@@ -10,6 +10,7 @@
 ## 🏛️ Core Capabilities
 
 - **`verifySiwxPayload()`**: Primary server entry point. Parses the CAIP-122 message, enforces verification policy (domain, URI, allowed chains, timing windows), checks nonce replay, and dynamically verifies EVM (`siwx-evm`) or Solana (`siwx-solana`) signatures.
+- **`getSiwxServerSession()`**: Unified server helper to resolve and verify active sessions across Next.js Server Actions, Route Handlers, and Web APIs from durable stores (`sessionStore`) or stateless demo tokens (`signingSecret`).
 - **`createSiwxApiHandler()`**: Production durable session handler for Next.js App Router. Requires persistent `SiwxSessionStore` and `SiwxNonceStore` (Redis, PostgreSQL, etc.) and uses opaque session IDs in `HttpOnly` cookies.
 - **`createStatelessDemoSiwxHandler()`**: Authenticated HMAC-SHA256 session handler for zero-infrastructure demonstration environments and rapid prototyping.
 - **`signStatelessDemoSession()` / `verifyStatelessDemoSession()`**: Web Crypto API constant-time HMAC signing and verification for demo tokens.
@@ -210,6 +211,42 @@ export const { GET, POST, DELETE } = handler;
 ```
 
 > **Warning**: Demo mode works without a database or Redis by using a short-lived stateless session. Real projects with user accounts, persistent login, logout/revoke, multi-replica deployment, and strong protection against session replay MUST connect Redis, PostgreSQL, SQLite, or another durable storage adapter.
+
+---
+
+### 3. Server Actions & Route Session Resolution (`getSiwxServerSession`)
+
+Use `getSiwxServerSession` in Next.js Server Actions or server-side routes to securely resolve authenticated sessions without accepting client-provided session parameters:
+
+```ts
+// app/actions/myAction.ts
+'use server';
+
+import { cookies } from 'next/headers';
+import { getSiwxServerSession } from '@tuwaio/siwx-server';
+import { isSessionMatchingTarget } from '@tuwaio/siwx-core';
+import { sessionStore } from '@/lib/authStores';
+
+export async function myServerAction(targetAddress: string, data: Record<string, unknown>) {
+  // 1. Resolve and verify session from HTTP-Only cookie server-side
+  const session = await getSiwxServerSession({
+    cookieSource: await cookies(),
+    sessionStore, // Or signingSecret for demo profile
+  });
+
+  if (!session) {
+    throw new Error('Unauthorized: No active session.');
+  }
+
+  // 2. Enforce cryptographic subject/address binding
+  if (!isSessionMatchingTarget(session, targetAddress)) {
+    throw new Error('Forbidden: Wallet address mismatch.');
+  }
+
+  // 3. Execute privileged server business logic
+  return { success: true };
+}
+```
 
 ---
 

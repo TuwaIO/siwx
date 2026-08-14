@@ -15,6 +15,7 @@ import {
 
 import type {
   CookieOptions,
+  GetSiwxServerSessionOptions,
   ServerVerifyOptions,
   ServerVerifyResult,
   SiwxNonceStore,
@@ -407,6 +408,92 @@ export class MemorySiwxNonceStore implements SiwxNonceStore {
     if (expiresAt < Date.now()) return false;
     return true;
   }
+}
+
+/**
+ * Resolves and verifies an active SIWX session strictly on the server side.
+ * Supports both durable session stores and stateless HMAC-signed demo cookies.
+ *
+ * @param options - Configuration including cookieSource, sessionStore or signingSecret, and optional policy.
+ * @returns The verified `SiwxSession` object, or `null` if invalid, expired, or absent.
+ *
+ * @example
+ * ```ts
+ * // In Next.js Server Actions:
+ * import { cookies } from 'next/headers';
+ * import { getSiwxServerSession } from '@tuwaio/siwx-server';
+ * import { sessionStore } from '@/lib/authStores';
+ *
+ * const session = await getSiwxServerSession({
+ *   cookieSource: await cookies(),
+ *   sessionStore,
+ * });
+ * ```
+ */
+export async function getSiwxServerSession(options: GetSiwxServerSessionOptions): Promise<SiwxSession | null> {
+  const { cookieSource, cookieName = 'siwx-session-v2', sessionStore, signingSecret, policy } = options;
+
+  if (!cookieSource) return null;
+
+  let cookieValue: string | null = null;
+
+  if (typeof cookieSource === 'string') {
+    cookieValue = cookieSource.includes('=') ? parseCookie(cookieSource, cookieName) : cookieSource;
+  } else if (
+    typeof (cookieSource as Request).headers === 'object' &&
+    typeof (cookieSource as Request).headers?.get === 'function'
+  ) {
+    const header = (cookieSource as Request).headers.get('cookie');
+    cookieValue = parseCookie(header, cookieName);
+  } else if (typeof (cookieSource as { get: (name: string) => unknown }).get === 'function') {
+    const raw = (cookieSource as { get: (name: string) => { value: string } | string | undefined | null }).get(
+      cookieName,
+    );
+    if (raw && typeof raw === 'object' && 'value' in raw) {
+      cookieValue = raw.value;
+    } else if (typeof raw === 'string') {
+      cookieValue = raw.includes('=') ? parseCookie(raw, cookieName) : raw;
+    } else if (typeof (cookieSource as Headers).get === 'function') {
+      const header = (cookieSource as Headers).get('cookie');
+      if (header) {
+        cookieValue = parseCookie(header, cookieName);
+      }
+    }
+  }
+
+  if (!cookieValue) return null;
+
+  // 1. Durable session lookup
+  if (sessionStore) {
+    const record = await sessionStore.get(cookieValue);
+    if (!record?.session) return null;
+
+    if (policy) {
+      if (policy.expectedDomain !== undefined) {
+        const expected = Array.isArray(policy.expectedDomain) ? policy.expectedDomain : [policy.expectedDomain];
+        if (!expected.some((d) => d.toLowerCase() === record.session.domain.toLowerCase())) {
+          return null;
+        }
+      }
+      if (policy.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
+        if (!policy.allowedChainIds.includes(record.session.chainId)) {
+          return null;
+        }
+      }
+      if (policy.requireExpirationTime && !record.session.expirationTime) {
+        return null;
+      }
+    }
+
+    return record.session;
+  }
+
+  // 2. Stateless demo HMAC token verification
+  if (signingSecret) {
+    return verifyStatelessDemoSession(cookieValue, signingSecret, policy);
+  }
+
+  return null;
 }
 
 /**

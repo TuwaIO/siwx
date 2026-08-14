@@ -15,6 +15,7 @@ export {
   createClearCookie,
   createSessionCookie,
   generateServerNonce,
+  getSiwxServerSession,
   MemorySiwxNonceStore,
   MemorySiwxSessionStore,
   parseCookie,
@@ -25,6 +26,7 @@ export {
 } from './server';
 export type {
   CookieOptions,
+  GetSiwxServerSessionOptions,
   ServerVerifyOptions,
   ServerVerifyResult,
   SiwxNonceStore,

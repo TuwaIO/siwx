@@ -13,3 +13,15 @@
 
 - [createSiwxApiHandler](functions/createSiwxApiHandler.md)
 - [createStatelessDemoSiwxHandler](functions/createStatelessDemoSiwxHandler.md)
+
+## References
+
+### getSiwxServerSession
+
+Re-exports [getSiwxServerSession](../functions/getSiwxServerSession.md)
+
+***
+
+### GetSiwxServerSessionOptions
+
+Re-exports [GetSiwxServerSessionOptions](../interfaces/GetSiwxServerSessionOptions.md)
