@@ -4,7 +4,7 @@
 
 # SiwxSessionLike
 
-Defined in: [packages/siwx-core/src/validateMessage.ts:317](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/validateMessage.ts#L317)
+Defined in: [packages/siwx-core/src/validateMessage.ts:328](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/validateMessage.ts#L328)
 
 Minimal interface for a SIWX session or parsed CAIP-122 message.
 
@@ -14,7 +14,7 @@ Minimal interface for a SIWX session or parsed CAIP-122 message.
 
 > **address**: `string`
 
-Defined in: [packages/siwx-core/src/validateMessage.ts:318](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/validateMessage.ts#L318)
+Defined in: [packages/siwx-core/src/validateMessage.ts:329](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/validateMessage.ts#L329)
 
 ***
 
@@ -22,4 +22,4 @@ Defined in: [packages/siwx-core/src/validateMessage.ts:318](https://github.com/T
 
 > `optional` **chainId?**: `string`
 
-Defined in: [packages/siwx-core/src/validateMessage.ts:319](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/validateMessage.ts#L319)
+Defined in: [packages/siwx-core/src/validateMessage.ts:330](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/validateMessage.ts#L330)

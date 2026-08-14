@@ -292,15 +292,16 @@ export function createSessionCookie(value: string, opts: CookieOptions = {}): st
  * Creates a clear/destroy Set-Cookie header value.
  */
 export function createClearCookie(opts: CookieOptions = {}): string {
-  const { name = 'siwx-session-v2', path = '/', domain } = opts;
+  const { name = 'siwx-session-v2', path = '/', domain, secure = true, sameSite = 'Strict' } = opts;
   const parts = [
     `${name}=`,
     `Path=${path}`,
     `Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
     `Max-Age=0`,
     `HttpOnly`,
-    `SameSite=Strict`,
+    `SameSite=${sameSite}`,
   ];
+  if (secure) parts.push('Secure');
   if (domain) parts.push(`Domain=${domain}`);
   return parts.join('; ');
 }

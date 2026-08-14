@@ -112,13 +112,12 @@ export interface StatelessDemoSiwxHandlerOptions {
  */
 export function createSiwxApiHandler(options: SiwxApiHandlerOptions) {
   if (!options?.sessionStore || !options?.nonceStore) {
-    throw new Error(
-      '[SIWX-SERVER] createSiwxApiHandler requires both `sessionStore` and `nonceStore`. For zero-infrastructure demos without storage, use `createStatelessDemoSiwxHandler`.',
-    );
+    throw new Error('[SIWX-SERVER] createSiwxApiHandler requires both `sessionStore` and `nonceStore`.');
   }
 
   const cookieName = options.cookieOptions?.name || 'siwx-session-v2';
   const ttlSeconds = options.ttlSeconds ?? (options.cookieOptions?.maxAge || 60 * 60 * 24 * 7);
+  const maxPayloadBytes = 65536; // 64 KB default request boundary limit
 
   const universalHandler = async (req: Request) => {
     try {
@@ -155,14 +154,43 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions) {
 
       // 3. POST /verify -> Validate payload, atomically consume nonce, issue durable session
       if (req.method === 'POST' && action === 'verify') {
-        const payload = await req.json();
+        const contentLength = req.headers.get('content-length');
+        if (contentLength && parseInt(contentLength, 10) > maxPayloadBytes) {
+          return new Response(JSON.stringify({ error: 'Payload Too Large' }), {
+            status: 413,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
 
-        if (!payload.message || !payload.signature) {
+        const rawBody = await req.text();
+        if (rawBody.length > maxPayloadBytes) {
+          return new Response(JSON.stringify({ error: 'Payload Too Large' }), {
+            status: 413,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        let rawParsed: Record<string, unknown>;
+        try {
+          rawParsed = JSON.parse(rawBody);
+        } catch {
+          return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        if (!rawParsed || typeof rawParsed.message !== 'string' || typeof rawParsed.signature !== 'string') {
           return new Response(JSON.stringify({ error: 'Missing message or signature' }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' },
           });
         }
+
+        const payload = {
+          message: rawParsed.message,
+          signature: rawParsed.signature,
+        };
 
         const result = await verifySiwxPayload(payload, {
           ...options.verifyOptions,
@@ -273,6 +301,7 @@ export function createStatelessDemoSiwxHandler(options: StatelessDemoSiwxHandler
 
   const cookieName = options.cookieOptions?.name || 'siwx-session-v2';
   const ttlSeconds = options.ttlSeconds ?? (options.cookieOptions?.maxAge || 1800); // 30 minutes default
+  const maxPayloadBytes = options.demoLimits?.maxTransactionPayloadBytes ?? 65536; // 64 KB default request boundary limit
 
   const universalHandler = async (req: Request) => {
     try {
@@ -308,14 +337,43 @@ export function createStatelessDemoSiwxHandler(options: StatelessDemoSiwxHandler
 
       // 3. POST /verify -> Validate payload and issue signed demo token
       if (req.method === 'POST' && action === 'verify') {
-        const payload = await req.json();
+        const contentLength = req.headers.get('content-length');
+        if (contentLength && parseInt(contentLength, 10) > maxPayloadBytes) {
+          return new Response(JSON.stringify({ error: 'Payload Too Large' }), {
+            status: 413,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
 
-        if (!payload.message || !payload.signature) {
+        const rawBody = await req.text();
+        if (rawBody.length > maxPayloadBytes) {
+          return new Response(JSON.stringify({ error: 'Payload Too Large' }), {
+            status: 413,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        let rawParsed: Record<string, unknown>;
+        try {
+          rawParsed = JSON.parse(rawBody);
+        } catch {
+          return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        if (!rawParsed || typeof rawParsed.message !== 'string' || typeof rawParsed.signature !== 'string') {
           return new Response(JSON.stringify({ error: 'Missing message or signature' }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' },
           });
         }
+
+        const payload = {
+          message: rawParsed.message,
+          signature: rawParsed.signature,
+        };
 
         const result = await verifySiwxPayload(payload, {
           ...options.verifyOptions,

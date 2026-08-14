@@ -149,13 +149,18 @@ export interface StatelessDemoTokenPayload {
 }
 
 /**
- * Limits for stateless demo profile.
+ * Enforceable request boundary limits for the stateless demo profile.
+ *
+ * Note: Shared rate limits and request quotas across multiple replicas require
+ * a durable store or are authoritative at the Quasar App RPS / Quota layer.
  */
 export interface StatelessDemoLimits {
-  /** Maximum transaction payload size in bytes. */
+  /**
+   * Maximum allowed incoming payload body size in bytes for SIWX verification endpoints.
+   * Requests exceeding this limit will be rejected with HTTP 413 (Payload Too Large).
+   * @default 65536 (64 KB)
+   */
   maxTransactionPayloadBytes?: number;
-  /** Advisory request cap per session. */
-  maxRequestsPerSession?: number;
 }
 
 /**

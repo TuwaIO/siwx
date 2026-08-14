@@ -6,7 +6,7 @@
 
 > **createStatelessDemoSiwxHandler**(`options`): `object`
 
-Defined in: [packages/siwx-server/src/next.ts:267](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/next.ts#L267)
+Defined in: [packages/siwx-server/src/next.ts:295](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/next.ts#L295)
 
 Creates a stateless demo Next.js App Router route handler for SIWX.
 Uses authenticated HMAC-SHA256 tokens in HttpOnly cookies without requiring Redis or a database.

@@ -4,7 +4,7 @@
 
 # SiwxIssuedAtStaleError
 
-Defined in: [packages/siwx-core/src/errors.ts:165](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L165)
+Defined in: [packages/siwx-core/src/errors.ts:165](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L165)
 
 Thrown when the message issuedAt timestamp is older than allowed by policy.
 
@@ -18,7 +18,7 @@ Thrown when the message issuedAt timestamp is older than allowed by policy.
 
 > **new SiwxIssuedAtStaleError**(`issuedAt`, `maxAgeSeconds`): `SiwxIssuedAtStaleError`
 
-Defined in: [packages/siwx-core/src/errors.ts:166](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L166)
+Defined in: [packages/siwx-core/src/errors.ts:166](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L166)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -70,7 +70,7 @@ Optional machine-readable error code.
 
 > `readonly` **issuedAt**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:167](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L167)
+Defined in: [packages/siwx-core/src/errors.ts:167](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L167)
 
 ***
 
@@ -78,7 +78,7 @@ Defined in: [packages/siwx-core/src/errors.ts:167](https://github.com/TuwaIO/siw
 
 > `readonly` **maxAgeSeconds**: `number`
 
-Defined in: [packages/siwx-core/src/errors.ts:168](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L168)
+Defined in: [packages/siwx-core/src/errors.ts:168](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L168)
 
 ***
 

@@ -4,26 +4,26 @@
 
 # StatelessDemoLimits
 
-Defined in: [packages/siwx-server/src/types.ts:154](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/types.ts#L154)
+Defined in: [packages/siwx-server/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L157)
 
-Limits for stateless demo profile.
+Enforceable request boundary limits for the stateless demo profile.
+
+Note: Shared rate limits and request quotas across multiple replicas require
+a durable store or are authoritative at the Quasar App RPS / Quota layer.
 
 ## Properties
-
-### maxRequestsPerSession?
-
-> `optional` **maxRequestsPerSession?**: `number`
-
-Defined in: [packages/siwx-server/src/types.ts:158](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/types.ts#L158)
-
-Advisory request cap per session.
-
-***
 
 ### maxTransactionPayloadBytes?
 
 > `optional` **maxTransactionPayloadBytes?**: `number`
 
-Defined in: [packages/siwx-server/src/types.ts:156](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/types.ts#L156)
+Defined in: [packages/siwx-server/src/types.ts:163](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/types.ts#L163)
 
-Maximum transaction payload size in bytes.
+Maximum allowed incoming payload body size in bytes for SIWX verification endpoints.
+Requests exceeding this limit will be rejected with HTTP 413 (Payload Too Large).
+
+#### Default
+
+```ts
+65536 (64 KB)
+```

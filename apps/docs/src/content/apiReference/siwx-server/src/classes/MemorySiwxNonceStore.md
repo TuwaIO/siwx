@@ -4,7 +4,7 @@
 
 # MemorySiwxNonceStore
 
-Defined in: [packages/siwx-server/src/server.ts:385](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/server.ts#L385)
+Defined in: [packages/siwx-server/src/server.ts:386](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L386)
 
 In-memory implementation of SiwxNonceStore.
 STRICTLY for local development, prototyping, and unit testing.
@@ -20,7 +20,7 @@ Fails closed in production environments.
 
 > **new MemorySiwxNonceStore**(`options?`): `MemorySiwxNonceStore`
 
-Defined in: [packages/siwx-server/src/server.ts:388](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/server.ts#L388)
+Defined in: [packages/siwx-server/src/server.ts:389](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L389)
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: [packages/siwx-server/src/server.ts:388](https://github.com/TuwaIO/s
 
 > **consume**(`input`): `Promise`\<`boolean`\>
 
-Defined in: [packages/siwx-server/src/server.ts:404](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/server.ts#L404)
+Defined in: [packages/siwx-server/src/server.ts:405](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L405)
 
 Atomically consumes a nonce, guaranteeing single-use.
 
@@ -70,7 +70,7 @@ True if the nonce was valid and consumed, false if already consumed or expired.
 
 > **issue**(`input`): `Promise`\<`void`\>
 
-Defined in: [packages/siwx-server/src/server.ts:399](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-server/src/server.ts#L399)
+Defined in: [packages/siwx-server/src/server.ts:400](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-server/src/server.ts#L400)
 
 Issues and stores a new challenge nonce with TTL.
 

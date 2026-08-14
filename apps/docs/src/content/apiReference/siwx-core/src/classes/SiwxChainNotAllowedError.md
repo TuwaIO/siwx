@@ -4,7 +4,7 @@
 
 # SiwxChainNotAllowedError
 
-Defined in: [packages/siwx-core/src/errors.ts:152](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L152)
+Defined in: [packages/siwx-core/src/errors.ts:152](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L152)
 
 Thrown when the message chain ID is not in the allowed list of chain IDs.
 
@@ -18,7 +18,7 @@ Thrown when the message chain ID is not in the allowed list of chain IDs.
 
 > **new SiwxChainNotAllowedError**(`allowedChainIds`, `received`): `SiwxChainNotAllowedError`
 
-Defined in: [packages/siwx-core/src/errors.ts:153](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L153)
+Defined in: [packages/siwx-core/src/errors.ts:153](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L153)
 
 #### Parameters
 
@@ -44,7 +44,7 @@ Defined in: [packages/siwx-core/src/errors.ts:153](https://github.com/TuwaIO/siw
 
 > `readonly` **allowedChainIds**: `string`[]
 
-Defined in: [packages/siwx-core/src/errors.ts:154](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L154)
+Defined in: [packages/siwx-core/src/errors.ts:154](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L154)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -102,7 +102,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **received**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:155](https://github.com/TuwaIO/siwx/blob/3e92d2c12c74ad4820f3f675f56b978c23099c12/packages/siwx-core/src/errors.ts#L155)
+Defined in: [packages/siwx-core/src/errors.ts:155](https://github.com/TuwaIO/siwx/blob/fcaa3a6f9f1375901c6bae0f335f995349246d8e/packages/siwx-core/src/errors.ts#L155)
 
 ***
 

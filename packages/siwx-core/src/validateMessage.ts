@@ -150,10 +150,21 @@ export function validatePolicy(
     }
   }
 
-  // 2. URI match
+  // 2. URI match (supports exact match, origin matching, and subpath prefix matching)
   if (policy.expectedUri !== undefined) {
     const expected = Array.isArray(policy.expectedUri) ? policy.expectedUri : [policy.expectedUri];
-    const isUriMatch = expected.includes(fields.uri);
+    const isUriMatch = expected.some((exp) => {
+      if (fields.uri === exp) return true;
+      const cleanExp = exp.endsWith('/') ? exp.slice(0, -1) : exp;
+      if (fields.uri.startsWith(`${cleanExp}/`)) return true;
+      try {
+        const fieldUrl = new URL(fields.uri);
+        const expUrl = new URL(exp);
+        return fieldUrl.origin.toLowerCase() === expUrl.origin.toLowerCase();
+      } catch {
+        return false;
+      }
+    });
     if (!isUriMatch) {
       errors.push(`URI mismatch. Expected: [${expected.join(', ')}], Received: "${fields.uri}"`);
     }
