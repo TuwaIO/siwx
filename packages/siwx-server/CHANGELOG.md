@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.2.1...siwx-server-v0.2.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* logic & updated docs & added new tests ([5afdbf8](https://github.com/TuwaIO/siwx/commit/5afdbf8444bc2b94d7f938774996543e40e8ee51))
+* updated packages ([88a125a](https://github.com/TuwaIO/siwx/commit/88a125a446fcd52d85e61a4921716a207094c06a))
+
 ## [0.2.1](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.2.0...siwx-server-v0.2.1) (2026-08-14)
 
 

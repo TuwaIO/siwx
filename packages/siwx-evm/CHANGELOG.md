@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.2.0...siwx-evm-v0.2.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* updated packages ([88a125a](https://github.com/TuwaIO/siwx/commit/88a125a446fcd52d85e61a4921716a207094c06a))
+
 ## [0.2.0](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.1.1...siwx-evm-v0.2.0) (2026-08-14)
 
 
