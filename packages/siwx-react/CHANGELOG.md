@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.2.1...siwx-react-v0.2.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* Enhance SIWX message fields and validation, fix Solana Base58 ([53c3101](https://github.com/TuwaIO/siwx/commit/53c3101ddaf5a9d81bec5f071f67d323e919e8b9))
+
 ## [0.2.1](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.2.0...siwx-react-v0.2.1) (2026-08-14)
 
 
