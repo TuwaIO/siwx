@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.2.2...siwx-react-v0.2.3) (2026-08-15)
+
+
+### Bug Fixes
+
+* updated react hook ([2c19847](https://github.com/TuwaIO/siwx/commit/2c19847847742bbb17697bfb68bdad3b4caad56e))
+
 ## [0.2.2](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.2.1...siwx-react-v0.2.2) (2026-08-14)
 
 

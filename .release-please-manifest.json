@@ -2,6 +2,6 @@
   "packages/siwx-core": "0.2.2",
   "packages/siwx-evm": "0.2.1",
   "packages/siwx-solana": "0.2.1",
-  "packages/siwx-react": "0.2.2",
+  "packages/siwx-react": "0.2.3",
   "packages/siwx-server": "0.2.2"
 }
