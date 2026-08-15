@@ -4,7 +4,7 @@
 
 # SiwxVerifyResult
 
-Defined in: [packages/siwx-core/src/types.ts:195](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L195)
+Defined in: [packages/siwx-core/src/types.ts:195](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/types.ts#L195)
 
 The result of a signature verification operation.
 
@@ -14,7 +14,7 @@ The result of a signature verification operation.
 
 > `optional` **data?**: [`SiwxMessageFields`](SiwxMessageFields.md)
 
-Defined in: [packages/siwx-core/src/types.ts:202](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L202)
+Defined in: [packages/siwx-core/src/types.ts:202](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/types.ts#L202)
 
 The parsed message fields if verification succeeded.
 Present only when `success` is true.
@@ -25,7 +25,7 @@ Present only when `success` is true.
 
 > `optional` **error?**: `string`
 
-Defined in: [packages/siwx-core/src/types.ts:207](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L207)
+Defined in: [packages/siwx-core/src/types.ts:207](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/types.ts#L207)
 
 A human-readable error if verification failed.
 Present only when `success` is false.
@@ -36,6 +36,6 @@ Present only when `success` is false.
 
 > **success**: `boolean`
 
-Defined in: [packages/siwx-core/src/types.ts:197](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/types.ts#L197)
+Defined in: [packages/siwx-core/src/types.ts:197](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/types.ts#L197)
 
 Whether the signature is valid and the message is authentic.

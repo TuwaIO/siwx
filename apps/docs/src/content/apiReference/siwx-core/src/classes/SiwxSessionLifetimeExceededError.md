@@ -4,7 +4,7 @@
 
 # SiwxSessionLifetimeExceededError
 
-Defined in: [packages/siwx-core/src/errors.ts:207](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L207)
+Defined in: [packages/siwx-core/src/errors.ts:207](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/errors.ts#L207)
 
 Thrown when the message session duration exceeds the max allowed session lifetime.
 
@@ -18,7 +18,7 @@ Thrown when the message session duration exceeds the max allowed session lifetim
 
 > **new SiwxSessionLifetimeExceededError**(`lifetimeSeconds`, `maxLifetimeSeconds`): `SiwxSessionLifetimeExceededError`
 
-Defined in: [packages/siwx-core/src/errors.ts:208](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L208)
+Defined in: [packages/siwx-core/src/errors.ts:208](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/errors.ts#L208)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -70,7 +70,7 @@ Optional machine-readable error code.
 
 > `readonly` **lifetimeSeconds**: `number`
 
-Defined in: [packages/siwx-core/src/errors.ts:209](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L209)
+Defined in: [packages/siwx-core/src/errors.ts:209](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/errors.ts#L209)
 
 ***
 
@@ -78,7 +78,7 @@ Defined in: [packages/siwx-core/src/errors.ts:209](https://github.com/TuwaIO/siw
 
 > `readonly` **maxLifetimeSeconds**: `number`
 
-Defined in: [packages/siwx-core/src/errors.ts:210](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-core/src/errors.ts#L210)
+Defined in: [packages/siwx-core/src/errors.ts:210](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/errors.ts#L210)
 
 ***
 

@@ -4,7 +4,7 @@
 
 # SatelliteSiwxFieldOptions
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:21](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L21)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:21](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L21)
 
 Options for generating Satellite SIWX fields.
 
@@ -14,7 +14,7 @@ Options for generating Satellite SIWX fields.
 
 > `optional` **domain?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L22)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L22)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:22](https://github.com/
 
 > `optional` **expirationSeconds?**: `number`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:26](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L26)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:26](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L26)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:26](https://github.com/
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:25](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L25)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:25](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L25)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:25](https://github.com/
 
 > `optional` **notBefore?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:27](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L27)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:27](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L27)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:27](https://github.com/
 
 > `optional` **requestId?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:28](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L28)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:28](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L28)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:28](https://github.com/
 
 > `optional` **resources?**: `string`[]
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:29](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L29)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:29](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L29)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:29](https://github.com/
 
 > `optional` **statement?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:24](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L24)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:24](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L24)
 
 ***
 
@@ -70,4 +70,4 @@ Defined in: [packages/siwx-react/src/satelliteHelpers.ts:24](https://github.com/
 
 > `optional` **uri?**: `string`
 
-Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-react/src/satelliteHelpers.ts#L23)
+Defined in: [packages/siwx-react/src/satelliteHelpers.ts:23](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/satelliteHelpers.ts#L23)

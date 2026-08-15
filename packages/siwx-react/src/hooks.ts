@@ -42,6 +42,12 @@ export interface UseSiwxSignInOptions {
   };
 
   /**
+   * Optional function to fetch a challenge nonce from the backend before signing.
+   * If not provided and `fields.nonce` is omitted, `generateNonce()` is used as fallback.
+   */
+  getNonce?: () => Promise<string> | string;
+
+  /**
    * Optional callback triggered immediately after successful authentication.
    *
    * @param session - The authenticated client session object.
@@ -104,12 +110,12 @@ export function useSiwx(): UseSiwxReturn {
 
   const signIn = useCallback(
     async (options: UseSiwxSignInOptions) => {
-      const { signer, verifier, fields, onSuccess, onError } = options;
+      const { signer, verifier, fields, getNonce, onSuccess, onError } = options;
 
       try {
         setSigning();
 
-        const nonce = fields.nonce ?? generateNonce();
+        const nonce = fields.nonce ?? (getNonce ? await getNonce() : generateNonce());
         const issuedAt = fields.issuedAt ?? new Date().toISOString();
         const expirationTime = fields.expirationTime ?? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 

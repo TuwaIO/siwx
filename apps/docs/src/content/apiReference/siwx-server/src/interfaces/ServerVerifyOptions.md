@@ -4,7 +4,7 @@
 
 # ServerVerifyOptions
 
-Defined in: [packages/siwx-server/src/types.ts:10](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L10)
+Defined in: [packages/siwx-server/src/types.ts:10](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L10)
 
 Options for the `verifySiwxPayload` function.
 
@@ -14,7 +14,7 @@ Options for the `verifySiwxPayload` function.
 
 > `optional` **policy?**: [`SiwxVerificationPolicy`](SiwxVerificationPolicy.md)
 
-Defined in: [packages/siwx-server/src/types.ts:28](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L28)
+Defined in: [packages/siwx-server/src/types.ts:28](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L28)
 
 Optional verification policy to enforce on the message fields.
 
@@ -24,7 +24,7 @@ Optional verification policy to enforce on the message fields.
 
 > `optional` **publicClient?**: `any`
 
-Defined in: [packages/siwx-server/src/types.ts:34](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L34)
+Defined in: [packages/siwx-server/src/types.ts:34](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L34)
 
 Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wallet) verification.
 
@@ -34,7 +34,7 @@ Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wal
 
 > `optional` **skipExpiration?**: `boolean`
 
-Defined in: [packages/siwx-server/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L23)
+Defined in: [packages/siwx-server/src/types.ts:23](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L23)
 
 If true, skips the `expirationTime` validation check.
 Not recommended for production use.
@@ -51,7 +51,7 @@ false
 
 > `optional` **usedNonces?**: `Set`\<`string`\>
 
-Defined in: [packages/siwx-server/src/types.ts:16](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L16)
+Defined in: [packages/siwx-server/src/types.ts:16](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L16)
 
 A set of nonces that have already been used.
 If the payload's nonce is found in this set, verification will fail

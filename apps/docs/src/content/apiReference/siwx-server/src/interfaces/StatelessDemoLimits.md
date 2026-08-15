@@ -4,7 +4,7 @@
 
 # StatelessDemoLimits
 
-Defined in: [packages/siwx-server/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L157)
+Defined in: [packages/siwx-server/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L157)
 
 Enforceable request boundary limits for the stateless demo profile.
 
@@ -17,7 +17,7 @@ a durable store or are authoritative at the Quasar App RPS / Quota layer.
 
 > `optional` **maxTransactionPayloadBytes?**: `number`
 
-Defined in: [packages/siwx-server/src/types.ts:163](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-server/src/types.ts#L163)
+Defined in: [packages/siwx-server/src/types.ts:163](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-server/src/types.ts#L163)
 
 Maximum allowed incoming payload body size in bytes for SIWX verification endpoints.
 Requests exceeding this limit will be rejected with HTTP 413 (Payload Too Large).

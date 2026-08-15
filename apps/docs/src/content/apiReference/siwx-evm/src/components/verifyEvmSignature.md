@@ -6,7 +6,7 @@
 
 > **verifyEvmSignature**(`message`, `signature`, `options?`): `Promise`\<[`EvmVerifyResult`](../interfaces/EvmVerifyResult.md)\>
 
-Defined in: [packages/siwx-evm/src/verify.ts:183](https://github.com/TuwaIO/siwx/blob/21b3a05b39d40806567e8859c0d7699b6b50336c/packages/siwx-evm/src/verify.ts#L183)
+Defined in: [packages/siwx-evm/src/verify.ts:183](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-evm/src/verify.ts#L183)
 
 Universal EVM signature verifier for CAIP-122 messages.
 Tries EIP-191 (standard EOA ecrecover) first.
