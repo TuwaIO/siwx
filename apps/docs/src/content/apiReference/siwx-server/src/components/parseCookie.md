@@ -6,7 +6,7 @@
 
 > **parseCookie**(`cookieHeader`, `name`): `string` \| `null`
 
-Defined in: [packages/siwx-server/src/server.ts:312](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-server/src/server.ts#L312)
+Defined in: [packages/siwx-server/src/server.ts:312](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-server/src/server.ts#L312)
 
 Extracts a cookie value by name from a raw Cookie header string.
 

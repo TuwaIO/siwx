@@ -4,7 +4,7 @@
 
 # SiwxNotBeforeError
 
-Defined in: [packages/siwx-core/src/errors.ts:197](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/errors.ts#L197)
+Defined in: [packages/siwx-core/src/errors.ts:197](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/errors.ts#L197)
 
 Thrown when the message notBefore timestamp has not yet been reached.
 
@@ -18,7 +18,7 @@ Thrown when the message notBefore timestamp has not yet been reached.
 
 > **new SiwxNotBeforeError**(`notBefore`): `SiwxNotBeforeError`
 
-Defined in: [packages/siwx-core/src/errors.ts:198](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/errors.ts#L198)
+Defined in: [packages/siwx-core/src/errors.ts:198](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/errors.ts#L198)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `string` = `'SIWX_ERROR'`
 
-Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/errors.ts#L17)
+Defined in: [packages/siwx-core/src/errors.ts:17](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/errors.ts#L17)
 
 Optional machine-readable error code.
 
@@ -90,7 +90,7 @@ Defined in: node\_modules/.pnpm/typescript@6.0.3/node\_modules/typescript/lib/li
 
 > `readonly` **notBefore**: `string`
 
-Defined in: [packages/siwx-core/src/errors.ts:198](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/errors.ts#L198)
+Defined in: [packages/siwx-core/src/errors.ts:198](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/errors.ts#L198)
 
 ***
 

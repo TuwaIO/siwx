@@ -4,7 +4,7 @@
 
 # SolanaSiwxSignerTarget
 
-Defined in: [packages/siwx-solana/src/signer.ts:29](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-solana/src/signer.ts#L29)
+Defined in: [packages/siwx-solana/src/signer.ts:29](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-solana/src/signer.ts#L29)
 
 Target input for the Solana SIWX signer.
 Accepts raw wallet and account objects, or a unified signer object.
@@ -19,7 +19,7 @@ Accepts raw wallet and account objects, or a unified signer object.
 
 > `optional` **account?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:30](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-solana/src/signer.ts#L30)
+Defined in: [packages/siwx-solana/src/signer.ts:30](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-solana/src/signer.ts#L30)
 
 ***
 
@@ -27,4 +27,4 @@ Defined in: [packages/siwx-solana/src/signer.ts:30](https://github.com/TuwaIO/si
 
 > `optional` **wallet?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/siwx-solana/src/signer.ts:31](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-solana/src/signer.ts#L31)
+Defined in: [packages/siwx-solana/src/signer.ts:31](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-solana/src/signer.ts#L31)

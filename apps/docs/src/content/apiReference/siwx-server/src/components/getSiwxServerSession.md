@@ -6,7 +6,7 @@
 
 > **getSiwxServerSession**(`options`): `Promise`\<[`SiwxSession`](../interfaces/SiwxSession.md) \| `null`\>
 
-Defined in: [packages/siwx-server/src/server.ts:434](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-server/src/server.ts#L434)
+Defined in: [packages/siwx-server/src/server.ts:434](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-server/src/server.ts#L434)
 
 Resolves and verifies an active SIWX session strictly on the server side.
 Supports both durable session stores and stateless HMAC-signed demo cookies.

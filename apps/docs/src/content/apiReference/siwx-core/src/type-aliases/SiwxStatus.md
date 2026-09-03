@@ -6,6 +6,6 @@
 
 > **SiwxStatus** = `"idle"` \| `"building"` \| `"signing"` \| `"verifying"` \| `"authenticated"` \| `"error"`
 
-Defined in: [packages/siwx-core/src/types.ts:24](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/types.ts#L24)
+Defined in: [packages/siwx-core/src/types.ts:24](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/types.ts#L24)
 
 The lifecycle status of a SIWX authentication session.
