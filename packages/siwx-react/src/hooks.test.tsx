@@ -1,8 +1,14 @@
+// @vitest-environment jsdom
 import { act, renderHook } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useSiwx, useSiwxSession } from '../hooks';
-import { useSiwxSessionStore } from '../sessionStore';
+import { useSiwx, useSiwxSession } from './hooks';
+import { useSiwxSessionStore } from './sessionStore';
+
+beforeEach(() => {
+  sessionStorage.clear();
+  useSiwxSessionStore.getState().reset();
+});
 
 describe('useSiwxSession()', () => {
   it('returns default unauthenticated session state initially', () => {

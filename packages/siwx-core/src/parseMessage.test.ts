@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildMessage } from '../buildMessage';
-import { SiwxParseError } from '../errors';
-import { parseMessage } from '../parseMessage';
-import type { SiwxMessageFields } from '../types';
+import { buildMessage } from './buildMessage';
+import { SiwxParseError } from './errors';
+import { parseMessage } from './parseMessage';
+import type { SiwxMessageFields } from './types';
 
 /** The canonical "full" message string for round-trip testing. */
 const FULL_FIELDS: SiwxMessageFields = {

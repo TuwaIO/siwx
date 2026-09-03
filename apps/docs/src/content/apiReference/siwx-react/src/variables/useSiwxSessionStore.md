@@ -6,7 +6,7 @@
 
 > `const` **useSiwxSessionStore**: `UseBoundStore`\<`WithImmer`\<`StoreApi`\<[`SiwxSessionStore`](../type-aliases/SiwxSessionStore.md)\>\>\>
 
-Defined in: [packages/siwx-react/src/sessionStore.ts:93](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-react/src/sessionStore.ts#L93)
+Defined in: [packages/siwx-react/src/sessionStore.ts:93](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-react/src/sessionStore.ts#L93)
 
 The primary Zustand store for SIWX session management.
 Uses `persist` middleware to survive page reloads (sessionStorage by default),

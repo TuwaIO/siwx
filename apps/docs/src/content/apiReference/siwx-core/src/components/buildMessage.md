@@ -6,7 +6,7 @@
 
 > **buildMessage**(`fields`): `string`
 
-Defined in: [packages/siwx-core/src/buildMessage.ts:29](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/buildMessage.ts#L29)
+Defined in: [packages/siwx-core/src/buildMessage.ts:29](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/buildMessage.ts#L29)
 
 Builds a CAIP-122 compliant sign-in message string from the provided fields.
 The output format follows the EIP-4361 / CAIP-122 specification exactly.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { useSiwxSessionStore } from '../sessionStore';
+import { useSiwxSessionStore } from './sessionStore';
 
 describe('useSiwxSessionStore', () => {
   it('starts in idle state with null session and null error', () => {

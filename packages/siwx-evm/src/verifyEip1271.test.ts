@@ -2,7 +2,7 @@ import { buildMessage } from '@tuwaio/siwx-core';
 import type { PublicClient } from 'viem';
 import { describe, expect, it, vi } from 'vitest';
 
-import { verifyEip1271 } from '../verify';
+import { verifyEip1271 } from './verify';
 
 const SMART_CONTRACT_ADDRESS = '0x1111111111111111111111111111111111111111';
 

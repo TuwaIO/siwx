@@ -6,6 +6,6 @@
 
 > **ParsedSiwxMessage** = [`SiwxMessageFields`](../interfaces/SiwxMessageFields.md)
 
-Defined in: [packages/siwx-core/src/types.ts:180](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-core/src/types.ts#L180)
+Defined in: [packages/siwx-core/src/types.ts:180](https://github.com/TuwaIO/siwx/blob/7a4dd6dae3d09a536e9c8ec7c5ea5bf16941b2e9/packages/siwx-core/src/types.ts#L180)
 
 A parsed CAIP-122 message, structurally identical to the fields used to build it.

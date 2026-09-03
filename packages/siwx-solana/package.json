@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "Layer 2 (L2) of the TUWA Ecosystem. Solana adapter for @tuwaio/siwx. Signs and verifies CAIP-122 messages for Solana via gill and @wallet-standard using ed25519 cryptography.",
+  "description": "Layer 2 (L2) of the TUWA Ecosystem. Solana adapter for @tuwaio/siwx. Signs and verifies CAIP-122 messages for Solana via @solana/kit and @wallet-standard using ed25519 cryptography.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -27,7 +27,7 @@
     "caip-122",
     "solana",
     "ed25519",
-    "gill",
+    "@solana/kit",
     "wallet-standard",
     "sign-in-with-solana",
     "authentication",
@@ -50,13 +50,13 @@
   ],
   "peerDependencies": {
     "@tuwaio/siwx-core": "workspace:*",
-    "@wallet-standard/base": "^1.0.0",
-    "gill": "^0.14.0"
+    "@wallet-standard/base": ">=1.1.1",
+    "@solana/kit": ">=8.2"
   },
   "devDependencies": {
     "@tuwaio/siwx-core": "workspace:*",
     "@wallet-standard/base": "^1.1.1",
-    "gill": "^0.14.0",
+    "@solana/kit": "^8.2.0",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3"
   }

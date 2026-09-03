@@ -3,6 +3,7 @@
  * Uses ed25519 cryptography via the native SubtleCrypto API (Node.js & browser compatible).
  */
 
+import { address as solanaAddress } from '@solana/kit';
 import type { SiwxVerifyResult } from '@tuwaio/siwx-core';
 import {
   parseMessage,
@@ -11,7 +12,6 @@ import {
   SiwxVerificationError,
   validateMessage,
 } from '@tuwaio/siwx-core';
-import { address as solanaAddress } from 'gill';
 
 import type { SolanaVerifyPayload } from './types';
 
@@ -136,14 +136,21 @@ export async function verifyEd25519(
       throw new SiwxUnsupportedNamespaceError(parsed.chainId.split(':')[0] ?? 'unknown');
     }
 
-    const validation = validateMessage(parsed, { skipExpiration: options?.skipExpiration });
+    if (signatureBytes.length !== 64) {
+      throw new SiwxVerificationError(`Invalid Solana signature length: ${signatureBytes.length} bytes (expected 64)`);
+    }
+
+    const validation = validateMessage(parsed, {
+      skipExpiration: options?.skipExpiration,
+      policy: { enforceNotBefore: true },
+    });
     if (!validation.valid) {
       throw new SiwxValidationError(validation.errors);
     }
 
     const rawAddress = extractSolanaAddress(parsed.address);
 
-    // Validate the address using gill's address utility
+    // Validate the address using @solana/kit's address utility
     const validatedAddress = solanaAddress(rawAddress);
     const publicKeyBytes = base58ToBytes(validatedAddress);
 

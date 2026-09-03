@@ -12,8 +12,8 @@ import {
   signStatelessDemoSession,
   verifySiwxPayload,
   verifyStatelessDemoSession,
-} from '../server';
-import type { SiwxSession } from '../types';
+} from './server';
+import type { SiwxSession } from './types';
 
 const TEST_SECRET = '0123456789abcdef0123456789abcdef'; // 32 characters
 

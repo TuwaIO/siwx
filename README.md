@@ -45,7 +45,7 @@ pnpm add @tuwaio/siwx-core
 pnpm add @tuwaio/siwx-evm viem @wagmi/core
 
 # Solana support
-pnpm add @tuwaio/siwx-solana gill
+pnpm add @tuwaio/siwx-solana @solana/kit
 
 # React bindings
 pnpm add @tuwaio/siwx-react @tuwaio/siwx-core zustand
