@@ -6,7 +6,7 @@
 
 > **verifyEip1271**(`message`, `signature`, `options`): `Promise`\<[`EvmVerifyResult`](../interfaces/EvmVerifyResult.md)\>
 
-Defined in: [packages/siwx-evm/src/verify.ts:120](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-evm/src/verify.ts#L120)
+Defined in: [packages/siwx-evm/src/verify.ts:120](https://github.com/TuwaIO/siwx/blob/83013b6156828e4328756382b00fca539cc26a69/packages/siwx-evm/src/verify.ts#L120)
 
 Verifies an EVM (eip155) CAIP-122 signature using EIP-1271 (`isValidSignature`).
 This method is used for smart contract wallets (e.g., Safe, Argent, Gnosis).

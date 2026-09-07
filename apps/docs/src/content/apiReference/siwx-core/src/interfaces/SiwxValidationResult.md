@@ -4,7 +4,7 @@
 
 # SiwxValidationResult
 
-Defined in: [packages/siwx-core/src/types.ts:170](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/types.ts#L170)
+Defined in: [packages/siwx-core/src/types.ts:170](https://github.com/TuwaIO/siwx/blob/83013b6156828e4328756382b00fca539cc26a69/packages/siwx-core/src/types.ts#L170)
 
 The result of a message validation operation.
 
@@ -14,7 +14,7 @@ The result of a message validation operation.
 
 > **errors**: `string`[]
 
-Defined in: [packages/siwx-core/src/types.ts:174](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/types.ts#L174)
+Defined in: [packages/siwx-core/src/types.ts:174](https://github.com/TuwaIO/siwx/blob/83013b6156828e4328756382b00fca539cc26a69/packages/siwx-core/src/types.ts#L174)
 
 List of validation error messages, empty if valid.
 
@@ -24,6 +24,6 @@ List of validation error messages, empty if valid.
 
 > **valid**: `boolean`
 
-Defined in: [packages/siwx-core/src/types.ts:172](https://github.com/TuwaIO/siwx/blob/023cd641f42d16bcbd0c2945fcfa41700389bfc5/packages/siwx-core/src/types.ts#L172)
+Defined in: [packages/siwx-core/src/types.ts:172](https://github.com/TuwaIO/siwx/blob/83013b6156828e4328756382b00fca539cc26a69/packages/siwx-core/src/types.ts#L172)
 
 Whether the message fields are valid.

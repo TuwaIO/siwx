@@ -53,8 +53,8 @@
   ],
   "peerDependencies": {
     "@tuwaio/siwx-core": "workspace:*",
-    "@wagmi/core": "^3.0.0",
-    "viem": "^2.0.0"
+    "@wagmi/core": ">=3",
+    "viem": ">=2"
   },
   "devDependencies": {
     "@tuwaio/siwx-core": "workspace:*",
