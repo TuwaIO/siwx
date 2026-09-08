@@ -10,7 +10,7 @@
 
 - **Core:** TypeScript v6.0+, Node.js (v20+), pnpm v11+ (Workspace).
 - **Web3 (EVM):** `viem` v2.x, `@wagmi/core` v3.x.
-- **Web3 (Solana):** `gill` v0.14+, `@wallet-standard/base`.
+- **Web3 (Solana):** `@solana/kit` v8.x, `@wallet-standard/base`.
 - **State Management:** `zustand` v5.x (with `immer` + `persist` middleware).
 - **Docs:** Next.js v16, Nextra v4, Tailwind CSS v4.
 - **Build:** `tsup` (ESM/CJS/DTS). `typedoc` + `typedoc-plugin-markdown` for API docs.
@@ -85,7 +85,8 @@ siwx/
 - **Dependency Rule:** Never install new packages without explicit user permission.
 - **Hallucination Check:**
   - Do **NOT** import `ethers.js` (We use `viem`).
-  - Do **NOT** import `@solana/web3.js` legacy methods (We use `gill` and SubtleCrypto).
+  - Do **NOT** import `gill` (Eradicated; we use `@solana/kit` and SubtleCrypto).
+  - Do **NOT** import `@solana/web3.js` legacy methods.
   - Do **NOT** assume Starknet or Cosmos support exists (v1 is EVM + Solana only).
   - Do **NOT** add UI components to any package except `siwx-react` (and even then, no visual components — only hooks and store).
   - Do **NOT** couple `siwx-server` or any package to Quasar. It is a consumer, not a dependency.

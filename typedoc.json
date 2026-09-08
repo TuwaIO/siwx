@@ -9,7 +9,15 @@
     "packages/siwx-server/src/index.ts",
     "packages/siwx-server/src/next.ts"
   ],
-  "exclude": ["**/__tests__/**"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/__tests__/**",
+    "**/tests/**",
+    "**/setup.ts"
+  ],
   "entryPointStrategy": "expand",
   "tsconfig": "tsconfig.json",
   "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-react"],

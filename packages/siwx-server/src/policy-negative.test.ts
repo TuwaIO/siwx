@@ -1,9 +1,9 @@
 import { buildMessage, generateNonce } from '@tuwaio/siwx-core';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createSiwxApiHandler, createStatelessDemoSiwxHandler } from '../next';
-import * as serverModule from '../server';
-import { MemorySiwxNonceStore, MemorySiwxSessionStore, signStatelessDemoSession } from '../server';
+import { createSiwxApiHandler, createStatelessDemoSiwxHandler } from './next';
+import * as serverModule from './server';
+import { MemorySiwxNonceStore, MemorySiwxSessionStore, signStatelessDemoSession } from './server';
 
 const TEST_SECRET = '0123456789abcdef0123456789abcdef'; // 32 characters
 

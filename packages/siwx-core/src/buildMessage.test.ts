@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildMessage } from '../buildMessage';
-import type { SiwxMessageFields } from '../types';
+import { buildMessage } from './buildMessage';
+import type { SiwxMessageFields } from './types';
 
 /** Minimal valid fields with all required properties. */
 const MINIMAL_FIELDS: SiwxMessageFields = {

@@ -6,6 +6,6 @@
 
 > **EvmSiwxSignerTarget** = `Config` \| `WalletClient`
 
-Defined in: [packages/siwx-evm/src/signer.ts:12](https://github.com/TuwaIO/siwx/blob/0ca0708dd74b07eb7d1d46e0b3ebb6c65b68bbc8/packages/siwx-evm/src/signer.ts#L12)
+Defined in: [packages/siwx-evm/src/signer.ts:12](https://github.com/TuwaIO/siwx/blob/f77d0e06aaa7919c3688c2277c2d9f28269ea2b6/packages/siwx-evm/src/signer.ts#L12)
 
 Target input for the EVM SIWX signer, accepting either Wagmi or Viem clients.

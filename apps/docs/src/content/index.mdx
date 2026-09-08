@@ -43,7 +43,7 @@ SIWX is designed with strict separation of concerns within the TUWA layer model:
 ```
 @tuwaio/siwx-core    → Message building, parsing, validation (zero deps)
 @tuwaio/siwx-evm     → EIP-191 + EIP-1271 verification via viem
-@tuwaio/siwx-solana  → ed25519 verification via SubtleCrypto + gill
+@tuwaio/siwx-solana  → ed25519 verification via SubtleCrypto + @solana/kit
 @tuwaio/siwx-react   → Zustand session store + React hooks
 @tuwaio/siwx-server  → Backend verification dispatcher + cookie serialization
 ```

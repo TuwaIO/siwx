@@ -2,7 +2,7 @@ import { buildMessage } from '@tuwaio/siwx-core';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { describe, expect, it } from 'vitest';
 
-import { verifyEip191 } from '../verify';
+import { verifyEip191 } from './verify';
 
 describe('verifyEip191()', () => {
   it('successfully verifies a valid EIP-191 signature signed by a real EVM account', async () => {

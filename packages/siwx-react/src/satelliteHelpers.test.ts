@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getSatelliteSiwxFields } from '../satelliteHelpers';
+import { getSatelliteSiwxFields } from './satelliteHelpers';
 
 describe('getSatelliteSiwxFields', () => {
   it('should generate fields for EVM connection with default expirationTime', () => {

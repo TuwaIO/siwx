@@ -10,7 +10,7 @@
 ## 🏛️ Core Capabilities
 
 - **ed25519 Verification**: Verifies Solana wallet signatures against CAIP-122 messages using the native `SubtleCrypto` API (no native module dependencies).
-- Extracts and validates Solana addresses from CAIP-10 strings using `gill`.
+- Extracts and validates Solana addresses from CAIP-10 strings using `@solana/kit`.
 - Compatible with Node.js (v19+), browsers, and Edge runtimes (Cloudflare Workers, Vercel Edge).
 
 ---
@@ -18,7 +18,7 @@
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core gill
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit @wallet-standard/base
 ```
 
 ---
@@ -46,7 +46,7 @@ if (result.success) {
 
 ### `createSolanaSiwxSigner(signer)`
 
-Creates a standard SIWX signer callback for Solana chains. Automatically adapts to Wallet Standard, Web3 v2 (gill), or legacy Solana signers.
+Creates a standard SIWX signer callback for Solana chains. Automatically adapts to Wallet Standard, Web3 v2 (@solana/kit), or legacy Solana signers.
 
 ```ts
 import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
@@ -80,8 +80,8 @@ await signIn({ signer, verifier, fields: { ... } });
 | Package                 | Version       |
 | ----------------------- | ------------- |
 | `@tuwaio/siwx-core`     | `workspace:*` |
-| `gill`                  | `^0.14.0`     |
-| `@wallet-standard/base` | `^1.0.0`      |
+| `@solana/kit`           | `>=8.2.0`     |
+| `@wallet-standard/base` | `^1.1.1`      |
 
 ---
 

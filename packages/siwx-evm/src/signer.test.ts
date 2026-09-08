@@ -1,7 +1,7 @@
 import * as wagmiCore from '@wagmi/core';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createEvmSiwxSigner } from '../signer';
+import { createEvmSiwxSigner } from './signer';
 
 vi.mock('@wagmi/core', () => ({
   signMessage: vi.fn(),

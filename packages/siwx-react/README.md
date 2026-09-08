@@ -13,7 +13,7 @@
 - **`useSiwx()` Hook**: Orchestrates the sign-in flow: requests challenge nonce → builds CAIP-122 message → triggers wallet signer → verifies with backend → sets verified session.
 - **`useSiwxSession()` Hook**: Lightweight selector for reading the current authentication state and active account details in any component.
 - **Satellite Helpers**: Duck-typed integration helpers for `@tuwaio/satellite-core` connections.
-- **Backend Agnostic**: Works with any EVM or Solana signer (`wagmi`, `viem`, `gill`, Wallet Standard) and any backend endpoint.
+- **Backend Agnostic**: Works with any EVM or Solana signer (`wagmi`, `viem`, `@solana/kit`, Wallet Standard) and any backend endpoint.
 
 > **Important**: Client-side session state in Zustand reflects UI parity only. Server actions and API routes must never trust client-provided session state as proof of identity and must always verify the server-issued `HttpOnly` session cookie or authorization token.
 
@@ -22,7 +22,7 @@
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-react @tuwaio/siwx-core zustand immer
+pnpm add @tuwaio/siwx-react @tuwaio/siwx-core react zustand immer
 ```
 
 ---
@@ -36,8 +36,9 @@ Orchestrates wallet signing and backend verification.
 ```tsx
 import { useSiwx } from '@tuwaio/siwx-react';
 import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+import type { WalletClient } from 'viem';
 
-function LoginButton({ walletClient, address }: { walletClient: any; address: string }) {
+function LoginButton({ walletClient, address }: { walletClient: WalletClient; address: string }) {
   const { signIn, signOut } = useSiwx();
 
   const handleLogin = async () => {

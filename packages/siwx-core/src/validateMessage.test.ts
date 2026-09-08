@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { SiwxMessageFields } from '../types';
-import { generateNonce, validateMessage } from '../validateMessage';
+import type { SiwxMessageFields } from './types';
+import { generateNonce, validateMessage } from './validateMessage';
 
 /** A fully valid message baseline. Future-dated expiration avoids flakiness. */
 const VALID_FIELDS: SiwxMessageFields = {

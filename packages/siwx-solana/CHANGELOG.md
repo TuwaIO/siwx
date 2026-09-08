@@ -2,17 +2,15 @@
 
 ## [0.2.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.2.0...siwx-solana-v0.2.1) (2026-08-14)
 
-
 ### Bug Fixes
 
-* Enhance SIWX message fields and validation, fix Solana Base58 ([53c3101](https://github.com/TuwaIO/siwx/commit/53c3101ddaf5a9d81bec5f071f67d323e919e8b9))
+- Enhance SIWX message fields and validation, fix Solana Base58 ([53c3101](https://github.com/TuwaIO/siwx/commit/53c3101ddaf5a9d81bec5f071f67d323e919e8b9))
 
 ## [0.2.0](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.1.3...siwx-solana-v0.2.0) (2026-08-14)
 
-
 ### Features
 
-* updated security logic ([3734560](https://github.com/TuwaIO/siwx/commit/373456067828708e00b66b1f40ba6bc0bd37fcf6))
+- updated security logic ([3734560](https://github.com/TuwaIO/siwx/commit/373456067828708e00b66b1f40ba6bc0bd37fcf6))
 
 ## [0.1.3](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.1.2...siwx-solana-v0.1.3) (2026-08-09)
 

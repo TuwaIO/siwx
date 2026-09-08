@@ -15,7 +15,7 @@ import { useSiwxSessionStore } from './sessionStore';
 export interface UseSiwxSignInOptions {
   /**
    * A function that accepts the formatted CAIP-122 message string and returns the signature.
-   * This is where you integrate with your wallet connector (e.g., satellite, wagmi, gill).
+   * This is where you integrate with your wallet connector (e.g., satellite, wagmi, @solana/kit).
    *
    * @param message - The formatted CAIP-122 message ready for signing.
    * @returns A promise resolving to the hex/base58-encoded signature string.
