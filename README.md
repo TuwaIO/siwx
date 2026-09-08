@@ -42,16 +42,16 @@ L7: nova-uikit      → UI View Layer (consumes siwx-react)
 pnpm add @tuwaio/siwx-core
 
 # EVM support
-pnpm add @tuwaio/siwx-evm viem @wagmi/core
+pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @wagmi/core viem
 
 # Solana support
-pnpm add @tuwaio/siwx-solana @solana/kit
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit @wallet-standard/base
 
 # React bindings
-pnpm add @tuwaio/siwx-react @tuwaio/siwx-core zustand
+pnpm add @tuwaio/siwx-react @tuwaio/siwx-core react zustand immer
 
 # Server utilities (Node.js / Edge)
-pnpm add @tuwaio/siwx-server
+pnpm add @tuwaio/siwx-server @tuwaio/siwx-core
 ```
 
 ### 2. Build a CAIP-122 Message
@@ -201,9 +201,10 @@ export async function myAction(targetAddress: string) {
 ```tsx
 import { useSiwx, useSiwxSession } from '@tuwaio/siwx-react';
 import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+import type { WalletClient } from 'viem';
 // import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
 
-function LoginButton({ walletClient, address }: { walletClient: any; address: string }) {
+function LoginButton({ walletClient, address }: { walletClient: WalletClient; address: string }) {
   const { signIn, signOut } = useSiwx();
   const { isAuthenticated, session } = useSiwxSession();
 

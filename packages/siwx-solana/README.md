@@ -18,7 +18,7 @@
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit @wallet-standard/base
 ```
 
 ---

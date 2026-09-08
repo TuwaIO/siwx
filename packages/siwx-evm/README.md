@@ -18,7 +18,7 @@
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core viem @wagmi/core
+pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @wagmi/core viem
 ```
 
 ---
