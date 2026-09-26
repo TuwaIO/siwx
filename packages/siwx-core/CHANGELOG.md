@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/TuwaIO/siwx/compare/siwx-core-v0.3.0...siwx-core-v0.4.0) (2026-09-26)
+
+
+### Features
+
+* packages docs layout, persisted siwx-react session and security fixes ([816f1cb](https://github.com/TuwaIO/siwx/commit/816f1cbf55390f5d013f30e83668a7b9f8cf3dfc))
+
 ## [0.3.0](https://github.com/TuwaIO/siwx/compare/siwx-core-v0.2.2...siwx-core-v0.3.0) (2026-09-08)
 
 
