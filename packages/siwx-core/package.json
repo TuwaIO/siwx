@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "Layer 1 (L1) of the TUWA Ecosystem. Chain-agnostic CAIP-122 message builder, parser, and validator.",
+  "description": "L1 core of SIWX (TUWA): zero-dependency CAIP-122 sign-in message builder, parser and validator with verification policies, session matching, nonces and typed errors for EVM and Solana.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -22,15 +22,18 @@
     "test:coverage": "vitest run --coverage"
   },
   "keywords": [
-    "web3",
-    "typescript",
-    "caip-122",
-    "siwe",
+    "tuwa",
+    "siwx",
     "sign-in-with-x",
+    "caip-122",
     "authentication",
-    "headless",
-    "chain-agnostic",
-    "tuwa"
+    "web3",
+    "multi-chain",
+    "evm",
+    "solana",
+    "typescript",
+    "framework-agnostic",
+    "headless"
   ],
   "repository": {
     "type": "git",
@@ -49,6 +52,6 @@
   ],
   "devDependencies": {
     "tsup": "^8.5.1",
-    "typescript": "^6.0.3"
+    "typescript": "6.0.3"
   }
 }

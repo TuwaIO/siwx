@@ -1,17 +1,17 @@
-# `@tuwaio/siwx-solana`
+# @tuwaio/siwx-solana
 
 [![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-solana.svg)](https://www.npmjs.com/package/@tuwaio/siwx-solana)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-solana.svg)](./LICENSE)
+[![License](https://img.shields.io/npm/l/@tuwaio/siwx-solana.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/LICENSE)
 
-> Solana adapter for `@tuwaio/siwx` (L2). Verifies CAIP-122 messages for Solana using native ed25519 cryptography via SubtleCrypto. Compatible with all Wallet Standard wallets.
+`@tuwaio/siwx-solana` is the Solana Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`** and **`@solana/kit`**, it signs CAIP-122 messages with Solana wallets and verifies `solana` ed25519 signatures with the native Web Crypto API. It does not use the legacy `@solana/web3.js` or `gill`.
 
 ---
 
 ## 🏛️ Core Capabilities
 
-- **ed25519 Verification**: Verifies Solana wallet signatures against CAIP-122 messages using the native `SubtleCrypto` API (no native module dependencies).
-- Extracts and validates Solana addresses from CAIP-10 strings using `@solana/kit`.
-- Compatible with Node.js (v19+), browsers, and Edge runtimes (Cloudflare Workers, Vercel Edge).
+- **Signing:** `createSolanaSiwxSigner` turns a Wallet Standard wallet and account (typed with `@wallet-standard/base`), an `@solana/kit` message signer or a legacy adapter into the `(message) => signature` function that `useSiwx` from [`@tuwaio/siwx-react`](https://siwx.docs.tuwa.io/packages/siwx-react) expects. Signatures are returned as base58 strings.
+- **Verification:** `verifyEd25519` accepts a `{ message, signature }` payload (base58 strings or bytes) or the output of the Wallet Standard `solana:signIn` feature. It requires a `solana` chain and a 64-byte signature, validates the message (format, expiration, `notBefore` and an `issuedAt` in the future) and the address, and checks the signature with `crypto.subtle`. It runs locally, without RPC calls, and returns `{ success, data, error }` instead of throwing.
+- **Runtimes:** any runtime whose Web Crypto API supports Ed25519, such as Node.js 20+ and current browsers. No native modules or polyfills.
 
 ---
 
@@ -21,70 +21,73 @@
 pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit @wallet-standard/base
 ```
 
+> [!IMPORTANT]
+> `@tuwaio/siwx-core`, `@solana/kit` (>=8.2) and `@wallet-standard/base` (>=1.1.1) are peer dependencies and must be installed alongside `@tuwaio/siwx-solana`.
+
 ---
 
-## 🚀 API & Module Architecture
+## 🚀 Usage
 
-### `verifyEd25519(payload, options?): Promise<SiwxVerifyResult>`
+### Signing with a Wallet Standard wallet
 
-Verifies a Solana wallet signature. The signature must be base58-encoded (as produced by all Wallet Standard adapters). Accepts optional `options?: { skipExpiration?: boolean }`.
+```typescript
+import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
+import type { Wallet, WalletAccount } from '@wallet-standard/base';
 
-```ts
+declare const wallet: Wallet; // a wallet with the `solana:signMessage` feature
+declare const account: WalletAccount; // the connected account, one of `wallet.accounts`
+declare const message: string;
+
+const signer = createSolanaSiwxSigner({ wallet, account });
+
+// Opens the wallet prompt. Rejects with "[SIWX-SOLANA] Signing failed: …" (original error in `cause`).
+const signature = await signer(message); // base58
+```
+
+Pass the Wallet Standard `Wallet` and `WalletAccount` objects. The UI handles of `@wallet-standard/ui` (`UiWallet`, `UiWalletAccount`) only list feature names and cannot sign.
+
+### Signing with other signers
+
+```typescript
+import type { MessageModifyingSigner } from '@solana/kit';
+import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
+
+declare const kitSigner: MessageModifyingSigner; // an @solana/kit message signer
+declare const walletAdapter: { signMessage(message: Uint8Array): Promise<Uint8Array> }; // legacy wallet adapter
+
+const signWithKit = createSolanaSiwxSigner(kitSigner);
+const signWithAdapter = createSolanaSiwxSigner(walletAdapter);
+```
+
+The signer uses the first capability it finds: `modifyAndSignMessages` (an `@solana/kit` `MessageModifyingSigner`), the `solana:signMessage` feature of `wallet.features`, a `signMessages` method, or a legacy `signMessage` method (also on `adapter`).
+
+### Verifying a signature
+
+```typescript
 import { verifyEd25519 } from '@tuwaio/siwx-solana';
 
-const result = await verifyEd25519({
-  message: rawCaip122Message,
-  signature: base58EncodedSignature,
-});
+declare const message: string;
+declare const signature: string; // base58, as returned by createSolanaSiwxSigner
+
+const result = await verifyEd25519({ message, signature });
 
 if (result.success) {
-  console.log('Solana auth verified for:', result.data?.address);
+  console.log(result.data?.address); // "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:…"
+} else {
+  console.error(result.error);
 }
 ```
 
----
+The output of the Wallet Standard `solana:signIn` feature can be passed as-is (or as `{ output }`); the signed message must be a CAIP-122 message.
 
-### `createSolanaSiwxSigner(signer)`
-
-Creates a standard SIWX signer callback for Solana chains. Automatically adapts to Wallet Standard, Web3 v2 (@solana/kit), or legacy Solana signers.
-
-```ts
-import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
-
-const signer = createSolanaSiwxSigner(connectedAccount);
-const signature = await signer('Message to sign');
-```
+`verifyEd25519` does not check the domain, URI, nonce or other policy rules. On a server, use [`@tuwaio/siwx-server`](https://siwx.docs.tuwa.io/packages/siwx-server), which adds the policy and single-use nonces, or run `validatePolicy` from `@tuwaio/siwx-core` yourself.
 
 ---
 
-## Wallet Standard Integration
+## 📚 API Reference
 
-When using a Wallet Standard compatible wallet (Phantom, Solflare, Backpack), integration is seamless with the factory:
-
-```ts
-import { useSiwx } from '@tuwaio/siwx-react';
-import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
-
-const { signIn } = useSiwx();
-
-// `connectedAccount` is the `UiWalletAccount` from `@wallet-standard/react`
-const signer = createSolanaSiwxSigner(connectedAccount);
-
-await signIn({ signer, verifier, fields: { ... } });
-```
-
----
-
-## Peer Dependencies
-
-| Package                 | Version       |
-| ----------------------- | ------------- |
-| `@tuwaio/siwx-core`     | `workspace:*` |
-| `@solana/kit`           | `>=8.2.0`     |
-| `@wallet-standard/base` | `^1.1.1`      |
-
----
+Every export, with signatures and types generated from the source, is documented at **[siwx.docs.tuwa.io/packages/siwx-solana](https://siwx.docs.tuwa.io/packages/siwx-solana)**.
 
 ## 📄 License
 
-Licensed under the **Apache-2.0 License**. See the [LICENSE](./LICENSE) file for details.
+Licensed under the **Apache-2.0 License**. See the [LICENSE](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/LICENSE) file for details.

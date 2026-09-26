@@ -1,14 +1,7 @@
 /**
- * @fileoverview Public API barrel for @tuwaio/siwx-server.
+ * Framework-agnostic server utilities, imported from `@tuwaio/siwx-server`.
  *
- * @packageDocumentation
- * @module @tuwaio/siwx-server
- *
- * Backend utilities for the TUWA Sign-In With X (SIWX) ecosystem.
- * Provides server-side CAIP-122 payload verification, durable session store abstractions,
- * authenticated stateless demo handlers, and single-use nonce generation.
- *
- * @see {@link https://github.com/TuwaIO/siwx Repository}
+ * @module server
  */
 
 export {
@@ -16,12 +9,14 @@ export {
   createSessionCookie,
   generateServerNonce,
   getSiwxServerSession,
+  issueStatelessDemoNonce,
   MemorySiwxNonceStore,
   MemorySiwxSessionStore,
   parseCookie,
   signStatelessDemoSession,
   toSession,
   verifySiwxPayload,
+  verifyStatelessDemoNonce,
   verifyStatelessDemoSession,
 } from './server';
 export type {

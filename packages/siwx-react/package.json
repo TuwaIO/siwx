@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "Layer 2 (L2) of the TUWA Ecosystem. React bindings for @tuwaio/siwx. Provides hooks and Zustand-powered session store for managing CAIP-122 authentication.",
+  "description": "L2 React package of SIWX (TUWA): useSiwx and useSiwxSession hooks with a zustand session store for the CAIP-122 sign-in flow, plus Satellite Connect helpers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -22,16 +22,17 @@
     "test:coverage": "vitest run --coverage"
   },
   "keywords": [
-    "web3",
-    "typescript",
-    "react",
+    "tuwa",
+    "siwx",
+    "sign-in-with-x",
     "caip-122",
     "authentication",
+    "web3",
+    "react",
     "hooks",
     "zustand",
-    "sign-in-with-x",
-    "session",
-    "tuwa"
+    "typescript",
+    "headless"
   ],
   "repository": {
     "type": "git",
@@ -58,7 +59,7 @@
     "@tuwaio/siwx-core": "workspace:*",
     "@types/react": "^19",
     "immer": "^11.1.18",
-    "react": "^19.2.8",
+    "react": "^19.3.0",
     "tsup": "^8.5.1",
     "typescript": "6.0.3",
     "zustand": "^5.0.15"

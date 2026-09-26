@@ -28,10 +28,11 @@ const logo = (
 // --- Metadata Configuration ---
 export const metadata: Metadata = {
   title: {
-    default: 'TUWA SIWX Documentation',
+    default: 'SIWX Documentation',
     template: '%s – SIWX',
   },
-  description: 'Technical documentation for TUWA SIWX.',
+  description:
+    'Documentation for SIWX (Sign-In With X), the Stage 1 authentication layer of the TUWA ecosystem: headless, framework-agnostic CAIP-122 sign-in for EVM and Solana.',
   manifest: '/manifest.json',
   icons: {
     icon: 'https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/favicon/icon0.svg',
@@ -39,28 +40,35 @@ export const metadata: Metadata = {
     apple: 'https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/favicon/web-app-manifest-512x512.png',
   },
   keywords: [
+    'siwx',
+    'sign-in with x',
+    'caip-122',
+    'tuwa',
+    'web3 authentication',
+    'wallet sign-in',
+    'multi-chain',
     'headless',
-    'state management',
-    'transaction tracking',
-    'web3 utils',
+    'framework-agnostic',
+    'evm',
+    'eip-191',
+    'eip-1271',
+    'viem',
+    'wagmi',
     'solana',
     '@solana/kit',
-    'solanakit',
-    'web3',
-    'zustand',
-    'wagmi',
-    'viem',
+    'ed25519',
+    'react',
+    'next.js',
     'typescript',
-    'siwx',
-    'SIWX',
   ],
   authors: [{ name: 'TUWA', url: 'https://github.com/TuwaIO' }],
 
   openGraph: {
-    title: 'TUWA SIWX Documentation',
-    description: 'Technical documentation for TUWA SIWX.',
+    title: 'SIWX Documentation',
+    description:
+      'Documentation for SIWX (Sign-In With X), the Stage 1 authentication layer of the TUWA ecosystem: headless, framework-agnostic CAIP-122 sign-in for EVM and Solana.',
     url: 'https://siwx.docs.tuwa.io/',
-    siteName: 'TUWA SIWX Docs',
+    siteName: 'SIWX Docs',
     images: [
       {
         url: 'https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/preview/preview-logo.png',
@@ -74,8 +82,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'TUWA SIWX Documentation',
-    description: 'Technical documentation for TUWA SIWX.',
+    title: 'SIWX Documentation',
+    description:
+      'Documentation for SIWX (Sign-In With X), the Stage 1 authentication layer of the TUWA ecosystem: headless, framework-agnostic CAIP-122 sign-in for EVM and Solana.',
     images: ['https://cdn.jsdelivr.net/gh/TuwaIO/workflows@main/preview/preview-logo.png'],
   },
 };

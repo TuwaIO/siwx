@@ -1,223 +1,242 @@
 /**
- * @fileoverview Core type definitions for the CAIP-122 (Sign-In With X) standard.
- * These types are chain-agnostic and form the foundation of the entire siwx ecosystem.
+ * @file Core type definitions for the CAIP-122 (Sign-In With X) standard.
+ * These types are chain-agnostic and are shared by every SIWX package.
  *
  * @see {@link https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md CAIP-122 Specification}
  */
 
 /**
- * Supported CAIP-2 chain namespace identifiers.
- * Only EVM (eip155) and Solana are supported in v1.
+ * CAIP-2 chain namespaces supported by SIWX: `eip155` (EVM) and `solana`.
  */
 export type SiwxChainNamespace = 'eip155' | 'solana';
 
 /**
- * A fully qualified CAIP-2 chain ID string.
+ * A CAIP-2 chain ID in a supported namespace: `{namespace}:{reference}`.
+ *
  * @example "eip155:1" (Ethereum Mainnet)
  * @example "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK" (Solana Mainnet)
  */
 export type SiwxChainId = `${SiwxChainNamespace}:${string}`;
 
 /**
- * The lifecycle status of a SIWX authentication session.
+ * Lifecycle status of a client-side sign-in.
+ *
+ * `@tuwaio/siwx-react` moves through `idle` → `building` (nonce and message) → `signing` (wallet prompt) →
+ * `verifying` (backend) → `authenticated` or `error`.
  */
 export type SiwxStatus = 'idle' | 'building' | 'signing' | 'verifying' | 'authenticated' | 'error';
 
 /**
- * The complete set of fields required to build a CAIP-122 compliant message.
- * All fields follow the CAIP-122 specification.
+ * Fields of a CAIP-122 sign-in message. They are the input of `buildMessage` and the output of
+ * `parseMessage`; `validateMessage` checks their format.
  */
 export interface SiwxMessageFields {
   /**
-   * The RFC 3986 URI of the domain requesting the sign-in.
+   * RFC 3986 authority (host and optional port) requesting the sign-in, without a scheme.
    * @example "app.tuwa.io"
    */
   domain: string;
 
   /**
-   * The blockchain account address performing the sign-in, CAIP-10 compliant.
+   * CAIP-10 account ID of the signer: `{namespace}:{chainReference}:{address}`.
    * @example "eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
    */
   address: string;
 
   /**
-   * A statement (human-readable) that the user will sign.
-   * Must not contain '\n'.
+   * Optional human-readable statement shown to the user. Must be a single line: `validateMessage`
+   * rejects statements that contain `\n`.
    */
   statement?: string;
 
   /**
-   * The RFC 3986 URI referring to the resource that is the subject of the sign-in.
+   * RFC 3986 URI of the resource that is the subject of the sign-in. `validateMessage` requires an
+   * `http://` or `https://` URI.
    * @example "https://app.tuwa.io"
    */
   uri: string;
 
   /**
-   * The version of the CAIP-122 message specification.
-   * Currently always "1".
+   * Version of the CAIP-122 message format. Always `"1"`.
    */
   version: '1';
 
   /**
-   * The CAIP-2 chain ID to which the session is bound.
+   * CAIP-2 chain ID the session is bound to.
    * @example "eip155:1"
    */
   chainId: SiwxChainId;
 
   /**
-   * A unique, secure, randomly generated string used to prevent replay attacks.
-   * @example "32891757"
+   * Random value that binds the signature to one sign-in attempt and prevents replay. `validateMessage`
+   * requires at least 8 alphanumeric characters; `generateNonce` returns 32 hex characters.
+   * @example "a4f3b2c1d0e5f6789abc0123456789ab"
    */
   nonce: string;
 
   /**
-   * The ISO 8601 datetime string of when the message was generated.
-   * @example "2021-09-30T16:25:24Z"
+   * ISO 8601 date-time when the message was created.
+   * @example "2026-08-06T08:00:00.000Z"
    */
   issuedAt: string;
 
   /**
-   * Optional ISO 8601 datetime string after which the session is no longer valid.
+   * Optional ISO 8601 date-time after which the signed message is no longer valid.
    */
   expirationTime?: string;
 
   /**
-   * Optional ISO 8601 datetime string when the session is valid from.
+   * Optional ISO 8601 date-time before which the signed message is not yet valid. `validateMessage` rejects the
+   * message until then.
    */
   notBefore?: string;
 
   /**
-   * Optional system-specific identifier for the request.
+   * Optional system-specific identifier of the request.
    */
   requestId?: string;
 
   /**
-   * Optional list of URIs the session is valid for.
+   * Optional list of URIs the user wishes to have resolved as part of the sign-in.
    */
   resources?: string[];
 }
 
 /**
- * Policy parameters for server-side CAIP-122 message verification.
- * Enforces strict security constraints including domain, URI, chain ID, and timing windows.
+ * Rules that bind a CAIP-122 message to your application. Enforced by {@link validatePolicy}, and by
+ * {@link validateMessage} when passed in its options.
+ *
+ * Every rule below is optional and is skipped when its field is omitted. Two timing rules always apply, even without
+ * a policy in {@link validateMessage}: messages whose `issuedAt` lies in the future beyond `clockSkewSeconds` are
+ * rejected, and so are (unless `enforceNotBefore` is `false`) messages whose `notBefore` has not been reached.
+ * Always set at least `expectedDomain` on the server.
  */
 export interface SiwxVerificationPolicy {
   /**
-   * Expected domain(s) requesting sign-in (e.g. "tuwa.io" or ["tuwa.io", "staging.tuwa.io"]).
+   * Accepted value(s) of the message `domain`, compared case-insensitively.
+   * @example "tuwa.io"
+   * @example ["tuwa.io", "staging.tuwa.io"]
    */
   expectedDomain?: string | string[];
 
   /**
-   * Expected RFC 3986 URI(s) subject of sign-in (e.g. "https://tuwa.io").
+   * Accepted value(s) of the message `uri`. A message URI matches an expected URI when it is equal to it,
+   * starts with it followed by `/`, or has the same origin (scheme, host and port).
+   * @example "https://tuwa.io"
    */
   expectedUri?: string | string[];
 
   /**
-   * List of allowed CAIP-2 chain IDs (e.g. ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK"]).
+   * Allowed CAIP-2 chain IDs. The message `chainId` must equal one of them exactly (bare references such as `"1"`
+   * never match). An empty array allows every chain.
+   * @example ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK"]
    */
   allowedChainIds?: string[];
 
   /**
-   * Whether the CAIP-122 message MUST include an `expirationTime`.
-   * Strongly recommended for zero-infrastructure stateless demo profiles.
+   * Rejects messages without an `expirationTime`. Recommended for the stateless demo profile of
+   * `@tuwaio/siwx-server`.
    */
   requireExpirationTime?: boolean;
 
   /**
-   * Maximum allowed age of the message's `issuedAt` in seconds.
-   * Prevents accepting stale sign-in messages.
-   * @default 300 (5 minutes)
+   * Maximum age of the message `issuedAt`, in seconds (plus `clockSkewSeconds`). Rejects stale messages.
+   * There is no default: when omitted, the age is not checked.
    */
   maxIssuedAtAgeSeconds?: number;
 
   /**
-   * Maximum allowed session lifetime in seconds (expirationTime - issuedAt).
+   * Maximum signed session lifetime (`expirationTime - issuedAt`), in seconds. Checked only when the message
+   * has an `expirationTime`.
    */
   maxSessionLifetimeSeconds?: number;
 
   /**
-   * Allowed clock skew in seconds when validating timestamps.
-   * @default 60 (1 minute)
+   * Allowed clock difference between signer and verifier, in seconds. Applied to `issuedAt`, `notBefore` and
+   * `expirationTime` checks.
+   * @default 60
    */
   clockSkewSeconds?: number;
 
   /**
-   * Whether to enforce the `notBefore` timestamp if present in the message.
+   * Rejects messages whose `notBefore` is still in the future (beyond `clockSkewSeconds`).
    * @default true
    */
   enforceNotBefore?: boolean;
 }
 
 /**
- * Options for validating a CAIP-122 message object.
+ * Options of {@link validateMessage}.
  */
 export interface ValidateMessageOptions {
   /**
-   * If true, skips the `expirationTime` validation check.
-   * Not recommended for production use.
+   * Skips the check that `expirationTime` has not passed (the format is still checked).
+   * Not recommended in production.
    */
   skipExpiration?: boolean;
 
   /**
-   * Optional verification policy to enforce on the message fields.
+   * Verification policy to enforce on top of the format checks. See {@link validatePolicy}.
    */
   policy?: SiwxVerificationPolicy;
 }
 
 /**
- * The result of a message validation operation.
+ * Result of {@link validateMessage}.
  */
 export interface SiwxValidationResult {
-  /** Whether the message fields are valid. */
+  /** `true` when no check failed. */
   valid: boolean;
-  /** List of validation error messages, empty if valid. */
+  /** Human-readable description of every failed check; empty when `valid` is `true`. */
   errors: string[];
 }
 
 /**
- * A parsed CAIP-122 message, structurally identical to the fields used to build it.
+ * A CAIP-122 message parsed by `parseMessage`. Same shape as {@link SiwxMessageFields}.
  */
 export type ParsedSiwxMessage = SiwxMessageFields;
 
 /**
- * The payload submitted for signature verification.
+ * A signed CAIP-122 message, as sent from the client to the verifier.
  */
 export interface SiwxVerifyPayload {
-  /** The raw CAIP-122 compliant message string that was signed. */
+  /** The exact CAIP-122 message string that was signed. */
   message: string;
-  /** The signature produced by the wallet. */
+  /** The wallet signature: hex (`0x…`) for EVM, base58 for Solana. */
   signature: string;
 }
 
 /**
- * The result of a signature verification operation.
+ * Result of a signature verification. Verification functions return this object instead of throwing.
  */
 export interface SiwxVerifyResult {
-  /** Whether the signature is valid and the message is authentic. */
+  /** `true` when the message is valid and the signature matches its `address`. */
   success: boolean;
   /**
-   * The parsed message fields if verification succeeded.
-   * Present only when `success` is true.
+   * The parsed message. Present only when `success` is `true`.
    */
   data?: ParsedSiwxMessage;
   /**
-   * A human-readable error if verification failed.
-   * Present only when `success` is false.
+   * Human-readable reason of the failure. Present only when `success` is `false`.
    */
   error?: string;
 }
 
 /**
- * A chain-specific adapter interface that all siwx chain packages must implement.
+ * Shape of a verifier for one CAIP-2 namespace.
+ *
+ * The SIWX packages do not implement or consume this interface: the chain packages export plain functions
+ * (`verifyEvmSignature` in `@tuwaio/siwx-evm`, `verifyEd25519` in `@tuwaio/siwx-solana`) that you can wrap into it
+ * to build your own namespace registry.
  */
 export interface SiwxAdapter {
   /**
-   * The CAIP-2 namespace this adapter handles.
+   * CAIP-2 namespace handled by the adapter.
    */
   namespace: SiwxChainNamespace;
 
   /**
-   * Verifies a CAIP-122 payload signature.
+   * Verifies a signed CAIP-122 message.
    * @param payload - The message and signature to verify.
    * @returns A promise resolving to the verification result.
    */

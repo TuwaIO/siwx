@@ -1,53 +1,54 @@
 /**
- * @fileoverview Server-side types for the @tuwaio/siwx-server package.
+ * @file Server-side types for the @tuwaio/siwx-server package.
  */
 
 import type { ParsedSiwxMessage, SiwxVerificationPolicy, SiwxVerifyResult } from '@tuwaio/siwx-core';
+import type { PublicClient } from 'viem';
 
 /**
- * Options for the `verifySiwxPayload` function.
+ * Options of {@link verifySiwxPayload}.
  */
 export interface ServerVerifyOptions {
   /**
-   * A set of nonces that have already been used.
-   * If the payload's nonce is found in this set, verification will fail
-   * to prevent replay attacks.
+   * Nonces that must be rejected. Verification fails when the message nonce is in the set. The set is only read:
+   * record used nonces yourself, or use a {@link SiwxNonceStore} (as `createSiwxApiHandler` does) for
+   * multi-instance deployments.
    */
   usedNonces?: Set<string>;
 
   /**
-   * If true, skips the `expirationTime` validation check.
-   * Not recommended for production use.
+   * Skips the check that the message `expirationTime` has not passed. Not recommended in production.
    * @default false
    */
   skipExpiration?: boolean;
 
   /**
-   * Optional verification policy to enforce on the message fields.
+   * Verification policy enforced on the message fields (domain, URI, chains, timing). See
+   * {@link SiwxVerificationPolicy}.
    */
   policy?: SiwxVerificationPolicy;
 
   /**
-   * Optional viem `PublicClient` instance for EVM chain EIP-1271 (smart contract wallet) verification.
+   * viem `PublicClient` for the chain of the message. Enables the EIP-1271 (smart contract wallet) fallback for
+   * `eip155` messages; ignored for Solana.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  publicClient?: any;
+  publicClient?: PublicClient;
 }
 
 /**
- * The result of a server-side verification operation, extending the base result
- * with the verification method used.
+ * Result of {@link verifySiwxPayload}.
  */
 export interface ServerVerifyResult extends SiwxVerifyResult {
   /**
-   * The CAIP-2 namespace used for verification routing.
-   * `eip155` for EVM chains, `solana` for Solana.
+   * The CAIP-2 namespace whose verifier checked the signature: `eip155` or `solana`. Absent when verification
+   * failed before the signature check.
    */
   namespace?: 'eip155' | 'solana';
 }
 
 /**
- * Represents a serializable session object derived from a verified CAIP-122 message.
+ * Serializable session derived from a verified CAIP-122 message (see {@link toSession}). Returned as JSON by the
+ * `verify` and `session` endpoints of `@tuwaio/siwx-server/next`.
  */
 export interface SiwxSession {
   /** The verified CAIP-10 blockchain address. */
@@ -56,7 +57,7 @@ export interface SiwxSession {
   chainId: string;
   /** The domain that issued the session. */
   domain: string;
-  /** The nonce that was used. Must be invalidated server-side after use. */
+  /** The nonce of the signed message. It must be single-use: consume it in a {@link SiwxNonceStore}. */
   nonce: string;
   /** ISO 8601 timestamp when the session was issued. */
   issuedAt: string;
@@ -65,14 +66,14 @@ export interface SiwxSession {
 }
 
 /**
- * Represents a stored session record in a durable session store.
+ * A session stored in a {@link SiwxSessionStore}.
  */
 export interface SiwxSessionRecord {
-  /** Unique opaque session identifier (e.g. secure random UUID). */
+  /** Opaque, unguessable session ID. It is the value of the session cookie. */
   id: string;
   /** The verified SIWX session data. */
   session: SiwxSession;
-  /** Optional subject ID (e.g., Payload User ID or internal database ID) bound to this session. */
+  /** Optional ID of your own user record (for example a database user ID), set with `bindSubject`. */
   subjectId?: string;
   /** Timestamp in milliseconds when the session record was created. */
   createdAt: number;
@@ -81,90 +82,109 @@ export interface SiwxSessionRecord {
 }
 
 /**
- * Durable session store interface for production environments.
+ * Storage contract for durable sessions (Redis, SQL, KV…), used by `createSiwxApiHandler` and
+ * {@link getSiwxServerSession}. Implementations must be shared by every server instance.
+ * {@link MemorySiwxSessionStore} is an in-memory implementation for development and tests.
  */
 export interface SiwxSessionStore {
   /**
    * Creates and stores a new session record.
+   * @param input - The session to store.
    * @param input.session - The verified session data.
    * @param input.ttlSeconds - Time-to-live in seconds.
-   * @returns The created session record with unique ID.
+   * @returns The created record. Its `id` must be unguessable, because it becomes the session cookie value.
    */
   create(input: { session: SiwxSession; ttlSeconds: number }): Promise<SiwxSessionRecord>;
 
   /**
-   * Retrieves a session record by its opaque ID.
+   * Retrieves a session record by its ID. Session expiry is enforced here: SIWX does not compare `expiresAt` itself.
    * @param id - The session ID.
-   * @returns The session record, or null if not found or expired.
+   * @returns The session record, or `null` if it does not exist or has expired.
    */
   get(id: string): Promise<SiwxSessionRecord | null>;
 
   /**
-   * Atomically binds a user/subject identifier to the session.
+   * Binds one of your user IDs to the session. Not called by SIWX; use it after sign-in to link the wallet session to
+   * your own user record.
    * @param id - The session ID.
    * @param subjectId - The user or subject ID.
-   * @returns True if binding succeeded, false if session not found.
+   * @returns `true` if the session exists and was updated, `false` otherwise.
    */
   bindSubject(id: string, subjectId: string): Promise<boolean>;
 
   /**
-   * Revokes and removes a session record.
+   * Revokes a session. Must succeed when the session does not exist.
    * @param id - The session ID.
+   * @returns A promise that resolves once the session is removed.
    */
   revoke(id: string): Promise<void>;
 }
 
 /**
- * Durable nonce store interface for single-use nonce issuance and atomic consumption.
+ * Storage contract for single-use challenge nonces, used by `createSiwxApiHandler`. Implementations must be shared
+ * by every server instance and `consume` must be atomic (for example Redis `GETDEL`).
+ * {@link MemorySiwxNonceStore} is an in-memory implementation for development and tests.
  */
 export interface SiwxNonceStore {
   /**
-   * Issues and stores a new challenge nonce with TTL.
-   * @param input.nonce - The unique nonce string.
-   * @param input.ttlSeconds - Time-to-live in seconds (typically 300s).
+   * Stores a newly issued nonce.
+   * @param input - The nonce to store.
+   * @param input.nonce - The nonce string.
+   * @param input.ttlSeconds - Time-to-live in seconds. `createSiwxApiHandler` uses 300.
+   * @returns A promise that resolves once the nonce is stored.
    */
   issue(input: { nonce: string; ttlSeconds: number }): Promise<void>;
 
   /**
-   * Atomically consumes a nonce, guaranteeing single-use.
+   * Atomically removes a nonce, so that each nonce is accepted once.
+   * @param input - The nonce to consume.
    * @param input.nonce - The nonce string to consume.
-   * @returns True if the nonce was valid and consumed, false if already consumed or expired.
+   * @returns `true` if the nonce was issued, not expired and not consumed before; otherwise `false`.
    */
   consume(input: { nonce: string }): Promise<boolean>;
 }
 
 /**
- * Compact payload structure for stateless demo session tokens.
+ * JSON payload of a stateless demo session token (see {@link signStatelessDemoSession}). The token is signed, not
+ * encrypted: anyone holding it can read these fields.
  */
 export interface StatelessDemoTokenPayload {
+  /** Token format version. */
   version: 1;
+  /** CAIP-10 account ID of the session. */
   address: string;
+  /** CAIP-2 chain ID of the session. */
   chainId: string;
+  /** Domain of the signed message. */
   domain: string;
+  /** Nonce of the signed message. */
   nonce: string;
+  /** `issuedAt` of the signed message. */
   issuedAt: string;
+  /** Expiry of the token: the message `expirationTime`, or the issuing time plus the token TTL. */
   expirationTime?: string;
+  /** Random ID of the token. */
   sessionId: string;
+  /** Token mode. */
   mode: 'demo';
 }
 
 /**
- * Enforceable request boundary limits for the stateless demo profile.
- *
- * Note: Shared rate limits and request quotas across multiple replicas require
- * a durable store or are authoritative at the Quasar App RPS / Quota layer.
+ * Request limits of `createStatelessDemoSiwxHandler`. Only the body size is limited; rate limiting is not part of
+ * SIWX.
  */
 export interface StatelessDemoLimits {
   /**
-   * Maximum allowed incoming payload body size in bytes for SIWX verification endpoints.
-   * Requests exceeding this limit will be rejected with HTTP 413 (Payload Too Large).
+   * Maximum body size of `POST /verify`. Larger requests are rejected with HTTP 413. The durable handler always
+   * uses 65536.
    * @default 65536 (64 KB)
    */
   maxTransactionPayloadBytes?: number;
 }
 
 /**
- * Options for cookie session serialization.
+ * Attributes of the session cookie, used by {@link createSessionCookie}, {@link createClearCookie} and the
+ * `@tuwaio/siwx-server/next` handlers. The cookie is always `HttpOnly`.
  */
 export interface CookieOptions {
   /**
@@ -173,7 +193,8 @@ export interface CookieOptions {
    */
   name?: string;
   /**
-   * Max age in seconds. Defaults to 7 days for durable, 30 minutes for demo.
+   * `Max-Age` in seconds. {@link createSessionCookie} defaults to 604800 (7 days). The handlers use their
+   * `ttlSeconds` instead, and fall back to this value when `ttlSeconds` is not set.
    * @default 604800
    */
   maxAge?: number;
@@ -199,15 +220,17 @@ export interface CookieOptions {
 }
 
 /**
- * Options for the `getSiwxServerSession` helper function.
+ * Options of {@link getSiwxServerSession}.
  */
 export interface GetSiwxServerSessionOptions {
   /**
-   * Cookie source:
-   * - A raw Cookie string (e.g. `req.headers.get('cookie')` or `"siwx-session-v2=xyz"`)
-   * - A Next.js ReadonlyRequestCookies object (from `await cookies()`)
-   * - A Web API `Request` or `Headers` object
-   * - Any object with a `get(name)` method
+   * Where to read the session cookie from:
+   * - a `Cookie` header string (`"siwx-session-v2=…; other=…"`) or the bare cookie value;
+   * - a Web API `Request`;
+   * - the Next.js cookie store (`await cookies()`) or any object with `get(name)` returning `{ value }` or a string;
+   * - a Web API `Headers` object.
+   *
+   * `null` and `undefined` resolve to no session.
    */
   cookieSource:
     | string
@@ -224,24 +247,30 @@ export interface GetSiwxServerSessionOptions {
   cookieName?: string;
 
   /**
-   * Durable session store (for production durable sessions).
+   * Store of the durable profile. The cookie value is looked up with `sessionStore.get`. Takes precedence over
+   * `signingSecret`.
    */
   sessionStore?: SiwxSessionStore;
 
   /**
-   * Server HMAC secret key (for stateless demo sessions).
+   * HMAC secret of the stateless demo profile. The cookie value is verified with
+   * {@link verifyStatelessDemoSession}.
    */
   signingSecret?: string;
 
   /**
-   * Optional verification policy to validate the session.
+   * Policy checked against the stored session. Only a subset applies: `expectedDomain`, `allowedChainIds` (exact
+   * match) and, for durable sessions, `requireExpirationTime`; for demo tokens, expiry with `clockSkewSeconds`.
    */
   policy?: SiwxVerificationPolicy;
 }
 
 /**
- * Converts a ParsedSiwxMessage to a lean SiwxSession object.
- * @internal
+ * Converts a verified CAIP-122 message into a {@link SiwxSession}: keeps `address`, `chainId`, `domain`, `nonce`,
+ * `issuedAt` and `expirationTime`. Pure function.
+ *
+ * @param parsed - The verified message, for example `result.data` of {@link verifySiwxPayload}.
+ * @returns The session object to store or sign.
  */
 export function toSession(parsed: ParsedSiwxMessage): SiwxSession {
   return {

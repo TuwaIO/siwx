@@ -6,7 +6,7 @@ import { useSiwx, useSiwxSession } from './hooks';
 import { useSiwxSessionStore } from './sessionStore';
 
 beforeEach(() => {
-  sessionStorage.clear();
+  localStorage.clear();
   useSiwxSessionStore.getState().reset();
 });
 
@@ -147,5 +147,44 @@ describe('useSiwx()', () => {
     expect(sessionHook.current.status).toBe('idle');
     expect(sessionHook.current.isAuthenticated).toBe(false);
     expect(sessionHook.current.session).toBeNull();
+  });
+
+  it('moves through building, signing and verifying before authenticated', async () => {
+    const statuses: string[] = [];
+    const unsubscribe = useSiwxSessionStore.subscribe((state) => statuses.push(state.status));
+    const getNonce = vi.fn(() => {
+      expect(useSiwxSessionStore.getState().status).toBe('building');
+      return 'a4f3b2c1d0e5f678';
+    });
+
+    const { result: siwxHook } = renderHook(() => useSiwx());
+
+    await act(async () => {
+      await siwxHook.current.signIn({
+        signer: vi.fn().mockResolvedValue('0xsignature123'),
+        verifier: vi.fn().mockResolvedValue({
+          domain: 'app.tuwa.io',
+          address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
+          chainId: 'eip155:1',
+          issuedAt: '2026-08-06T08:00:00.000Z',
+        }),
+        getNonce,
+        fields: {
+          domain: 'app.tuwa.io',
+          address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
+          uri: 'https://app.tuwa.io',
+          chainId: 'eip155:1',
+        },
+      });
+    });
+    unsubscribe();
+
+    expect(getNonce).toHaveBeenCalledTimes(1);
+    expect(statuses.filter((status, i) => status !== statuses[i - 1])).toEqual([
+      'building',
+      'signing',
+      'verifying',
+      'authenticated',
+    ]);
   });
 });

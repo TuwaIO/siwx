@@ -6,11 +6,13 @@ import {
   createClearCookie,
   createSessionCookie,
   generateServerNonce,
+  issueStatelessDemoNonce,
   MemorySiwxNonceStore,
   MemorySiwxSessionStore,
   parseCookie,
   signStatelessDemoSession,
   verifySiwxPayload,
+  verifyStatelessDemoNonce,
   verifyStatelessDemoSession,
 } from './server';
 import type { SiwxSession } from './types';
@@ -70,6 +72,20 @@ describe('verifySiwxPayload()', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toContain('expired');
+  });
+
+  it('applies the policy clock skew to expirationTime', async () => {
+    const { message, signature } = await createEvmPayload({
+      issuedAt: new Date(Date.now() - 60 * 1000).toISOString(),
+      expirationTime: new Date(Date.now() - 30 * 1000).toISOString(),
+    });
+
+    const withDefaultSkew = await verifySiwxPayload({ message, signature });
+    expect(withDefaultSkew.success).toBe(true);
+
+    const withoutSkew = await verifySiwxPayload({ message, signature }, { policy: { clockSkewSeconds: 0 } });
+    expect(withoutSkew.success).toBe(false);
+    expect(withoutSkew.error).toContain('expired');
   });
 
   it('allows expired message if skipExpiration: true is specified', async () => {
@@ -159,6 +175,30 @@ describe('signStatelessDemoSession() and verifyStatelessDemoSession()', () => {
 
   it('rejects short secret (< 32 characters)', async () => {
     await expect(signStatelessDemoSession(sampleSession, 'too-short-secret')).rejects.toThrow('at least 32 characters');
+  });
+});
+
+describe('issueStatelessDemoNonce() and verifyStatelessDemoNonce()', () => {
+  it('issues a CAIP-122 compatible nonce that verifies with the same secret', async () => {
+    const nonce = await issueStatelessDemoNonce(TEST_SECRET);
+
+    expect(nonce).toMatch(/^[0-9a-f]{106}$/);
+    expect(await verifyStatelessDemoNonce(nonce, TEST_SECRET)).toBe(true);
+  });
+
+  it('rejects nonces signed with another secret, tampered or expired', async () => {
+    const nonce = await issueStatelessDemoNonce(TEST_SECRET);
+    const tampered = `${nonce.slice(0, 10)}${nonce[10] === 'a' ? 'b' : 'a'}${nonce.slice(11)}`;
+    const expired = await issueStatelessDemoNonce(TEST_SECRET, -1);
+
+    expect(await verifyStatelessDemoNonce(nonce, '9999999999abcdef0123456789abcdef')).toBe(false);
+    expect(await verifyStatelessDemoNonce(tampered, TEST_SECRET)).toBe(false);
+    expect(await verifyStatelessDemoNonce(expired, TEST_SECRET)).toBe(false);
+    expect(await verifyStatelessDemoNonce(generateServerNonce(), TEST_SECRET)).toBe(false);
+  });
+
+  it('rejects short secrets when issuing', async () => {
+    await expect(issueStatelessDemoNonce('short')).rejects.toThrow('at least 32 characters');
   });
 });
 

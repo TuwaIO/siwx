@@ -1,5 +1,5 @@
 /**
- * @fileoverview CAIP-122 message parser.
+ * @file CAIP-122 message parser.
  * Converts a raw CAIP-122 compliant message string back into structured fields.
  */
 
@@ -16,11 +16,15 @@ const FIELD_REGEX = /^(?<key>[A-Za-z ]+): (?<value>.+)$/;
 const RESOURCE_REGEX = /^- (?<resource>.+)$/;
 
 /**
- * Parses a raw CAIP-122 compliant message string into a structured `ParsedSiwxMessage` object.
+ * Parses a CAIP-122 message string (as produced by {@link buildMessage}) back into its fields.
  *
- * @param message - The raw message string produced by `buildMessage` and signed by the wallet.
- * @returns The structured fields extracted from the message.
- * @throws {SiwxParseError} If the message is malformed or missing required fields.
+ * Pure function. It checks the message structure and the presence of the required fields (`URI`, `Version`,
+ * `Chain ID`, `Nonce`, `Issued At`) but not their format or timing; use {@link validateMessage} for that.
+ *
+ * @param message - The raw message string that was signed.
+ * @returns The fields found in the message. `version` and `chainId` are taken as written, without validation.
+ * @throws {@link SiwxParseError} If the header or the blank separator lines are malformed, or a required field is
+ * missing.
  *
  * @example
  * ```ts

@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "Layer 2 (L2) of the TUWA Ecosystem. Backend utilities for @tuwaio/siwx. Parses, validates, and verifies CAIP-122 payloads on Node.js or Edge runtimes.",
+  "description": "L2 server package of SIWX (TUWA): backend verification of CAIP-122 sign-ins for EVM and Solana, single-use nonce and session stores, HttpOnly cookie helpers and Next.js App Router handlers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -44,19 +44,18 @@
     "test:coverage": "vitest run --coverage"
   },
   "keywords": [
-    "web3",
-    "typescript",
+    "tuwa",
+    "siwx",
+    "sign-in-with-x",
     "caip-122",
-    "server",
-    "backend",
-    "node",
-    "edge",
     "authentication",
-    "verification",
+    "web3",
+    "server",
     "session",
     "cookie",
-    "jwt",
-    "tuwa"
+    "nonce",
+    "nextjs",
+    "typescript"
   ],
   "repository": {
     "type": "git",
@@ -74,7 +73,21 @@
     }
   ],
   "peerDependencies": {
-    "@tuwaio/siwx-core": "workspace:*"
+    "@tuwaio/siwx-core": "workspace:*",
+    "@tuwaio/siwx-evm": "workspace:*",
+    "@tuwaio/siwx-solana": "workspace:*",
+    "viem": ">=2"
+  },
+  "peerDependenciesMeta": {
+    "@tuwaio/siwx-evm": {
+      "optional": true
+    },
+    "@tuwaio/siwx-solana": {
+      "optional": true
+    },
+    "viem": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@tuwaio/siwx-core": "workspace:*",
@@ -82,6 +95,6 @@
     "@tuwaio/siwx-solana": "workspace:*",
     "tsup": "^8.5.1",
     "typescript": "6.0.3",
-    "viem": "^2.56.3"
+    "viem": "^2.56.9"
   }
 }

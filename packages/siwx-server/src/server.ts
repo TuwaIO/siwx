@@ -1,5 +1,5 @@
 /**
- * @fileoverview Server-side CAIP-122 payload verification and session utilities.
+ * @file Server-side CAIP-122 payload verification and session utilities.
  * Backend-agnostic — compatible with Node.js 20+ and Edge runtimes (Cloudflare Workers, Next.js, Fastify).
  */
 
@@ -7,7 +7,6 @@ import type { SiwxVerifyPayload } from '@tuwaio/siwx-core';
 import {
   generateNonce,
   parseMessage,
-  SiwxExpiredSessionError,
   SiwxNonceReplayError,
   SiwxUnsupportedNamespaceError,
   validateMessage,
@@ -27,12 +26,22 @@ import type {
 import { toSession } from './types';
 
 /**
- * Parses and validates a raw CAIP-122 payload (message + signature) on the server side.
- * Dynamically routes verification to the correct chain adapter based on the CAIP-2 namespace.
+ * Verifies a signed CAIP-122 message on the server, for any supported chain.
  *
- * @param payload - The `{ message, signature }` payload sent by the client.
- * @param options - Server-side verification options (policy, nonce replay protection, etc.).
- * @returns A `ServerVerifyResult` with `success: true` and the parsed session data, or an error.
+ * Steps: parse the message, run {@link validateMessage} with `options.policy` (format, expiration with
+ * `clockSkewSeconds`, `notBefore` and the policy rules), reject nonces listed in `options.usedNonces`, then route by the `chainId` namespace to `verifyEvmSignature`
+ * (`@tuwaio/siwx-evm`, with the EIP-1271 fallback when `options.publicClient` is set) or `verifyEd25519`
+ * (`@tuwaio/siwx-solana`).
+ *
+ * Side effects: dynamically imports the chain package of the namespace, so `@tuwaio/siwx-evm` and/or
+ * `@tuwaio/siwx-solana` must be installed for the chains you accept; the EIP-1271 fallback makes one RPC call.
+ * It does not consume nonces or create sessions: pair it with a {@link SiwxNonceStore} and a
+ * {@link SiwxSessionStore}, or use the handlers of `@tuwaio/siwx-server/next`.
+ *
+ * @param payload - The `{ message, signature }` sent by the client.
+ * @param options - Policy, replay protection and chain options.
+ * @returns `{ success: true, data, namespace }` with the parsed message, or `{ success: false, error }`. Never
+ * throws: every failure is returned as `error`.
  */
 export async function verifySiwxPayload(
   payload: SiwxVerifyPayload,
@@ -47,13 +56,6 @@ export async function verifySiwxPayload(
     });
     if (!validation.valid) {
       return { success: false, error: `Validation failed: ${validation.errors.join(', ')}` };
-    }
-
-    // Check expiration unless explicitly skipped
-    if (!options.skipExpiration && parsed.expirationTime) {
-      if (new Date(parsed.expirationTime) < new Date()) {
-        throw new SiwxExpiredSessionError(parsed.expirationTime);
-      }
     }
 
     // Check nonce replay
@@ -85,11 +87,7 @@ export async function verifySiwxPayload(
 
     return { success: false, error: 'Unsupported namespace.' };
   } catch (error) {
-    if (
-      error instanceof SiwxExpiredSessionError ||
-      error instanceof SiwxNonceReplayError ||
-      error instanceof SiwxUnsupportedNamespaceError
-    ) {
+    if (error instanceof SiwxNonceReplayError || error instanceof SiwxUnsupportedNamespaceError) {
       return { success: false, error: error.message };
     }
     return { success: false, error: `Server verification failed: ${String(error)}` };
@@ -152,13 +150,16 @@ async function getCryptoKey(secret: string): Promise<CryptoKey> {
 }
 
 /**
- * Signs a stateless demo session into an authenticated compact token.
- * Uses Web Crypto HMAC-SHA256.
+ * Creates a stateless demo session token: the session as base64url JSON ({@link StatelessDemoTokenPayload}) plus
+ * an HMAC-SHA256 signature (Web Crypto). The token is signed, not encrypted, and cannot be revoked before it
+ * expires.
  *
  * @param session - The verified session to sign.
- * @param secret - Server-only signing secret (minimum 32 bytes).
- * @param ttlSeconds - Maximum session validity in seconds (default 1800 = 30m).
- * @returns Authenticated compact token in `${payload}.${signature}` format.
+ * @param secret - Server-only signing secret of at least 32 characters.
+ * @param ttlSeconds - Token lifetime in seconds, used only when the session has no `expirationTime`; otherwise the
+ * token expires with the message.
+ * @returns The token, formatted as `{payload}.{signature}`.
+ * @throws {Error} If `secret` is shorter than 32 characters.
  */
 export async function signStatelessDemoSession(
   session: SiwxSession,
@@ -194,13 +195,17 @@ export async function signStatelessDemoSession(
 }
 
 /**
- * Verifies an authenticated stateless demo session token.
- * Performs constant-time cryptographic verification and validates expiration and policy.
+ * Verifies a token created by {@link signStatelessDemoSession}: checks the HMAC signature with Web Crypto, the
+ * token version and mode, and its expiry (with `policy.clockSkewSeconds`, 60 seconds by default).
  *
- * @param token - Compact token from cookie (`${payload}.${signature}`).
- * @param secret - Server-only signing secret.
- * @param policy - Optional verification policy to enforce.
- * @returns The verified SiwxSession, or null if invalid, expired, or tampered.
+ * Only `expectedDomain` and `allowedChainIds` (exact match) of the policy are applied; other policy fields are
+ * ignored because they were checked when the token was issued.
+ *
+ * @param token - The token from the session cookie.
+ * @param secret - The secret the token was signed with.
+ * @param policy - Optional policy to check against the token.
+ * @returns The session, or `null` if the token is missing, malformed, tampered, expired or rejected by the policy.
+ * Never throws.
  */
 export async function verifyStatelessDemoSession(
   token: string | null | undefined,
@@ -267,8 +272,102 @@ export async function verifyStatelessDemoSession(
   }
 }
 
+/** Domain separation prefix of demo nonce MACs, so they can never be confused with demo session token MACs. */
+const DEMO_NONCE_MAC_PREFIX = 'siwx-demo-nonce:';
+
+/** Hex length of the random part of a demo nonce (16 bytes from {@link generateNonce}). */
+const DEMO_NONCE_RANDOM_LENGTH = 32;
+
+/** Hex length of the expiry part of a demo nonce (Unix time in seconds). */
+const DEMO_NONCE_EXPIRY_LENGTH = 10;
+
+/** Format of a demo nonce: random part, expiry and HMAC-SHA256, all lowercase hex. */
+const DEMO_NONCE_PATTERN = /^[0-9a-f]{106}$/;
+
 /**
- * Creates an HttpOnly Set-Cookie header value for a session.
+ * Encodes bytes as lowercase hex.
+ * @internal
+ */
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Decodes a lowercase hex string into bytes.
+ * @internal
+ */
+function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(new ArrayBuffer(hex.length / 2));
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
+
+/**
+ * Issues a challenge nonce for the stateless demo profile: a random value and an expiry time, signed with
+ * HMAC-SHA256 (Web Crypto), encoded as 106 lowercase hex characters so that it is a valid CAIP-122 nonce.
+ * {@link verifyStatelessDemoNonce} can then check, without any storage, that the server issued the nonce and that it
+ * has not expired.
+ *
+ * @param secret - Server-only signing secret of at least 32 characters.
+ * @param ttlSeconds - How long the nonce can be used, in seconds.
+ * @returns The signed nonce.
+ * @throws {Error} If `secret` is shorter than 32 characters.
+ */
+export async function issueStatelessDemoNonce(secret: string, ttlSeconds: number = 300): Promise<string> {
+  if (!secret || secret.length < 32) {
+    throw new Error('[SIWX-SERVER] Stateless demo signing secret must be at least 32 characters long.');
+  }
+
+  const expiresAtSeconds = Math.floor(Date.now() / 1000) + ttlSeconds;
+  const body = generateNonce() + expiresAtSeconds.toString(16).padStart(DEMO_NONCE_EXPIRY_LENGTH, '0');
+  const key = await getCryptoKey(secret);
+  const mac = await globalThis.crypto.subtle.sign('HMAC', key, new TextEncoder().encode(DEMO_NONCE_MAC_PREFIX + body));
+
+  return body + bytesToHex(new Uint8Array(mac));
+}
+
+/**
+ * Checks a nonce issued by {@link issueStatelessDemoNonce}: its format, its HMAC signature (constant-time, Web
+ * Crypto) and its expiry. It does not track usage, so the same nonce passes until it expires; callers that need
+ * single use must remember consumed nonces (`createStatelessDemoSiwxHandler` does so per server instance).
+ *
+ * @param nonce - The nonce of the signed message.
+ * @param secret - The secret the nonce was issued with.
+ * @returns `true` if the nonce was issued with `secret` and has not expired; otherwise `false`. Never throws.
+ */
+export async function verifyStatelessDemoNonce(nonce: string, secret: string): Promise<boolean> {
+  if (typeof nonce !== 'string' || !secret || !DEMO_NONCE_PATTERN.test(nonce)) return false;
+
+  const bodyLength = DEMO_NONCE_RANDOM_LENGTH + DEMO_NONCE_EXPIRY_LENGTH;
+  const body = nonce.slice(0, bodyLength);
+  const mac = nonce.slice(bodyLength);
+
+  try {
+    const key = await getCryptoKey(secret);
+    const isValid = await globalThis.crypto.subtle.verify(
+      'HMAC',
+      key,
+      hexToBytes(mac),
+      new TextEncoder().encode(DEMO_NONCE_MAC_PREFIX + body),
+    );
+    if (!isValid) return false;
+
+    const expiresAtSeconds = parseInt(body.slice(DEMO_NONCE_RANDOM_LENGTH), 16);
+    return expiresAtSeconds * 1000 >= Date.now();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Formats a `Set-Cookie` header value for the session cookie: `HttpOnly`, `Secure` and `SameSite=Strict` by
+ * default.
+ *
+ * @param value - The cookie value (session ID or demo token). Written as-is, without encoding.
+ * @param opts - Cookie attributes. Defaults: name `siwx-session-v2`, `Max-Age` 604800, path `/`.
+ * @returns The header value, e.g. `siwx-session-v2=…; Max-Age=604800; Path=/; HttpOnly; SameSite=Strict; Secure`.
  */
 export function createSessionCookie(value: string, opts: CookieOptions = {}): string {
   const {
@@ -289,7 +388,11 @@ export function createSessionCookie(value: string, opts: CookieOptions = {}): st
 }
 
 /**
- * Creates a clear/destroy Set-Cookie header value.
+ * Formats a `Set-Cookie` header value that deletes the session cookie (`Max-Age=0` and an expiry date in the
+ * past). Use the same `name`, `path` and `domain` as when the cookie was set.
+ *
+ * @param opts - Cookie attributes. `maxAge` is ignored.
+ * @returns The header value.
  */
 export function createClearCookie(opts: CookieOptions = {}): string {
   const { name = 'siwx-session-v2', path = '/', domain, secure = true, sameSite = 'Strict' } = opts;
@@ -307,7 +410,12 @@ export function createClearCookie(opts: CookieOptions = {}): string {
 }
 
 /**
- * Extracts a cookie value by name from a raw Cookie header string.
+ * Reads one cookie from a `Cookie` request header. Pairs must be separated by `"; "`; values are returned as-is,
+ * without URL-decoding.
+ *
+ * @param cookieHeader - The `Cookie` header value.
+ * @param name - The cookie name.
+ * @returns The cookie value, or `null` when the header is empty or has no such cookie.
  */
 export function parseCookie(cookieHeader: string | null | undefined, name: string): string | null {
   if (!cookieHeader) return null;
@@ -324,13 +432,18 @@ export function parseCookie(cookieHeader: string | null | undefined, name: strin
 }
 
 /**
- * In-memory implementation of SiwxSessionStore.
- * STRICTLY for local development, prototyping, and unit testing.
- * Fails closed in production environments.
+ * In-memory {@link SiwxSessionStore} for local development and tests. Sessions live in a `Map` of the current
+ * process: they are lost on restart and not shared between instances or serverless invocations. Session IDs are
+ * 32-character hex strings from {@link generateNonce}.
  */
 export class MemorySiwxSessionStore implements SiwxSessionStore {
   private records = new Map<string, SiwxSessionRecord>();
 
+  /**
+   * @param options - Store options.
+   * @param options.allowInProduction - Allows the store when `NODE_ENV` is `production`.
+   * @throws {Error} When `process.env.NODE_ENV` is `production` and `allowInProduction` is not `true`.
+   */
   constructor(options?: { allowInProduction?: boolean }) {
     const isProduction =
       typeof globalThis !== 'undefined' &&
@@ -379,13 +492,18 @@ export class MemorySiwxSessionStore implements SiwxSessionStore {
 }
 
 /**
- * In-memory implementation of SiwxNonceStore.
- * STRICTLY for local development, prototyping, and unit testing.
- * Fails closed in production environments.
+ * In-memory {@link SiwxNonceStore} for local development and tests. Nonces live in a `Map` of the current process:
+ * they are lost on restart and not shared between instances or serverless invocations, so a nonce issued by one
+ * instance is rejected by another.
  */
 export class MemorySiwxNonceStore implements SiwxNonceStore {
   private nonces = new Map<string, number>();
 
+  /**
+   * @param options - Store options.
+   * @param options.allowInProduction - Allows the store when `NODE_ENV` is `production`.
+   * @throws {Error} When `process.env.NODE_ENV` is `production` and `allowInProduction` is not `true`.
+   */
   constructor(options?: { allowInProduction?: boolean }) {
     const isProduction =
       typeof globalThis !== 'undefined' &&
@@ -412,11 +530,17 @@ export class MemorySiwxNonceStore implements SiwxNonceStore {
 }
 
 /**
- * Resolves and verifies an active SIWX session strictly on the server side.
- * Supports both durable session stores and stateless HMAC-signed demo cookies.
+ * Reads the SIWX session of the current request from its session cookie. Use it in Server Actions, Route Handlers
+ * or any server code instead of trusting session data sent by the client.
  *
- * @param options - Configuration including cookieSource, sessionStore or signingSecret, and optional policy.
- * @returns The verified `SiwxSession` object, or `null` if invalid, expired, or absent.
+ * With `sessionStore`, the cookie value is a session ID looked up with `sessionStore.get` (which enforces
+ * expiry). Otherwise, with `signingSecret`, it is a demo token verified with {@link verifyStatelessDemoSession}.
+ * See {@link GetSiwxServerSessionOptions} for the accepted cookie sources and the policy checks.
+ *
+ * @param options - Cookie source, store or secret, and optional policy.
+ * @returns The session, or `null` when there is no cookie, no store or secret, or the session is unknown, expired or
+ * rejected by the policy.
+ * @throws Errors thrown by `sessionStore.get` are not caught.
  *
  * @example
  * ```ts
@@ -498,11 +622,8 @@ export async function getSiwxServerSession(options: GetSiwxServerSessionOptions)
 }
 
 /**
- * Re-exports `generateNonce` from `@tuwaio/siwx-core` for server challenge generation.
+ * Alias of `generateNonce` from `@tuwaio/siwx-core`, for issuing challenge nonces and session IDs on the server.
  */
 export { generateNonce as generateServerNonce };
 
-/**
- * Converts a `ParsedSiwxMessage` to a lean `SiwxSession` object.
- */
 export { toSession };

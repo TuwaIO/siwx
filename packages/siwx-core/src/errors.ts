@@ -1,16 +1,17 @@
 /**
- * @fileoverview Error classes for the @tuwaio/siwx-core package.
+ * @file Error classes for the @tuwaio/siwx-core package.
  * All errors are typed and carry contextual information for proper handling.
  */
 
 /**
- * Base error class for all siwx-related errors.
- * Extends the native Error with an optional error code for programmatic handling.
+ * Base class of every SIWX error. Extends the native `Error` with a machine-readable `code` (for example
+ * `SIWX_PARSE_ERROR`) for programmatic handling; `name` is set to the concrete class name.
  */
 export class SiwxError extends Error {
   /**
    * @param message - Human-readable description of the error.
-   * @param code - Optional machine-readable error code.
+   * @param code - Machine-readable error code, for example `SIWX_PARSE_ERROR`. Each subclass passes its own code;
+   * `SIWX_ERROR` is used only by the base class.
    */
   constructor(
     message: string,
@@ -23,8 +24,8 @@ export class SiwxError extends Error {
 }
 
 /**
- * Thrown when a CAIP-122 message string cannot be parsed.
- * This indicates the message is malformed or not CAIP-122 compliant.
+ * Thrown by {@link parseMessage} when a string is not a well-formed CAIP-122 message (wrong header, missing
+ * blank lines or missing required fields). Code: `SIWX_PARSE_ERROR`.
  */
 export class SiwxParseError extends SiwxError {
   /**
@@ -37,12 +38,15 @@ export class SiwxParseError extends SiwxError {
 }
 
 /**
- * Thrown when one or more fields in a SiwxMessage fail validation.
- * The `errors` property contains a list of all validation failures.
+ * Signals that one or more message fields failed validation; `errors` lists every failure.
+ * Code: `SIWX_VALIDATION_ERROR`.
+ *
+ * The chain verifiers (`verifyEip191`, `verifyEip1271`, `verifyEd25519`) raise it internally and return its
+ * message in `SiwxVerifyResult.error`. {@link validateMessage} returns a result instead of throwing it.
  */
 export class SiwxValidationError extends SiwxError {
   /**
-   * @param errors - Array of validation error descriptions.
+   * @param errors - Descriptions of the failed checks, as returned by {@link validateMessage}.
    */
   constructor(public readonly errors: string[]) {
     super(`CAIP-122 message validation failed: ${errors.join(', ')}`, 'SIWX_VALIDATION_ERROR');
@@ -51,9 +55,10 @@ export class SiwxValidationError extends SiwxError {
 }
 
 /**
- * Thrown when a signature verification operation fails.
- * Indicates the signature is invalid, the message was tampered with,
- * or the signer address does not match.
+ * Signals a failed signature check: the signature is invalid, the message was altered, or the signer does not
+ * match the message `address`. Code: `SIWX_VERIFICATION_ERROR`.
+ *
+ * The chain verifiers raise it internally and return its message in `SiwxVerifyResult.error`.
  */
 export class SiwxVerificationError extends SiwxError {
   /**
@@ -66,7 +71,10 @@ export class SiwxVerificationError extends SiwxError {
 }
 
 /**
- * Thrown when the session or message has expired based on the `expirationTime` field.
+ * Signals that the message `expirationTime` has passed. Code: `SIWX_EXPIRED_SESSION`.
+ *
+ * Not thrown by SIWX itself: expired messages are reported by {@link validateMessage} and returned as `error` by the
+ * verifiers. Provided for applications that want to throw a typed error from their own checks.
  */
 export class SiwxExpiredSessionError extends SiwxError {
   /**
@@ -79,7 +87,10 @@ export class SiwxExpiredSessionError extends SiwxError {
 }
 
 /**
- * Thrown when a nonce replay attack is detected, i.e., the nonce has already been used.
+ * Signals that the message nonce has already been used. Code: `SIWX_NONCE_REPLAY`.
+ *
+ * `verifySiwxPayload` (`@tuwaio/siwx-server`) raises it internally when the nonce is in `usedNonces` and returns
+ * its message in the result.
  */
 export class SiwxNonceReplayError extends SiwxError {
   /**
@@ -92,11 +103,14 @@ export class SiwxNonceReplayError extends SiwxError {
 }
 
 /**
- * Thrown when the chain namespace in the message is not supported.
+ * Signals a CAIP-2 namespace that is not supported (anything other than `eip155` and `solana`), or not supported
+ * by the verifier that received the message. Code: `SIWX_UNSUPPORTED_NAMESPACE`.
+ *
+ * The chain verifiers and `verifySiwxPayload` raise it internally and report it through their result.
  */
 export class SiwxUnsupportedNamespaceError extends SiwxError {
   /**
-   * @param namespace - The unsupported namespace string extracted from the message.
+   * @param namespace - The namespace extracted from the message `chainId`.
    */
   constructor(public readonly namespace: string) {
     super(`Unsupported CAIP-2 namespace: "${namespace}". Supported: eip155, solana`, 'SIWX_UNSUPPORTED_NAMESPACE');
@@ -105,12 +119,15 @@ export class SiwxUnsupportedNamespaceError extends SiwxError {
 }
 
 /**
- * Thrown when a verification policy rule is violated.
+ * Base class of the policy violation errors. Code: `SIWX_POLICY_VIOLATION`, or a specific code set by a subclass.
+ *
+ * The SIWX functions report policy violations as strings (see {@link validatePolicy}) and never throw this class or
+ * its subclasses. They are provided for applications that want to throw typed errors from their own checks.
  */
 export class SiwxPolicyViolationError extends SiwxError {
   /**
-   * @param message - Human-readable description of policy violation.
-   * @param code - Specific policy violation error code.
+   * @param message - Human-readable description of the violation.
+   * @param code - Machine-readable error code. Defaults to `SIWX_POLICY_VIOLATION`.
    */
   constructor(message: string, code: string = 'SIWX_POLICY_VIOLATION') {
     super(message, code);
@@ -119,9 +136,14 @@ export class SiwxPolicyViolationError extends SiwxError {
 }
 
 /**
- * Thrown when the message domain does not match the expected domain policy.
+ * Policy violation: the message `domain` is not one of the expected domains. Code: `SIWX_DOMAIN_MISMATCH`.
+ * Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxDomainMismatchError extends SiwxPolicyViolationError {
+  /**
+   * @param expected - The expected domain or domains.
+   * @param received - The `domain` found in the message.
+   */
   constructor(
     public readonly expected: string | string[],
     public readonly received: string,
@@ -133,9 +155,14 @@ export class SiwxDomainMismatchError extends SiwxPolicyViolationError {
 }
 
 /**
- * Thrown when the message URI does not match the expected URI policy.
+ * Policy violation: the message `uri` does not match the expected URIs. Code: `SIWX_URI_MISMATCH`.
+ * Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxUriMismatchError extends SiwxPolicyViolationError {
+  /**
+   * @param expected - The expected URI or URIs.
+   * @param received - The `uri` found in the message.
+   */
   constructor(
     public readonly expected: string | string[],
     public readonly received: string,
@@ -147,9 +174,14 @@ export class SiwxUriMismatchError extends SiwxPolicyViolationError {
 }
 
 /**
- * Thrown when the message chain ID is not in the allowed list of chain IDs.
+ * Policy violation: the message `chainId` is not in the allowed list. Code: `SIWX_CHAIN_NOT_ALLOWED`.
+ * Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxChainNotAllowedError extends SiwxPolicyViolationError {
+  /**
+   * @param allowedChainIds - The allowed CAIP-2 chain IDs.
+   * @param received - The `chainId` found in the message.
+   */
   constructor(
     public readonly allowedChainIds: string[],
     public readonly received: string,
@@ -160,9 +192,14 @@ export class SiwxChainNotAllowedError extends SiwxPolicyViolationError {
 }
 
 /**
- * Thrown when the message issuedAt timestamp is older than allowed by policy.
+ * Policy violation: the message `issuedAt` is older than the allowed maximum age. Code: `SIWX_ISSUED_AT_STALE`.
+ * Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxIssuedAtStaleError extends SiwxPolicyViolationError {
+  /**
+   * @param issuedAt - The `issuedAt` found in the message.
+   * @param maxAgeSeconds - The allowed maximum age, in seconds.
+   */
   constructor(
     public readonly issuedAt: string,
     public readonly maxAgeSeconds: number,
@@ -176,9 +213,14 @@ export class SiwxIssuedAtStaleError extends SiwxPolicyViolationError {
 }
 
 /**
- * Thrown when the message issuedAt timestamp is in the future beyond acceptable clock skew.
+ * Policy violation: the message `issuedAt` lies in the future beyond the allowed clock skew.
+ * Code: `SIWX_ISSUED_AT_FUTURE`. Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxIssuedAtFutureError extends SiwxPolicyViolationError {
+  /**
+   * @param issuedAt - The `issuedAt` found in the message.
+   * @param clockSkewSeconds - The allowed clock skew, in seconds.
+   */
   constructor(
     public readonly issuedAt: string,
     public readonly clockSkewSeconds: number,
@@ -192,9 +234,13 @@ export class SiwxIssuedAtFutureError extends SiwxPolicyViolationError {
 }
 
 /**
- * Thrown when the message notBefore timestamp has not yet been reached.
+ * Policy violation: the message `notBefore` has not been reached yet. Code: `SIWX_NOT_BEFORE`.
+ * Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxNotBeforeError extends SiwxPolicyViolationError {
+  /**
+   * @param notBefore - The `notBefore` found in the message.
+   */
   constructor(public readonly notBefore: string) {
     super(`Message not valid before ${notBefore}`, 'SIWX_NOT_BEFORE');
     this.name = 'SiwxNotBeforeError';
@@ -202,9 +248,14 @@ export class SiwxNotBeforeError extends SiwxPolicyViolationError {
 }
 
 /**
- * Thrown when the message session duration exceeds the max allowed session lifetime.
+ * Policy violation: `expirationTime - issuedAt` exceeds the allowed maximum lifetime.
+ * Code: `SIWX_SESSION_LIFETIME_EXCEEDED`. Not thrown by SIWX itself; see {@link SiwxPolicyViolationError}.
  */
 export class SiwxSessionLifetimeExceededError extends SiwxPolicyViolationError {
+  /**
+   * @param lifetimeSeconds - The lifetime of the message, in seconds.
+   * @param maxLifetimeSeconds - The allowed maximum lifetime, in seconds.
+   */
   constructor(
     public readonly lifetimeSeconds: number,
     public readonly maxLifetimeSeconds: number,

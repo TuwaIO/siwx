@@ -1,24 +1,23 @@
-# `@tuwaio/siwx-core`
+# @tuwaio/siwx-core
 
 [![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-core.svg)](https://www.npmjs.com/package/@tuwaio/siwx-core)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-core.svg)](./LICENSE)
-[![CAIP-122](https://img.shields.io/badge/standard-CAIP--122-purple.svg)](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md)
+[![License](https://img.shields.io/npm/l/@tuwaio/siwx-core.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/LICENSE)
 
-> Chain-agnostic CAIP-122 message building, parsing, policy validation, and error definitions. The L1 foundational engine of the `@tuwaio/siwx` ecosystem. **Zero dependencies.**
+`@tuwaio/siwx-core` is the Layer 1 (L1) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). It implements the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) message format: it builds, parses and validates chain-agnostic sign-in messages for EVM (`eip155`) and Solana accounts, and defines the types and errors that the SIWX L2 packages share.
+
+The package has **zero runtime dependencies** and imports no Web3 SDK. It runs in browsers, Node.js 20+ and edge runtimes; only `generateNonce` needs the Web Crypto API.
 
 ---
 
 ## 🏛️ Core Capabilities
 
-This package is the **L1 core foundation** implementing the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard.
+- **Message format:** `buildMessage` formats CAIP-122 fields into the text the wallet signs (the EIP-4361 layout used by CAIP-122); `parseMessage` reads the text back and throws `SiwxParseError` when it is malformed.
+- **Validation:** `validateMessage` checks field formats (CAIP-10 address, CAIP-2 chain ID, `http(s)` URI, nonce, ISO 8601 timestamps) and expiration, and reports every failure at once.
+- **Verification policy:** `validatePolicy` and `SiwxVerificationPolicy` bind a message to your domain, URI, allowed chains and time windows (`issuedAt` age, `notBefore`, maximum lifetime, clock skew).
+- **Session matching:** `isSessionMatchingTarget` checks that a session belongs to a given address and chain, case-insensitively for EVM and case-sensitively for Solana.
+- **Nonces and errors:** `generateNonce` returns 32 random hex characters; `SiwxError` and its subclasses carry machine-readable `code`s.
 
-- **Build**: Format compliant CAIP-122 messages from structured fields.
-- **Parse**: Parse raw CAIP-122 message strings into typed objects.
-- **Validate Fields**: Validate format, CAIP-10 addresses, CAIP-2 chain identifiers, nonces, ISO 8601 timestamps, and expiration.
-- **Enforce Security Policies**: Validate messages against strict domain, URI, allowed chain, max age, and max session lifetime policies via `validatePolicy()`.
-- **Match Sessions**: Compare active sessions with target addresses and chains handling EVM/Solana casing and CAIP-10 formats.
-- **Generate Nonces**: Cryptographically secure 32-character hex nonce generator using Web Crypto API.
-- **Typed Error Hierarchy**: Comprehensive set of typed errors with machine-readable error codes.
+Signatures are verified by the chain packages ([`@tuwaio/siwx-evm`](https://siwx.docs.tuwa.io/packages/siwx-evm), [`@tuwaio/siwx-solana`](https://siwx.docs.tuwa.io/packages/siwx-solana)) and on the server by [`@tuwaio/siwx-server`](https://siwx.docs.tuwa.io/packages/siwx-server).
 
 ---
 
@@ -30,14 +29,12 @@ pnpm add @tuwaio/siwx-core
 
 ---
 
-## 🚀 API Reference
+## 🚀 Usage
 
-### `buildMessage(fields: SiwxMessageFields): string`
+### Building and parsing a message
 
-Builds a CAIP-122 compliant sign-in message string.
-
-```ts
-import { buildMessage, generateNonce } from '@tuwaio/siwx-core';
+```typescript
+import { buildMessage, generateNonce, parseMessage } from '@tuwaio/siwx-core';
 
 const message = buildMessage({
   domain: 'app.tuwa.io',
@@ -48,138 +45,94 @@ const message = buildMessage({
   chainId: 'eip155:1',
   nonce: generateNonce(),
   issuedAt: new Date().toISOString(),
-  expirationTime: new Date(Date.now() + 1000 * 60 * 30).toISOString(),
+  expirationTime: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
 });
+
+// Throws SiwxParseError if the text is not a CAIP-122 message.
+const fields = parseMessage(message);
 ```
 
-### `parseMessage(message: string): ParsedSiwxMessage`
+The message the wallet shows and signs:
 
-Parses a raw CAIP-122 message string back into structured fields.
+```text
+app.tuwa.io wants you to sign in with your blockchain account:
+eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
 
-```ts
-import { parseMessage } from '@tuwaio/siwx-core';
+Sign in to TUWA.
 
-const parsed = parseMessage(rawMessage);
-console.log(parsed.address); // "eip155:1:0xAb5801..."
-console.log(parsed.chainId); // "eip155:1"
-console.log(parsed.nonce); // "a4f3b2c1..."
+URI: https://app.tuwa.io
+Version: 1
+Chain ID: eip155:1
+Nonce: 3f9c1e2a7b4d8f6051c2e9a0d7b3f418
+Issued At: 2026-09-26T10:00:00.000Z
+Expiration Time: 2026-09-26T10:10:00.000Z
 ```
 
-### `validateMessage(fields: SiwxMessageFields, options?: ValidateMessageOptions): SiwxValidationResult`
+`buildMessage` does not validate its input; run `validateMessage` on untrusted fields.
 
-Validates all fields and optionally enforces a `SiwxVerificationPolicy`. Returns `{ valid: boolean, errors: string[] }`.
+### Validating fields and a policy
 
-```ts
-import { validateMessage } from '@tuwaio/siwx-core';
+```typescript
+import { parseMessage, validateMessage } from '@tuwaio/siwx-core';
 
-const result = validateMessage(parsedMessage, {
+declare const message: string;
+
+const result = validateMessage(parseMessage(message), {
   policy: {
     expectedDomain: 'app.tuwa.io',
     expectedUri: 'https://app.tuwa.io',
     allowedChainIds: ['eip155:1', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK'],
     requireExpirationTime: true,
     maxIssuedAtAgeSeconds: 300,
-    maxSessionLifetimeSeconds: 1800,
+    maxSessionLifetimeSeconds: 24 * 60 * 60,
   },
 });
 
 if (!result.valid) {
-  console.error('Validation errors:', result.errors);
+  console.error(result.errors); // one human-readable string per failed check
 }
 ```
 
-### `validatePolicy(fields: SiwxMessageFields, policy?: SiwxVerificationPolicy, now?: Date): string[]`
+- `validateMessage` checks formats and timing only. It does not verify the signature.
+- Policy rules run only for the fields you set; `maxIssuedAtAgeSeconds` has no default. `clockSkewSeconds` defaults to 60 seconds.
+- Two timing rules always apply, even without a policy: `issuedAt` must not be in the future and `notBefore` must have been reached (turn the latter off with `enforceNotBefore: false`).
+- `allowedChainIds` entries are full CAIP-2 IDs matched exactly: `eip155:1` does not allow `solana:1`, and a bare `1` matches nothing.
+- `validatePolicy(fields, policy, now?)` runs the policy rules alone and returns the list of violations.
 
-Dedicated helper for validating message fields against a verification policy.
+### Matching a session to a wallet
 
-```ts
-import { validatePolicy } from '@tuwaio/siwx-core';
-
-const errors = validatePolicy(fields, {
-  expectedDomain: ['app.tuwa.io', 'auth.tuwa.io'],
-  allowedChainIds: ['eip155:1'],
-  maxIssuedAtAgeSeconds: 300,
-});
-```
-
-### `isSessionMatchingTarget(session: SiwxSessionLike | null | undefined, targetAddress: string, targetChainId?: string | number): boolean`
-
-Validates whether a SIWX session matches a target wallet address and optional chainId. Handles EVM case-insensitivity, Solana case-sensitivity, and CAIP-10 / CAIP-2 normalization.
-
-```ts
+```typescript
 import { isSessionMatchingTarget } from '@tuwaio/siwx-core';
 
-const isMatch = isSessionMatchingTarget(session, '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', 'eip155:1');
+const session = { address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', chainId: 'eip155:1' };
+
+isSessionMatchingTarget(session, '0xab5801a7d398351b8be11c439e05c5b3259aec9b'); // true: EVM addresses ignore case
+isSessionMatchingTarget(session, 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', 'eip155:1'); // true
+isSessionMatchingTarget(session, '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', 10); // false: other chain
 ```
 
-### `generateNonce(): string`
+### Handling errors
 
-Generates a 32-character cryptographically secure hex nonce using `globalThis.crypto.getRandomValues`.
+```typescript
+import { parseMessage, SiwxParseError } from '@tuwaio/siwx-core';
 
-```ts
-import { generateNonce } from '@tuwaio/siwx-core';
-
-const nonce = generateNonce(); // e.g. "9a2f64c8d1b3e570..."
-```
-
----
-
-## 🛡️ `SiwxVerificationPolicy` Interface
-
-```ts
-export interface SiwxVerificationPolicy {
-  /** Expected domain(s) requesting sign-in (e.g. "tuwa.io" or ["tuwa.io", "auth.tuwa.io"]). */
-  expectedDomain?: string | string[];
-
-  /** Expected RFC 3986 URI(s) subject of sign-in (e.g. "https://tuwa.io"). */
-  expectedUri?: string | string[];
-
-  /** List of allowed CAIP-2 chain IDs (e.g. ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK"]). */
-  allowedChainIds?: string[];
-
-  /** Whether the message MUST include an expirationTime. */
-  requireExpirationTime?: boolean;
-
-  /** Maximum allowed age of issuedAt in seconds (default 300s). */
-  maxIssuedAtAgeSeconds?: number;
-
-  /** Maximum session lifetime in seconds (expirationTime - issuedAt). */
-  maxSessionLifetimeSeconds?: number;
-
-  /** Allowed clock skew in seconds (default 60s). */
-  clockSkewSeconds?: number;
-
-  /** Whether to enforce notBefore timestamp (default true). */
-  enforceNotBefore?: boolean;
+try {
+  parseMessage('not a CAIP-122 message');
+} catch (error) {
+  if (error instanceof SiwxParseError) {
+    console.error(error.code, error.message); // "SIWX_PARSE_ERROR", "Message is too short to be a valid CAIP-122 message."
+  }
 }
 ```
 
----
-
-## 🛑 Typed Error Classes
-
-All errors extend `SiwxError` and carry a machine-readable `code` property.
-
-| Class                              | Code                             | Description                                   |
-| ---------------------------------- | -------------------------------- | --------------------------------------------- |
-| `SiwxError`                        | `SIWX_ERROR`                     | Base class for all SIWX errors                |
-| `SiwxParseError`                   | `SIWX_PARSE_ERROR`               | Malformed CAIP-122 message string             |
-| `SiwxValidationError`              | `SIWX_VALIDATION_ERROR`          | Field validation failed                       |
-| `SiwxVerificationError`            | `SIWX_VERIFICATION_ERROR`        | Cryptographic signature mismatch              |
-| `SiwxExpiredSessionError`          | `SIWX_EXPIRED_SESSION`           | Session has expired                           |
-| `SiwxNonceReplayError`             | `SIWX_NONCE_REPLAY`              | Nonce already consumed                        |
-| `SiwxUnsupportedNamespaceError`    | `SIWX_UNSUPPORTED_NAMESPACE`     | Unsupported CAIP-2 namespace                  |
-| `SiwxPolicyViolationError`         | `SIWX_POLICY_VIOLATION`          | Generic policy rule violated                  |
-| `SiwxDomainMismatchError`          | `SIWX_DOMAIN_MISMATCH`           | Message domain does not match expected domain |
-| `SiwxUriMismatchError`             | `SIWX_URI_MISMATCH`              | Message URI does not match expected URI       |
-| `SiwxChainNotAllowedError`         | `SIWX_CHAIN_NOT_ALLOWED`         | Chain ID not present in allowed list          |
-| `SiwxIssuedAtStaleError`           | `SIWX_ISSUED_AT_STALE`           | `issuedAt` is older than max allowed age      |
-| `SiwxIssuedAtFutureError`          | `SIWX_ISSUED_AT_FUTURE`          | `issuedAt` is in the future beyond clock skew |
-| `SiwxNotBeforeError`               | `SIWX_NOT_BEFORE`                | `notBefore` timestamp has not been reached    |
-| `SiwxSessionLifetimeExceededError` | `SIWX_SESSION_LIFETIME_EXCEEDED` | Session duration exceeds maximum lifetime     |
+`parseMessage` and `generateNonce` are the only functions of this package that throw. The verifiers of the L2 packages return `{ success: false, error }` instead of throwing. The policy error classes (`SiwxPolicyViolationError` and its subclasses) are never thrown by SIWX; they are available for your own checks.
 
 ---
+
+## 📚 API Reference
+
+Every export, with signatures and types generated from the source, is documented at **[siwx.docs.tuwa.io/packages/siwx-core](https://siwx.docs.tuwa.io/packages/siwx-core)**.
 
 ## 📄 License
 
-Licensed under the **Apache-2.0 License**. See the [LICENSE](./LICENSE) file for details.
+Licensed under the **Apache-2.0 License**. See the [LICENSE](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/LICENSE) file for details.

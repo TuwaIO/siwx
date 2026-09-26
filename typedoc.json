@@ -1,34 +1,47 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "API Reference — @tuwaio/siwx (CAIP-122 Authentication Layer)",
-  "entryPoints": [
-    "packages/siwx-core/src/index.ts",
-    "packages/siwx-evm/src/index.ts",
-    "packages/siwx-solana/src/index.ts",
-    "packages/siwx-react/src/index.ts",
-    "packages/siwx-server/src/index.ts",
-    "packages/siwx-server/src/next.ts"
+  "name": "Packages",
+  "entryPointStrategy": "packages",
+  "entryPoints": ["packages/*"],
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/__tests__/**",
+      "**/tests/**",
+      "**/setup.ts"
+    ],
+    "excludeInternal": true,
+    "excludeExternals": true,
+    "gitRevision": "main",
+    "compilerOptions": {
+      "paths": {
+        "@tuwaio/siwx-core": ["./packages/siwx-core/src/index.ts"],
+        "@tuwaio/siwx-evm": ["./packages/siwx-evm/src/index.ts"],
+        "@tuwaio/siwx-solana": ["./packages/siwx-solana/src/index.ts"]
+      }
+    }
+  },
+  "plugin": [
+    "typedoc-plugin-markdown",
+    "./apps/docs/typedoc/preserveTypeAnnotations.mjs",
+    "./apps/docs/typedoc/nextraRoutes.mjs"
   ],
-  "exclude": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/__tests__/**",
-    "**/tests/**",
-    "**/setup.ts"
-  ],
-  "entryPointStrategy": "expand",
-  "tsconfig": "tsconfig.json",
-  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-react"],
-  "out": "apps/docs/src/content/apiReference",
-  "readme": "none",
-  "githubPages": false,
-  "hideGenerator": true,
-  "cleanOutputDir": true,
-  "categorizeByGroup": true,
-  "hideBreadcrumbs": true,
+  "out": "apps/docs/src/content/packages",
+  "publicPath": "/packages/",
+  "readme": "apps/docs/typedoc/packages-overview.md",
+  "mergeReadme": true,
+  "entryFileName": "index",
+  "excludeScopesInPaths": true,
   "pageTitleTemplates": {
     "member": "{name}"
-  }
+  },
+  "githubPages": false,
+  "hideGenerator": true,
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true,
+  "cleanOutputDir": true
 }

@@ -93,4 +93,26 @@ describe('verifyEip191()', () => {
     expect(result.success).toBe(false);
     expect(result.error).toContain('Unsupported CAIP-2 namespace');
   });
+
+  it('fails verification when notBefore has not been reached', async () => {
+    const account = privateKeyToAccount(generatePrivateKey());
+
+    const message = buildMessage({
+      domain: 'app.tuwa.io',
+      address: `eip155:1:${account.address}`,
+      uri: 'https://app.tuwa.io',
+      version: '1',
+      chainId: 'eip155:1',
+      nonce: 'a4f3b2c1d0e5f678',
+      issuedAt: '2026-08-06T08:00:00.000Z',
+      notBefore: '2099-01-01T00:00:00.000Z',
+    });
+
+    const signature = await account.signMessage({ message });
+
+    const result = await verifyEip191(message, signature);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('not valid before');
+  });
 });

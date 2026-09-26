@@ -1,41 +1,76 @@
+import type { SiwxChainId, SiwxMessageFields } from '@tuwaio/siwx-core';
+
 import type { SiwxClientSession } from './sessionStore';
 
 /**
- * Duck-typed interface for a Satellite Connection to avoid strict dependency on `@tuwaio/satellite-core`.
+ * Duck-typed subset of an active Satellite Connect connection, so `@tuwaio/siwx-react` does not depend on
+ * `@tuwaio/satellite-core`. Only `address`, `chainId`, `signMessage` and `connector` are read by the helpers.
  */
 export interface MinimalSatelliteConnection {
+  /** Whether the wallet is connected. Not read by the helpers. */
   isConnected?: boolean;
+  /** Connected account, as a plain address or a CAIP-10 account ID. */
   address?: string;
+  /** Connected chain: an EVM chain ID number, a chain reference or a CAIP-2 ID. */
   chainId?: string | number;
+  /** Signs a message with the connected wallet. Returned by {@link createSatelliteSiwxSigner}. */
   signMessage?: (message: string) => Promise<string>;
+  /** EVM connector. Its presence marks the connection as EVM in {@link getSatelliteSiwxFields}. */
   connector?: {
+    /** Returns the wallet client of the connector. Not read by the helpers. */
     getWalletClient?: () => Promise<unknown>;
   };
+  /** Connected account object of the wallet library. Not read by the helpers. */
   connectedAccount?: unknown;
+  /** Connected wallet object of the wallet library. Not read by the helpers. */
   connectedWallet?: unknown;
 }
 
 /**
- * Options for generating Satellite SIWX fields.
+ * Options of {@link getSatelliteSiwxFields}. The values are copied into the CAIP-122 fields.
  */
 export interface SatelliteSiwxFieldOptions {
+  /** Message `domain`. Defaults to `window.location.host` (empty string outside the browser). */
   domain?: string;
+  /** Message `uri`. Defaults to `window.location.href` (empty string outside the browser). */
   uri?: string;
+  /** Human-readable statement shown in the wallet. */
   statement?: string;
+  /** Explicit ISO 8601 `expirationTime`. Takes precedence over `expirationSeconds`. */
   expirationTime?: string;
+  /**
+   * Lifetime of the message, in seconds from now, used when `expirationTime` is omitted.
+   * @default 86400 (24 hours)
+   */
   expirationSeconds?: number;
+  /** ISO 8601 `notBefore`. */
   notBefore?: string;
+  /** Message `requestId`. */
   requestId?: string;
+  /** Message `resources`. */
   resources?: string[];
 }
 
 /**
- * Generates exact CAIP-10 and CAIP-2 identifiers strictly from the active connection.
+ * Builds the CAIP-122 `fields` for `useSiwx().signIn` from an active Satellite Connect connection.
+ *
+ * The connection is treated as EVM when its address starts with `0x` or `eip155:`, its `chainId` is a number or
+ * starts with `eip155:`, or it has a `connector`; otherwise it is treated as Solana. The CAIP-2 `chainId` is
+ * `{namespace}:{reference}` and the CAIP-10 `address` is `{chainId}:{account}`.
+ *
+ * Reads `window.location` for the default `domain` and `uri`. `nonce`, `issuedAt` and `version` are not included;
+ * `useSiwx` fills them in.
+ *
+ * @param activeConnection - The active connection. Must have `address` and `chainId`.
+ * @param options - Values for the other message fields.
+ * @returns The message fields: `domain`, `uri`, `statement`, `expirationTime`, `notBefore`, `requestId`,
+ * `resources`, `address` and `chainId`.
+ * @throws {Error} `[SIWX-REACT] Connection missing address or chainId.` when either value is missing.
  */
 export function getSatelliteSiwxFields(
   activeConnection: MinimalSatelliteConnection,
   options?: SatelliteSiwxFieldOptions,
-) {
+): Omit<SiwxMessageFields, 'nonce' | 'issuedAt' | 'version'> {
   if (!activeConnection.address || !activeConnection.chainId) {
     throw new Error('[SIWX-REACT] Connection missing address or chainId.');
   }
@@ -53,7 +88,7 @@ export function getSatelliteSiwxFields(
   const chainRef = rawChainId.includes(':') ? rawChainId.split(':').slice(1).join(':') : rawChainId;
   const accountAddr = rawAddress.includes(':') ? rawAddress.split(':').pop()! : rawAddress;
 
-  const caip2ChainId = isEvm ? `eip155:${chainRef}` : `solana:${chainRef}`;
+  const caip2ChainId: SiwxChainId = isEvm ? `eip155:${chainRef}` : `solana:${chainRef}`;
   const caip10Address = `${caip2ChainId}:${accountAddr}`;
 
   const now = Date.now();
@@ -72,12 +107,18 @@ export function getSatelliteSiwxFields(
     requestId: options?.requestId,
     resources: options?.resources,
     address: caip10Address,
-    chainId: caip2ChainId as never,
+    chainId: caip2ChainId,
   };
 }
 
 /**
- * Accepts a Satellite connection and returns its native signing method.
+ * Returns the `signMessage` method of an active Satellite Connect connection, to be used as `signer` in
+ * `useSiwx().signIn`.
+ *
+ * @param activeConnection - The active connection.
+ * @returns A promise resolving to `activeConnection.signMessage`.
+ * @throws {Error} `[SIWX-REACT] Connection missing signMessage capability.` (as a rejected promise) when the
+ * connection has no `signMessage`.
  */
 export async function createSatelliteSiwxSigner(
   activeConnection: MinimalSatelliteConnection,
@@ -90,7 +131,16 @@ export async function createSatelliteSiwxSigner(
 }
 
 /**
- * Evaluates whether an active SIWX session matches an active Satellite connection.
+ * Checks whether a SIWX session was issued for the active Satellite Connect connection, for example to reset the
+ * session after the user switches account or chain.
+ *
+ * The session `chainId` must equal the connection's CAIP-2 chain ID, and the session `address` must equal its
+ * CAIP-10 account ID (compared case-insensitively for `eip155` sessions).
+ *
+ * @param session - The current session, for example `useSiwxSession().session`.
+ * @param activeConnection - The active connection.
+ * @returns `true` when both match; `false` otherwise, including when either argument or the connection address or
+ * chain is missing. Never throws.
  */
 export function isSessionMatchingConnection(
   session: SiwxClientSession | null,

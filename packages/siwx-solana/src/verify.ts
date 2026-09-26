@@ -1,5 +1,5 @@
 /**
- * @fileoverview Solana signature verification for CAIP-122 messages.
+ * @file Solana signature verification for CAIP-122 messages.
  * Uses ed25519 cryptography via the native SubtleCrypto API (Node.js & browser compatible).
  */
 
@@ -107,16 +107,19 @@ function normalizeSolanaPayload(payload: SolanaVerifyPayload): {
 }
 
 /**
- * Verifies a Solana CAIP-122 signature using ed25519 cryptography.
- * Compatible with all Wallet Standard wallets (Phantom, Solflare, Backpack, etc.)
- * and accepts raw `solana:signIn` output objects as well as string payloads.
+ * Verifies a `solana` CAIP-122 message signed with ed25519.
  *
- * Uses the native `SubtleCrypto` API for ed25519 verification, ensuring
- * compatibility with both Node.js (v19+) and browser environments without polyfills.
+ * Parses the message, requires a `solana` chain and a 64-byte signature, runs `validateMessage` from `@tuwaio/siwx-core` (format,
+ * expiration, `notBefore` and an `issuedAt` in the future), validates the message `address` with `@solana/kit` and checks the signature against
+ * that public key with Web Crypto (`crypto.subtle`, algorithm `Ed25519`). Runs locally, without RPC calls. Nonce,
+ * domain and policy checks are the caller's job (see `@tuwaio/siwx-server`).
  *
- * @param payload - Standard SIWX payload, Uint8Array buffers, or Wallet Standard `solana:signIn` output.
- * @param options - Verification options.
- * @returns A `SiwxVerifyResult` with `success: true` and parsed data, or an error result.
+ * Requires a runtime with Ed25519 support in Web Crypto (current browsers, Node.js 20+, edge runtimes).
+ *
+ * @param payload - `{ message, signature }` (base58 string or bytes), or a Wallet Standard `solana:signIn` output.
+ * @param options - `skipExpiration` skips the check that `expirationTime` has not passed.
+ * @returns `{ success: true, data }`, or `{ success: false, error }`. Never throws: decoding, parse, validation and
+ * crypto errors are returned as `error`.
  *
  * @example
  * ```ts

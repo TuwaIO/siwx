@@ -1,278 +1,143 @@
-# @tuwaio/siwx — Sign-In With X (CAIP-122)
+# SIWX — Sign-In With X
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
-[![CAIP-122](https://img.shields.io/badge/standard-CAIP--122-purple.svg)](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md)
+[![License](https://img.shields.io/npm/l/@tuwaio/siwx-core.svg)](./LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/TuwaIO/siwx/release.yml?branch=main)](https://github.com/TuwaIO/siwx/actions)
 
-> **TUWA Ecosystem — Low-Level Core & Adapters Layer (L1/L2).**
-> A modular, multi-chain authentication library built on the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard. Headless, backend-agnostic, and designed for Sovereign Individual ownership.
+**SIWX** (Sign-In With X) is the authentication project of TUWA Stage 1: headless, framework-agnostic sign-in for EVM and Solana accounts, built on the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard. It builds and signs chain-agnostic sign-in messages, verifies them on your backend with single-use nonces and cookie sessions, and tracks the sign-in state in React, with no UI components and no hosted services.
+
+SIWX is built only on modern Web3 libraries: `viem` and `@wagmi/core` for EVM, `@solana/kit` and the Web Crypto API for Solana. It does not use `ethers.js`, `web3.js`, `@solana/web3.js` or `gill`, and it does not depend on any authentication platform or Wallet-as-a-Service.
+
+📖 **Documentation:** [siwx.docs.tuwa.io](https://siwx.docs.tuwa.io)
 
 ---
 
-## What SIWX Enables
-
-Modern Web3 applications require a unified, multi-chain authentication primitive. `@tuwaio/siwx` implements the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard end-to-end, providing a headless, framework-agnostic foundation for off-chain authentication across EVM, Solana, and future execution environments without framework lock-in or third-party cloud dependencies.
-
 ## 🏛️ Ecosystem Layer Architecture
 
-SIWX occupies the foundational **L1** and **L2** layers within the TUWA ecosystem:
+TUWA is built in stages. SIWX sits in **Stage 1 (Core Auth & Primitives)** next to [Orbit Utils](https://orbit.docs.tuwa.io/), below [Satellite Connect](https://satellite.docs.tuwa.io/) and [Pulsar](https://pulsar.docs.tuwa.io/) (Stage 2), [Quasar](https://sdk.docs.tuwa.io/quasar-cloud/overview) (Stage 3) and [Nova UI Kit](https://stories.tuwa.io/) (Stage 4). Higher layers such as Satellite Connect and the TUWA SDK use SIWX; SIWX depends on nothing else in TUWA and can be used on its own.
+
+Inside the monorepo, packages are split into two layers:
+
+### Layer 1: Foundational Core (L1)
+
+- **[`@tuwaio/siwx-core`](./packages/siwx-core)**: the CAIP-122 message format (build, parse, validate), verification policies, session matching, nonces, typed errors and the shared types. Zero runtime dependencies.
+
+### Layer 2: Chains, React and Server (L2)
+
+- **[`@tuwaio/siwx-evm`](./packages/siwx-evm)**: EVM signer and verifiers: EIP-191 for EOA wallets, EIP-1271 for smart contract wallets. Peer dependencies: `viem`, `@wagmi/core`.
+- **[`@tuwaio/siwx-solana`](./packages/siwx-solana)**: Solana signer and ed25519 verifier (Web Crypto). Peer dependencies: `@solana/kit`, `@wallet-standard/base`.
+- **[`@tuwaio/siwx-react`](./packages/siwx-react)**: `useSiwx` and `useSiwxSession` hooks, a zustand session store persisted to `localStorage`, and Satellite Connect helpers. Peer dependencies: `react`, `zustand`, `immer`.
+- **[`@tuwaio/siwx-server`](./packages/siwx-server)**: server-side verification, nonce and session stores, cookie helpers and Next.js App Router handlers (`@tuwaio/siwx-server/next`). Optional peer dependencies: `@tuwaio/siwx-evm`, `@tuwaio/siwx-solana`, `viem`.
+
+All L2 packages have `@tuwaio/siwx-core` as a peer dependency.
+
+---
+
+## 🔧 Monorepo Structure
 
 ```
-L1: siwx-core       → Pure CAIP-122 Engine (zero dependencies, completely standalone)
-L2: siwx adapters   → Chain Adapters (evm, solana), React store/hooks, Server utilities
-L3: satellite       → Wallet Connection & Session Integration Layer
-L7: nova-uikit      → UI View Layer (consumes siwx-react)
+siwx/
+├── apps/
+│   └── docs/                   # siwx.docs.tuwa.io (Next.js 16 + Nextra 4)
+│       ├── src/content/        # Hand-written MDX pages + generated `packages/` reference
+│       └── typedoc/            # TypeDoc plugins, Packages overview page and sidebar template
+├── packages/
+│   ├── siwx-core/              # L1: CAIP-122 message format, validation, policies, errors, types
+│   ├── siwx-evm/               # L2: EVM signer, EIP-191 and EIP-1271 verification (viem, @wagmi/core)
+│   ├── siwx-solana/            # L2: Solana signer, ed25519 verification (@solana/kit, Web Crypto)
+│   ├── siwx-react/             # L2: React hooks and zustand session store
+│   └── siwx-server/            # L2: server verification, nonce/session stores, cookies, Next.js handlers
+└── typedoc.json                # Reference generation (TypeDoc "packages" strategy)
 ```
-
-### Package Map
-
-| Package                                         | Description                                                                            |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------- |
-| [`@tuwaio/siwx-core`](./packages/siwx-core)     | Chain-agnostic CAIP-122 message builder, parser, and validator. Zero dependencies.     |
-| [`@tuwaio/siwx-evm`](./packages/siwx-evm)       | EVM adapter. EIP-191 (EOA) + EIP-1271 (Smart Contract Wallets) verification.           |
-| [`@tuwaio/siwx-solana`](./packages/siwx-solana) | Solana adapter. ed25519 signature verification via SubtleCrypto.                       |
-| [`@tuwaio/siwx-react`](./packages/siwx-react)   | React bindings. Zustand session store + `useSiwx` / `useSiwxSession` hooks.            |
-| [`@tuwaio/siwx-server`](./packages/siwx-server) | Backend utilities. Server-side verification dispatcher + cookie session serialization. |
 
 ---
 
 ## 💾 Installation
 
+Install the L1 core and the L2 packages your app needs:
+
 ```bash
-# Core only (chain-agnostic message building)
+# L1 Core
 pnpm add @tuwaio/siwx-core
 
-# EVM support
+# L2 EVM
 pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @wagmi/core viem
 
-# Solana support
+# L2 Solana
 pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit @wallet-standard/base
 
-# React bindings
+# L2 React
 pnpm add @tuwaio/siwx-react @tuwaio/siwx-core react zustand immer
 
-# Server utilities (Node.js / Edge)
+# L2 Server (plus the chain packages of the chains you accept)
 pnpm add @tuwaio/siwx-server @tuwaio/siwx-core
-```
-
-### 2. Build a CAIP-122 Message
-
-```ts
-import { buildMessage, generateNonce } from '@tuwaio/siwx-core';
-
-const message = buildMessage({
-  domain: 'app.tuwa.io',
-  address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
-  statement: 'Sign in to TUWA.',
-  uri: 'https://app.tuwa.io',
-  version: '1',
-  chainId: 'eip155:1',
-  nonce: generateNonce(),
-  issuedAt: new Date().toISOString(),
-  expirationTime: new Date(Date.now() + 1000 * 60 * 10).toISOString(), // 10 min
-});
-```
-
-### 3. Verify on the Server
-
-#### Option A: Production Standard (Durable Redis Session & Nonce Store)
-
-First, define your persistent stores:
-
-```ts
-// lib/authStores.ts
-import type { SiwxNonceStore, SiwxSession, SiwxSessionRecord, SiwxSessionStore } from '@tuwaio/siwx-server';
-import { generateServerNonce } from '@tuwaio/siwx-server';
-import Redis from 'ioredis';
-
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
-
-export const sessionStore: SiwxSessionStore = {
-  async create({ session, ttlSeconds }: { session: SiwxSession; ttlSeconds: number }): Promise<SiwxSessionRecord> {
-    const id = generateServerNonce();
-    const createdAt = Date.now();
-    const expiresAt = createdAt + ttlSeconds * 1000;
-    const record: SiwxSessionRecord = { id, session, createdAt, expiresAt };
-
-    await redis.set(`siwx:session:${id}`, JSON.stringify(record), 'EX', ttlSeconds);
-    return record;
-  },
-
-  async get(id: string): Promise<SiwxSessionRecord | null> {
-    const data = await redis.get(`siwx:session:${id}`);
-    return data ? JSON.parse(data) : null;
-  },
-
-  async bindSubject(id: string, subjectId: string): Promise<boolean> {
-    const record = await this.get(id);
-    if (!record) return false;
-    record.subjectId = subjectId;
-    const ttl = Math.max(1, Math.floor((record.expiresAt - Date.now()) / 1000));
-    await redis.set(`siwx:session:${id}`, JSON.stringify(record), 'EX', ttl);
-    return true;
-  },
-
-  async revoke(id: string): Promise<void> {
-    await redis.del(`siwx:session:${id}`);
-  },
-};
-
-export const nonceStore: SiwxNonceStore = {
-  async issue({ nonce, ttlSeconds }: { nonce: string; ttlSeconds: number }): Promise<void> {
-    await redis.set(`siwx:nonce:${nonce}`, '1', 'EX', ttlSeconds);
-  },
-
-  async consume({ nonce }: { nonce: string }): Promise<boolean> {
-    const value = await redis.getdel(`siwx:nonce:${nonce}`);
-    return value !== null;
-  },
-};
-```
-
-##### In-Memory Alternative for Local Testing / Prototyping (No Redis Needed):
-
-```ts
-// lib/authStores.dev.ts (Zero Dependencies / In-Memory)
-import { MemorySiwxNonceStore, MemorySiwxSessionStore } from '@tuwaio/siwx-server';
-
-// Built-in in-memory stores for local testing (fails closed in production by default)
-export const sessionStore = new MemorySiwxSessionStore();
-export const nonceStore = new MemorySiwxNonceStore();
-```
-
-Then create the Next.js App Router handler:
-
-```ts
-// app/api/siwx/[...siwx]/route.ts
-import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
-import { nonceStore, sessionStore } from '@/lib/authStores';
-
-const handler = createSiwxApiHandler({
-  sessionStore,
-  nonceStore,
-  policy: { expectedDomain: 'app.tuwa.io' },
-});
-
-export const { GET, POST, DELETE } = handler;
-```
-
-#### Option B: Stateless Demo Profile (Zero-Infrastructure Demonstration & Prototyping)
-
-For sandbox testing, integration demos, or environments running without a database or Redis:
-
-```ts
-// app/api/siwx/[...siwx]/route.ts
-import { createStatelessDemoSiwxHandler } from '@tuwaio/siwx-server/next';
-
-const handler = createStatelessDemoSiwxHandler({
-  signingSecret: process.env.SIWX_DEMO_SIGNING_SECRET!, // Minimum 32 characters
-  policy: { expectedDomain: 'demo.tuwa.io', requireExpirationTime: true },
-});
-
-export const { GET, POST, DELETE } = handler;
-```
-
-#### Option C: Server Actions Session Verification (`getSiwxServerSession`)
-
-```ts
-// app/actions/myAction.ts
-'use server';
-
-import { cookies } from 'next/headers';
-import { getSiwxServerSession } from '@tuwaio/siwx-server';
-import { isSessionMatchingTarget } from '@tuwaio/siwx-core';
-import { sessionStore } from '@/lib/authStores';
-
-export async function myAction(targetAddress: string) {
-  const session = await getSiwxServerSession({
-    cookieSource: await cookies(),
-    sessionStore, // Or signingSecret for demo profile
-  });
-
-  if (!session || !isSessionMatchingTarget(session, targetAddress)) {
-    throw new Error('Unauthorized');
-  }
-
-  return { success: true };
-}
-```
-
-### 4. Use in React
-
-```tsx
-import { useSiwx, useSiwxSession } from '@tuwaio/siwx-react';
-import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
-import type { WalletClient } from 'viem';
-// import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
-
-function LoginButton({ walletClient, address }: { walletClient: WalletClient; address: string }) {
-  const { signIn, signOut } = useSiwx();
-  const { isAuthenticated, session } = useSiwxSession();
-
-  const handleSignIn = async () => {
-    await signIn({
-      signer: createEvmSiwxSigner(walletClient),
-      verifier: async (payload) => {
-        const res = await fetch('/api/siwx/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        return res.ok ? res.json() : null;
-      },
-      fields: {
-        domain: window.location.host,
-        address: `eip155:1:${address}`,
-        uri: window.location.origin,
-        chainId: 'eip155:1',
-        statement: 'Sign in to TUWA.',
-      },
-    });
-  };
-
-  return isAuthenticated ? (
-    <div>
-      <span>{session?.address}</span>
-      <button onClick={signOut}>Sign Out</button>
-    </div>
-  ) : (
-    <button onClick={handleSignIn}>Sign In</button>
-  );
-}
 ```
 
 ---
 
 ## 🚀 Architectural Usage Example
 
-SIWX is completely headless, giving you full control over how you wire up the frontend and backend.
+A Next.js app that signs in EVM wallets. The server issues nonces, verifies the signed message and sets an `HttpOnly` session cookie; the client builds and signs the message:
 
-## Design Principles
+```typescript
+// app/api/siwx/[...siwx]/route.ts
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
 
-- **Headless**: Zero UI. Brings your own components.
-- **Backend-Agnostic**: `siwx-server` works with Next.js, NestJS, Hono, Express, Cloudflare Workers.
-- **No State in the SDK**: `siwx-react` manages client session state independently.
-- **Strict CAIP-122**: Every message is spec-compliant. Parser and builder are round-trip compatible.
+import { nonceStore, sessionStore } from '@/lib/authStores'; // your SiwxNonceStore and SiwxSessionStore (e.g. Redis)
+
+export const { GET, POST, DELETE } = createSiwxApiHandler({
+  sessionStore,
+  nonceStore,
+  policy: { expectedDomain: 'app.tuwa.io', requireExpirationTime: true, maxIssuedAtAgeSeconds: 300 },
+});
+```
+
+```tsx
+// components/SignInButton.tsx
+import { createEvmSiwxSigner } from '@tuwaio/siwx-evm';
+import { useSiwx, useSiwxSession } from '@tuwaio/siwx-react';
+import type { Config } from '@wagmi/core';
+
+export function SignInButton({ wagmiConfig, address }: { wagmiConfig: Config; address: string }) {
+  const { signIn } = useSiwx();
+  const { isAuthenticated, session } = useSiwxSession();
+
+  const handleSignIn = () =>
+    signIn({
+      signer: createEvmSiwxSigner(wagmiConfig),
+      getNonce: async () => ((await (await fetch('/api/siwx/nonce')).json()) as { nonce: string }).nonce,
+      verifier: async (payload) => {
+        const response = await fetch('/api/siwx/verify', { method: 'POST', body: JSON.stringify(payload) });
+        return response.ok ? response.json() : null;
+      },
+      fields: {
+        domain: window.location.host,
+        uri: window.location.origin,
+        address: `eip155:1:${address}`,
+        chainId: 'eip155:1',
+        statement: 'Sign in to TUWA.',
+      },
+    });
+
+  return isAuthenticated ? <span>{session?.address}</span> : <button onClick={handleSignIn}>Sign in</button>;
+}
+```
+
+On the server, read the session with `getSiwxServerSession` from `@tuwaio/siwx-server`. For Solana, use `createSolanaSiwxSigner` from `@tuwaio/siwx-solana` and a `solana:` address and chain ID; the same route verifies both.
 
 ---
 
-## ⚙️ Monorepo Development
+## 🛠️ Development
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Lint
-pnpm lint
-
-# Format
-pnpm format
-
-# Generate API docs
-pnpm docs:gen
+pnpm install                         # installs dependencies and builds all packages
+pnpm build                           # builds packages with tsup (ESM, CJS, types)
+pnpm test                            # runs vitest in every package
+pnpm lint                            # runs ESLint
+pnpm docs:gen                        # regenerates the Packages reference in apps/docs
+pnpm --filter @tuwaio/siwx-docs dev  # runs the docs site locally
 ```
+
+The Packages reference is generated from each package's entry points (`src/index.ts`, plus `src/next.ts` for `siwx-server`), JSDoc and README, and is regenerated by the pre-commit hook. Source links point to `main`, so a regeneration only changes the pages whose source actually changed.
 
 ---
 

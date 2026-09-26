@@ -1,16 +1,18 @@
 /**
- * @fileoverview CAIP-122 compliant message builder.
+ * @file CAIP-122 compliant message builder.
  * Generates the human-readable sign-in message string from structured fields.
  */
 
 import type { SiwxMessageFields } from './types';
 
 /**
- * Builds a CAIP-122 compliant sign-in message string from the provided fields.
- * The output format follows the EIP-4361 / CAIP-122 specification exactly.
+ * Formats CAIP-122 message fields into the plain-text message that the wallet signs (the EIP-4361 layout used by
+ * CAIP-122). Optional fields are omitted when empty.
  *
- * @param fields - The structured fields to encode into the message.
- * @returns A formatted, human-readable message string ready for wallet signing.
+ * Pure function: it does not validate the fields. Run {@link validateMessage} first if the input is untrusted.
+ *
+ * @param fields - The message fields to format.
+ * @returns The message lines joined with `\n`, ready to be signed and parseable by {@link parseMessage}.
  *
  * @example
  * ```ts

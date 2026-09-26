@@ -1,5 +1,5 @@
 /**
- * @fileoverview EVM signature verification utilities for CAIP-122 messages.
+ * @file EVM signature verification utilities for CAIP-122 messages.
  * Supports both EIP-191 (standard EOA wallets) and EIP-1271 (smart contract wallets).
  */
 
@@ -49,12 +49,18 @@ function extractEvmAddress(caip10Address: string): Address {
 }
 
 /**
- * Verifies an EVM (eip155) CAIP-122 signature using EIP-191 (personal_sign).
- * This method is used for standard EOA (Externally Owned Account) wallets.
+ * Verifies an `eip155` CAIP-122 message signed with EIP-191 (`personal_sign`) by an EOA wallet.
  *
- * @param message - The raw CAIP-122 message string that was signed.
- * @param signature - The hex-encoded EIP-191 signature from the wallet.
- * @returns An `EvmVerifyResult` with `success: true` and the parsed message, or an error result.
+ * Parses the message, requires an `eip155` chain, runs `validateMessage` from `@tuwaio/siwx-core` (format,
+ * expiration, `notBefore` and an `issuedAt` in the future; no policy), recovers the signer from the signature and
+ * compares it with the message `address` case-insensitively.
+ * Runs locally, without RPC calls. Nonce, domain and policy checks are the caller's job (see `@tuwaio/siwx-server`).
+ *
+ * @param message - The exact CAIP-122 message string that was signed.
+ * @param signature - The hex-encoded signature returned by the wallet.
+ * @param options - Verification options; only `skipExpiration` is used.
+ * @returns `{ success: true, data, method: 'eip191' }`, or `{ success: false, error }`. Never throws: parse,
+ * validation and recovery errors are returned as `error`.
  *
  * @example
  * ```ts
@@ -101,15 +107,17 @@ export async function verifyEip191(
 }
 
 /**
- * Verifies an EVM (eip155) CAIP-122 signature using EIP-1271 (`isValidSignature`).
- * This method is used for smart contract wallets (e.g., Safe, Argent, Gnosis).
+ * Verifies an `eip155` CAIP-122 message signed by a smart contract wallet (e.g. Safe) using EIP-1271.
  *
- * Falls back gracefully if the `publicClient` is not provided.
+ * Parses and validates the message like {@link verifyEip191}, then calls `isValidSignature(hash, signature)` on the
+ * message `address` through `options.publicClient` and expects the magic value `0x1626ba7e`.
+ * Side effect: one `eth_call` to the RPC endpoint of the client.
  *
- * @param message - The raw CAIP-122 message string that was signed.
- * @param signature - The hex-encoded signature from the smart contract wallet.
- * @param options - Options including the `publicClient` to use for on-chain calls.
- * @returns An `EvmVerifyResult` with `success: true` and the parsed message, or an error result.
+ * @param message - The exact CAIP-122 message string that was signed.
+ * @param signature - The hex-encoded signature returned by the wallet.
+ * @param options - Must contain `publicClient`; `skipExpiration` is optional.
+ * @returns `{ success: true, data, method: 'eip1271' }`, or `{ success: false, error }` (also when
+ * `publicClient` is missing or the contract call fails). Never throws.
  *
  * @example
  * ```ts
@@ -165,14 +173,16 @@ export async function verifyEip1271(
 }
 
 /**
- * Universal EVM signature verifier for CAIP-122 messages.
- * Tries EIP-191 (standard EOA ecrecover) first.
- * If EIP-191 fails and a `publicClient` is provided, automatically falls back to EIP-1271 (`isValidSignature`).
+ * Verifies an `eip155` CAIP-122 signature from an EOA or a smart contract wallet.
  *
- * @param message - The raw CAIP-122 message string that was signed.
- * @param signature - The hex-encoded signature from the wallet.
- * @param options - Options including optional `publicClient` for smart contract wallets.
- * @returns An `EvmVerifyResult` indicating success or failure and the method used (`eip191` or `eip1271`).
+ * Tries {@link verifyEip191} first. If it fails and `options.publicClient` is set, falls back to
+ * {@link verifyEip1271} (one on-chain `eth_call`).
+ *
+ * @param message - The exact CAIP-122 message string that was signed.
+ * @param signature - The hex-encoded signature returned by the wallet.
+ * @param options - `publicClient` enables the EIP-1271 fallback; `skipExpiration` is passed to both checks.
+ * @returns The first successful result (with `method`), otherwise the failed result of the last check that ran.
+ * Never throws.
  *
  * @example
  * ```ts

@@ -1,9 +1,10 @@
 /**
- * @fileoverview Solana signer adapter for SIWX authentication.
+ * @file Solana signer adapter for SIWX authentication.
  */
 
 import type { Address, MessageModifyingSigner, SignableMessage, SignatureBytes } from '@solana/kit';
 import { createSignableMessage, getBase58Decoder, getUtf8Encoder } from '@solana/kit';
+import type { Wallet, WalletAccount } from '@wallet-standard/base';
 
 export interface SolanaSignMessageInput {
   readonly account: unknown;
@@ -23,14 +24,44 @@ export interface SolanaSignMessageFeature {
 }
 
 /**
- * Target input for the Solana SIWX signer.
- * Accepts raw wallet and account objects, or a unified signer object.
+ * A Wallet Standard wallet and the account to sign with. The wallet must provide the `solana:signMessage` feature.
  */
-export interface SolanaSiwxSignerTarget {
-  account?: Record<string, unknown>;
-  wallet?: Record<string, unknown>;
-  [key: string]: unknown;
+export interface SolanaWalletStandardSignerTarget {
+  /** The Wallet Standard wallet. */
+  wallet: Wallet;
+  /** The connected account, one of `wallet.accounts`. Its `address` identifies the signature. */
+  account: WalletAccount;
 }
+
+/**
+ * A legacy wallet adapter (for example from `@solana/wallet-adapter-react`) that signs raw message bytes.
+ */
+export interface SolanaLegacyMessageSigner {
+  /**
+   * Signs the message bytes.
+   * @param message - UTF-8 bytes of the message.
+   * @returns The 64-byte ed25519 signature, or an object that contains it.
+   */
+  signMessage(message: Uint8Array): Promise<Uint8Array | { signature: Uint8Array }>;
+}
+
+/**
+ * What {@link createSolanaSiwxSigner} can sign with:
+ *
+ * - a Wallet Standard `{ wallet, account }` pair ({@link SolanaWalletStandardSignerTarget});
+ * - an `@solana/kit` `MessageModifyingSigner`;
+ * - a legacy adapter with `signMessage(bytes)` ({@link SolanaLegacyMessageSigner});
+ * - any `{ wallet, account }` objects with one of these capabilities, such as a wallet exposing an `adapter` or a
+ *   `signMessages` method.
+ *
+ * The signer uses the first capability it finds: `modifyAndSignMessages`, the `solana:signMessage` feature of
+ * `wallet.features`, a `signMessages` method, or a `signMessage` method (also looked up on `adapter`).
+ */
+export type SolanaSiwxSignerTarget =
+  | SolanaWalletStandardSignerTarget
+  | MessageModifyingSigner
+  | SolanaLegacyMessageSigner
+  | { wallet?: object; account?: object };
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a === b) return true;
@@ -191,11 +222,22 @@ function createMessageModifyingSigner(
 }
 
 /**
- * Creates a standard SIWX signer callback for Solana chains.
- * Automatically adapts to Wallet Standard, Web3 v2 (@solana/kit), or legacy Solana signers.
+ * Creates a SIWX signer for Solana wallets: a function that signs a message (UTF-8 bytes) with the wallet and returns
+ * the ed25519 signature as a base58 string. Pass it as `signer` to `useSiwx().signIn` from `@tuwaio/siwx-react`.
  *
- * @param target - A Solana signer target containing raw wallet and account, or a direct signer instance.
- * @returns A standardized signer function accepting a message string and returning a promise with the base58 signature.
+ * Works with Wallet Standard wallets, `@solana/kit` message signers and legacy adapters; see
+ * {@link SolanaSiwxSignerTarget} for how the signing method is chosen.
+ *
+ * @param target - The Wallet Standard wallet and account, an `@solana/kit` message signer or a legacy adapter.
+ * @returns An async signer. Calling it opens the wallet signature prompt; it rejects with an `Error` whose message
+ * starts with `[SIWX-SOLANA] Signing failed:` (original error in `cause`) when the target has no signing
+ * capability, the wallet rejects, or no signature is returned for the account address.
+ *
+ * @example
+ * ```ts
+ * const signer = createSolanaSiwxSigner({ wallet, account });
+ * const signature = await signer(message);
+ * ```
  */
 export function createSolanaSiwxSigner(target: SolanaSiwxSignerTarget) {
   return async (message: string): Promise<string> => {
@@ -204,8 +246,9 @@ export function createSolanaSiwxSigner(target: SolanaSiwxSignerTarget) {
         throw new Error('[SIWX-SOLANA] Invalid signer target.');
       }
 
-      const wallet = (target.wallet ?? target) as Record<string, unknown>;
-      const account = (target.account ?? target) as Record<string, unknown>;
+      const { wallet: targetWallet, account: targetAccount } = target as { wallet?: object; account?: object };
+      const wallet = (targetWallet ?? target) as Record<string, unknown>;
+      const account = (targetAccount ?? target) as Record<string, unknown>;
 
       const encoder = getUtf8Encoder();
       const messageBytes = encoder.encode(message) as unknown as Uint8Array;

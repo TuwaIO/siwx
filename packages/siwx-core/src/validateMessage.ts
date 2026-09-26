@@ -1,5 +1,5 @@
 /**
- * @fileoverview CAIP-122 message field validators.
+ * @file CAIP-122 message field validators.
  * Provides individual validators and a composite `validateMessage` function.
  */
 
@@ -126,12 +126,18 @@ function validateExpiration(
 }
 
 /**
- * Validates a CAIP-122 message object against an optional verification policy.
+ * Checks message fields against a {@link SiwxVerificationPolicy}: domain, URI, allowed chains, required
+ * `expirationTime`, `issuedAt` age and future skew, `notBefore` and maximum session lifetime. See the policy fields
+ * for the exact matching rules.
  *
- * @param fields - The message fields to validate.
- * @param policy - The verification policy to enforce.
- * @param now - Reference date for timestamp validations (defaults to new Date()).
- * @returns An array of policy violation error messages.
+ * Pure function; it reports violations instead of throwing and does not check field formats (see
+ * {@link validateMessage}, which always runs this function).
+ *
+ * @param fields - The message fields to check.
+ * @param policy - The policy to enforce. When omitted, no check runs and an empty array is returned; an empty
+ * object still applies the `issuedAt` future skew and `notBefore` checks.
+ * @param now - Reference time for the timing checks. Defaults to the current time.
+ * @returns A human-readable description of every violation; empty when the fields satisfy the policy.
  */
 export function validatePolicy(
   fields: SiwxMessageFields,
@@ -170,16 +176,9 @@ export function validatePolicy(
     }
   }
 
-  // 3. Allowed chain IDs
+  // 3. Allowed chain IDs (exact CAIP-2 match, so `eip155:1` never allows `solana:1`)
   if (policy.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
-    const fieldChainStr = String(fields.chainId);
-    const fieldRawChain = fieldChainStr.includes(':') ? fieldChainStr.split(':').pop()! : fieldChainStr;
-    const isChainAllowed = policy.allowedChainIds.some((allowed) => {
-      const allowedStr = String(allowed);
-      const allowedRaw = allowedStr.includes(':') ? allowedStr.split(':').pop()! : allowedStr;
-      return allowedStr === fieldChainStr || allowedRaw === fieldRawChain;
-    });
-    if (!isChainAllowed) {
+    if (!policy.allowedChainIds.includes(fields.chainId)) {
       errors.push(`Chain ID "${fields.chainId}" is not allowed. Allowed: [${policy.allowedChainIds.join(', ')}]`);
     }
   }
@@ -238,12 +237,21 @@ export function validatePolicy(
 }
 
 /**
- * Validates all fields of a CAIP-122 message object.
- * Collects all errors and returns them together rather than failing on the first.
+ * Validates the format of CAIP-122 message fields and, optionally, a verification policy. Collects every failure
+ * instead of stopping at the first one.
+ *
+ * Checks: non-empty single-line `domain`, CAIP-10 `address`, `http(s)://` `uri`, `version` `"1"`, CAIP-2 `chainId`,
+ * alphanumeric `nonce` of at least 8 characters, ISO 8601 `issuedAt` / `expirationTime` / `notBefore`, single-line
+ * `statement`, and that `expirationTime` (plus the policy clock skew, 60 seconds by default) has not passed.
+ * Then it runs {@link validatePolicy} with `options.policy`, or with an empty policy: so `issuedAt` in the future
+ * and a `notBefore` that has not been reached are always rejected (unless `enforceNotBefore` is `false`), and the
+ * other policy rules apply only when set. Timing checks use the current time.
+ *
+ * Does not verify the signature; the chain packages and `@tuwaio/siwx-server` do that and call this function.
  *
  * @param fields - The message fields to validate.
- * @param options - Optional validation options or verification policy.
- * @returns A `SiwxValidationResult` with `valid: true` or a list of errors.
+ * @param options - Skip the expiration check or enforce a {@link SiwxVerificationPolicy} (see {@link validatePolicy}).
+ * @returns `{ valid: true, errors: [] }`, or `valid: false` with a description of every failed check.
  *
  * @example
  * ```ts
@@ -301,20 +309,18 @@ export function validateMessage(fields: SiwxMessageFields, options?: ValidateMes
     errors.push('statement must not contain newline characters.');
   }
 
-  // Enforce policy if supplied
-  if (options?.policy) {
-    const policyErrors = validatePolicy(fields, options.policy);
-    errors.push(...policyErrors);
-  }
+  // Timing rules (future issuedAt, notBefore) apply even without a policy; the other rules only when set.
+  errors.push(...validatePolicy(fields, options?.policy ?? {}));
 
   return { valid: errors.length === 0, errors };
 }
 
 /**
- * Generates a cryptographically secure random nonce string suitable for CAIP-122 messages.
- * Produces a 16-byte random hex string (32 characters).
+ * Generates a random CAIP-122 nonce: 16 bytes from `globalThis.crypto.getRandomValues`, hex-encoded.
+ * Works in browsers, Node.js 20+ and edge runtimes that provide the Web Crypto API.
  *
- * @returns A 32-character hexadecimal nonce string.
+ * @returns A 32-character lowercase hexadecimal string.
+ * @throws {TypeError} If `globalThis.crypto` is not available in the runtime.
  *
  * @example
  * ```ts
@@ -330,25 +336,34 @@ export function generateNonce(): string {
 }
 
 /**
- * Minimal interface for a SIWX session or parsed CAIP-122 message.
+ * Minimal shape of a SIWX session or parsed CAIP-122 message accepted by {@link isSessionMatchingTarget}.
  */
 export interface SiwxSessionLike {
+  /** CAIP-10 account ID of the session, e.g. `eip155:1:0xAb58…`. */
   address: string;
+  /** CAIP-2 chain ID of the session, e.g. `eip155:1`. */
   chainId?: string;
 }
 
 /**
- * Validates whether a SIWX session matches a target wallet address and optional chainId.
- * Handles EVM case-insensitivity, Solana case-sensitivity, and CAIP-10/CAIP-2 normalization.
+ * Checks whether a SIWX session belongs to a given wallet address and, optionally, chain. Use it on the server to
+ * make sure the signed-in account is the one a request acts on.
  *
- * @param session - Active SIWX session or parsed message
- * @param targetAddress - Target account address (plain or CAIP-10)
- * @param targetChainId - Target chain reference or CAIP-2 identifier
- * @returns True if the session matches the target address and chainId; false otherwise.
+ * A target that starts with `0x` or `eip155:` is treated as EVM and only matches `eip155:` sessions, compared
+ * case-insensitively; any other target only matches `solana:` sessions, compared case-sensitively. The chain is
+ * compared only when `targetChainId` is given and the session has a `chainId`.
+ *
+ * @param session - The session or parsed message to check. `null` and `undefined` never match.
+ * @param targetAddress - The expected account, as a plain address or a CAIP-10 account ID.
+ * @param targetChainId - Optional expected chain, as a chain reference (`1`, `'1'`) or a CAIP-2 ID (`'eip155:1'`).
+ * @returns `true` if the session matches the address and, when given, the chain; otherwise `false`.
  *
  * @example
  * ```ts
- * const isValid = isSessionMatchingTarget(session, '0x123...', 1);
+ * const session = { address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', chainId: 'eip155:1' };
+ *
+ * isSessionMatchingTarget(session, '0xab5801a7d398351b8be11c439e05c5b3259aec9b', 1); // true
+ * isSessionMatchingTarget(session, '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', 'eip155:10'); // false
  * ```
  */
 export function isSessionMatchingTarget(

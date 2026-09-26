@@ -274,6 +274,15 @@ describe('generateNonce()', () => {
       expect(invalid.errors.some((e) => e.includes('Chain ID "eip155:1" is not allowed'))).toBe(true);
     });
 
+    it('matches allowedChainIds exactly, not by chain reference', () => {
+      const bareReference = validateMessage(VALID_FIELDS, { policy: { allowedChainIds: ['1'] } });
+      expect(bareReference.valid).toBe(false);
+
+      const otherNamespace = validateMessage(VALID_FIELDS, { policy: { allowedChainIds: ['solana:1'] } });
+      expect(otherNamespace.valid).toBe(false);
+      expect(otherNamespace.errors.some((e) => e.includes('Chain ID "eip155:1" is not allowed'))).toBe(true);
+    });
+
     it('enforces requireExpirationTime', () => {
       const withoutExp = { ...VALID_FIELDS, expirationTime: undefined };
       const res = validateMessage(withoutExp, {
@@ -306,6 +315,28 @@ describe('generateNonce()', () => {
       });
       expect(res.valid).toBe(false);
       expect(res.errors.some((e) => e.includes('exceeds maximum allowed lifetime'))).toBe(true);
+    });
+  });
+
+  describe('timing rules without a policy', () => {
+    it('rejects a notBefore that has not been reached', () => {
+      const result = validateMessage({ ...VALID_FIELDS, notBefore: '2099-01-01T00:00:00.000Z' });
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('not valid before'))).toBe(true);
+    });
+
+    it('accepts a future notBefore when enforceNotBefore is false', () => {
+      const result = validateMessage(
+        { ...VALID_FIELDS, notBefore: '2099-01-01T00:00:00.000Z' },
+        { policy: { enforceNotBefore: false } },
+      );
+      expect(result.valid).toBe(true);
+    });
+
+    it('rejects an issuedAt in the future beyond the default clock skew', () => {
+      const result = validateMessage({ ...VALID_FIELDS, issuedAt: new Date(Date.now() + 5 * 60 * 1000).toISOString() });
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('in the future'))).toBe(true);
     });
   });
 });
