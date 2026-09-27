@@ -3,6 +3,10 @@
 [![License](https://img.shields.io/npm/l/@tuwaio/siwx-core.svg)](./LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TuwaIO/siwx/release.yml?branch=main)](https://github.com/TuwaIO/siwx/actions)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/TuwaIO/workflows/refs/heads/main/preview/repos/siwx.png" alt="SIWX" width="450" style="border-radius: 12px; margin: 24px auto;" />
+</p>
+
 **SIWX** (Sign-In With X) is the authentication project of TUWA Stage 1: headless, framework-agnostic sign-in for EVM and Solana accounts, built on the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard. It builds and signs chain-agnostic sign-in messages, verifies them on your backend with single-use nonces and cookie sessions, and tracks the sign-in state in React, with no UI components and no hosted services.
 
 SIWX is built only on modern Web3 libraries: `viem` and `@wagmi/core` for EVM, `@solana/kit` and the Web Crypto API for Solana. It does not use `ethers.js`, `web3.js`, `@solana/web3.js` or `gill`, and it does not depend on any authentication platform or Wallet-as-a-Service.
