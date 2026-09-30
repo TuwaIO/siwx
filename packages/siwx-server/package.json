@@ -95,6 +95,6 @@
     "@tuwaio/siwx-solana": "workspace:*",
     "tsup": "^8.5.1",
     "typescript": "6.0.3",
-    "viem": "^2.56.9"
+    "viem": "^2.57.1"
   }
 }
