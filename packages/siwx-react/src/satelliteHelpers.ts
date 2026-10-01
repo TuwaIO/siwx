@@ -15,11 +15,11 @@ export interface MinimalSatelliteConnection {
   chainId?: string | number;
   /** Signs a message with the connected wallet. Returned by {@link createSatelliteSiwxSigner}. */
   signMessage?: (message: string) => Promise<string>;
-  /** EVM connector. Its presence marks the connection as EVM in {@link getSatelliteSiwxFields}. */
-  connector?: {
-    /** Returns the wallet client of the connector. Not read by the helpers. */
-    getWalletClient?: () => Promise<unknown>;
-  };
+  /**
+   * EVM connector, for example the wagmi `Connector` of an `EVMConnection` from `@tuwaio/satellite-evm`. Only its
+   * presence is read: it marks the connection as EVM in {@link getSatelliteSiwxFields}.
+   */
+  connector?: object;
   /** Connected account object of the wallet library. Not read by the helpers. */
   connectedAccount?: unknown;
   /** Connected wallet object of the wallet library. Not read by the helpers. */

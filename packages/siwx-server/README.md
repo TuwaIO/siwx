@@ -113,7 +113,7 @@ export const { GET, POST, DELETE } = createSiwxApiHandler({
   policy: {
     expectedDomain: 'app.tuwa.io',
     expectedUri: 'https://app.tuwa.io',
-    allowedChainIds: ['eip155:1', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK'],
+    allowedChainIds: ['eip155:1', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'],
     requireExpirationTime: true,
     maxIssuedAtAgeSeconds: 300,
   },

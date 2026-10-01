@@ -36,10 +36,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });
@@ -54,7 +54,7 @@ describe('verifyEd25519()', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.data?.address).toBe(`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`);
+    expect(result.data?.address).toBe(`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`);
   });
 
   it('fails verification when message is tampered', async () => {
@@ -65,10 +65,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });
@@ -119,10 +119,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2020-01-01T00:00:00.000Z',
       expirationTime: '2020-01-02T00:00:00.000Z',
@@ -144,10 +144,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2020-01-01T00:00:00.000Z',
       expirationTime: '2020-01-02T00:00:00.000Z',
@@ -168,10 +168,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
       notBefore: '2099-01-01T00:00:00.000Z',
@@ -193,10 +193,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });
@@ -217,10 +217,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });
@@ -245,10 +245,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });
@@ -263,7 +263,7 @@ describe('verifyEd25519()', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.data?.address).toBe(`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`);
+    expect(result.data?.address).toBe(`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`);
   });
 
   it('successfully verifies a nested output object structure', async () => {
@@ -273,10 +273,10 @@ describe('verifyEd25519()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:${solanaAddress}`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });

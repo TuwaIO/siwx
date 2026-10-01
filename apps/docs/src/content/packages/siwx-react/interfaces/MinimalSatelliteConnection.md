@@ -51,19 +51,10 @@ Connected wallet object of the wallet library. Not read by the helpers.
 
 > `optional` **connector?**: `object`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:19](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L19)
+Defined in: [siwx-react/src/satelliteHelpers.ts:22](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L22)
 
-EVM connector. Its presence marks the connection as EVM in [getSatelliteSiwxFields](/packages/siwx-react/functions/getSatelliteSiwxFields.md).
-
-#### getWalletClient?
-
-> `optional` **getWalletClient?**: () => `Promise`\<`unknown`\>
-
-Returns the wallet client of the connector. Not read by the helpers.
-
-##### Returns
-
-`Promise`\<`unknown`\>
+EVM connector, for example the wagmi `Connector` of an `EVMConnection` from `@tuwaio/satellite-evm`. Only its
+presence is read: it marks the connection as EVM in [getSatelliteSiwxFields](/packages/siwx-react/functions/getSatelliteSiwxFields.md).
 
 ***
 

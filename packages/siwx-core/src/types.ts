@@ -14,7 +14,7 @@ export type SiwxChainNamespace = 'eip155' | 'solana';
  * A CAIP-2 chain ID in a supported namespace: `{namespace}:{reference}`.
  *
  * @example "eip155:1" (Ethereum Mainnet)
- * @example "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK" (Solana Mainnet)
+ * @example "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp" (Solana Mainnet)
  */
 export type SiwxChainId = `${SiwxChainNamespace}:${string}`;
 
@@ -129,7 +129,7 @@ export interface SiwxVerificationPolicy {
   /**
    * Allowed CAIP-2 chain IDs. The message `chainId` must equal one of them exactly (bare references such as `"1"`
    * never match). An empty array allows every chain.
-   * @example ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK"]
+   * @example ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"]
    */
   allowedChainIds?: string[];
 

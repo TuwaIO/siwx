@@ -66,11 +66,11 @@ describe('buildMessage()', () => {
   it('produces a Solana CAIP-122 message when using solana namespace', () => {
     const result = buildMessage({
       ...MINIMAL_FIELDS,
-      address: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+      address: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
     });
-    expect(result).toContain('Chain ID: solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK');
-    expect(result).toContain('solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG');
+    expect(result).toContain('Chain ID: solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp');
+    expect(result).toContain('solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG');
   });
 
   it('builds the full message with ALL optional fields', () => {

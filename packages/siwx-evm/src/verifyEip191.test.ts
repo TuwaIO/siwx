@@ -78,10 +78,10 @@ describe('verifyEip191()', () => {
 
     const message = buildMessage({
       domain: 'app.tuwa.io',
-      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG`,
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG`,
       uri: 'https://app.tuwa.io',
       version: '1',
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK' as unknown as `eip155:1`,
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' as unknown as `eip155:1`,
       nonce: 'a4f3b2c1d0e5f678',
       issuedAt: '2026-08-06T08:00:00.000Z',
     });

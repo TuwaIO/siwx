@@ -61,8 +61,8 @@ describe('validateMessage()', () => {
     it('accepts a valid Solana CAIP-10 address', () => {
       const result = validateMessage({
         ...VALID_FIELDS,
-        address: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
-        chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
+        address: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
+        chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
         // Skip future expiry just for this test
         expirationTime: undefined,
       });
@@ -108,8 +108,8 @@ describe('validateMessage()', () => {
     it('accepts a valid Solana chainId', () => {
       const result = validateMessage({
         ...VALID_FIELDS,
-        chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK',
-        address: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
+        chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+        address: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
         expirationTime: undefined,
       });
       expect(result.valid).toBe(true);

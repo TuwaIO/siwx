@@ -24,7 +24,7 @@ never match). An empty array allows every chain.
 #### Example
 
 ```ts
-["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK"]
+["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"]
 ```
 
 ***

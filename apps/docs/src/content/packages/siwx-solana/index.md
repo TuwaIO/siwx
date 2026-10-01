@@ -72,7 +72,7 @@ declare const signature: string; // base58, as returned by createSolanaSiwxSigne
 const result = await verifyEd25519({ message, signature });
 
 if (result.success) {
-  console.log(result.data?.address); // "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK:…"
+  console.log(result.data?.address); // "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:…"
 } else {
   console.error(result.error);
 }

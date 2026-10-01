@@ -13,5 +13,5 @@ A CAIP-2 chain ID in a supported namespace: `{namespace}:{reference}`.
 ```
 
 ```ts
-"solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpK" (Solana Mainnet)
+"solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp" (Solana Mainnet)
 ```

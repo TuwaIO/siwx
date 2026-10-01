@@ -19,6 +19,21 @@ describe('getSatelliteSiwxFields', () => {
     expect(new Date(fields.expirationTime!).getTime()).toBeGreaterThan(Date.now());
   });
 
+  it('should accept a wagmi-shaped connector and treat the connection as EVM', () => {
+    // A typed connector without the optional fields of an inline literal, like the wagmi `Connector` of a
+    // Satellite `EVMConnection`: it must type-check and its presence alone marks the connection as EVM
+    const connector: { id: string; name: string; type: string } = {
+      id: 'injected',
+      name: 'Injected',
+      type: 'injected',
+    };
+    const activeConnection = { address: 'abc', chainId: '137', connector };
+
+    const fields = getSatelliteSiwxFields(activeConnection);
+    expect(fields.chainId).toBe('eip155:137');
+    expect(fields.address).toBe('eip155:137:abc');
+  });
+
   it('should support custom expirationSeconds', () => {
     const activeConnection = {
       address: '0x123abc',
