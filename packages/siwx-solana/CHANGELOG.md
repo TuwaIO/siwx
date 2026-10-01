@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.4.1...siwx-solana-v0.4.2) (2026-10-01)
+
+
+### Bug Fixes
+
+* updated docs and minor code fix ([9b08db1](https://github.com/TuwaIO/siwx/commit/9b08db1898f02d2ad4e25591b0a074e2251c8280))
+
 ## [0.4.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.4.0...siwx-solana-v0.4.1) (2026-09-30)
 
 
