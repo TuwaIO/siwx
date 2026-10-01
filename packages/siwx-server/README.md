@@ -165,11 +165,13 @@ import { createStatelessDemoSiwxHandler } from '@tuwaio/siwx-server/next';
 
 const signingSecret = process.env.SIWX_DEMO_SIGNING_SECRET; // server-only, at least 32 characters
 if (!signingSecret) throw new Error('SIWX_DEMO_SIGNING_SECRET is not set');
+const appUrl = new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'); // the origin users open
 
 export const { GET, POST, DELETE } = createStatelessDemoSiwxHandler({
   signingSecret,
   policy: {
-    expectedDomain: 'demo.tuwa.io',
+    expectedDomain: appUrl.host,
+    expectedUri: appUrl.origin,
     requireExpirationTime: true,
     maxIssuedAtAgeSeconds: 300,
     maxSessionLifetimeSeconds: 30 * 60,
