@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.4.0...siwx-react-v0.4.1) (2026-10-01)
+
+
+### Bug Fixes
+
+* updated docs and minor code fix ([9b08db1](https://github.com/TuwaIO/siwx/commit/9b08db1898f02d2ad4e25591b0a074e2251c8280))
+
 ## [0.4.0](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.3.0...siwx-react-v0.4.0) (2026-09-26)
 
 
