@@ -14,6 +14,7 @@
 - **Web3 (Solana):** `@solana/kit` (peer `>=8.2`) and `@wallet-standard/base` (peer `>=1.1.1`, types of the signer target) — peer dependencies of `siwx-solana`. ed25519 verification uses the Web Crypto API (`crypto.subtle`).
 - **React:** `react` (peer `>=19.2.3`), `zustand` v5 (peer `>=5`) with the `immer` (peer `>=11`) and `persist` middlewares. The verified session is saved to `localStorage` (`siwx-react:session`) and restored after mount.
 - **Server:** `siwx-server` has `@tuwaio/siwx-core` as a required peer and `@tuwaio/siwx-evm`, `@tuwaio/siwx-solana`, `viem` as optional peers (`peerDependenciesMeta`).
+- **Peers between SIWX packages:** plain `>=` ranges with the lowest version the package needs (e.g. `"@tuwaio/siwx-core": ">=0.5"`); `devDependencies` keep `workspace:*`. Never use `workspace:*` in `peerDependencies`: `pnpm publish` turns it into the exact version, so every `siwx-core` release would leave the other published packages asking for the old one (and installs a second `siwx-core`).
 - **Frameworks:**
   - `apps/docs`: Next.js v16, Nextra v4, Tailwind CSS v4, `@tuwaio/docs-ui`, Pagefind.
   - `packages/*`: Framework Agnostic, except `siwx-react` (React) and `siwx-server/next` (Next.js App Router shaped, but only uses Web `Request`/`Response`).

@@ -54,7 +54,7 @@
     }
   ],
   "peerDependencies": {
-    "@tuwaio/siwx-core": "workspace:*",
+    "@tuwaio/siwx-core": ">=0.4.1",
     "@wagmi/core": ">=3",
     "viem": ">=2"
   },

@@ -73,9 +73,9 @@
     }
   ],
   "peerDependencies": {
-    "@tuwaio/siwx-core": "workspace:*",
-    "@tuwaio/siwx-evm": "workspace:*",
-    "@tuwaio/siwx-solana": "workspace:*",
+    "@tuwaio/siwx-core": ">=0.5",
+    "@tuwaio/siwx-evm": ">=0.4.2",
+    "@tuwaio/siwx-solana": ">=0.4.2",
     "viem": ">=2"
   },
   "peerDependenciesMeta": {
