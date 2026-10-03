@@ -1,7 +1,7 @@
 {
   "packages/siwx-core": "0.5.0",
-  "packages/siwx-evm": "0.4.2",
-  "packages/siwx-solana": "0.4.2",
-  "packages/siwx-react": "0.5.0",
-  "packages/siwx-server": "0.5.0"
+  "packages/siwx-evm": "0.4.3",
+  "packages/siwx-solana": "0.4.3",
+  "packages/siwx-react": "0.5.1",
+  "packages/siwx-server": "0.5.1"
 }
