@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.4.3...siwx-server-v0.5.0) (2026-10-03)
+
+
+### Features
+
+* updated solana chain id logic ([af70deb](https://github.com/TuwaIO/siwx/commit/af70deb941e25a38a8703e95f631f599187f976e))
+
 ## [0.4.3](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.4.2...siwx-server-v0.4.3) (2026-10-01)
 
 
