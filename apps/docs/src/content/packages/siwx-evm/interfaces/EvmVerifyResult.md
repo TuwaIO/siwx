@@ -14,7 +14,7 @@ Result of an EVM verification, with the method that succeeded.
 
 > `optional` **data?**: [`SiwxMessageFields`](/packages/siwx-core/interfaces/SiwxMessageFields.md)
 
-Defined in: [siwx-core/src/types.ts:218](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L218)
+Defined in: [siwx-core/src/types.ts:219](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L219)
 
 The parsed message. Present only when `success` is `true`.
 
@@ -28,7 +28,7 @@ The parsed message. Present only when `success` is `true`.
 
 > `optional` **error?**: `string`
 
-Defined in: [siwx-core/src/types.ts:222](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L222)
+Defined in: [siwx-core/src/types.ts:223](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L223)
 
 Human-readable reason of the failure. Present only when `success` is `false`.
 
@@ -54,7 +54,7 @@ The verification method, set only when `success` is `true`.
 
 > **success**: `boolean`
 
-Defined in: [siwx-core/src/types.ts:214](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L214)
+Defined in: [siwx-core/src/types.ts:215](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L215)
 
 `true` when the message is valid and the signature matches its `address`.
 

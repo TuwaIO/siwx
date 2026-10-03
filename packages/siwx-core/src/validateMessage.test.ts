@@ -283,6 +283,28 @@ describe('generateNonce()', () => {
       expect(otherNamespace.errors.some((e) => e.includes('Chain ID "eip155:1" is not allowed'))).toBe(true);
     });
 
+    it('treats a Solana cluster name and its genesis-hash chain ID as the same allowed chain', () => {
+      const devnet = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
+      const solanaFields: SiwxMessageFields = {
+        ...VALID_FIELDS,
+        address: `${devnet}:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZAMdL4VZHirAn`,
+        chainId: devnet,
+      };
+
+      expect(validateMessage(solanaFields, { policy: { allowedChainIds: ['solana:devnet'] } }).valid).toBe(true);
+      expect(
+        validateMessage(
+          {
+            ...solanaFields,
+            address: 'solana:devnet:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZAMdL4VZHirAn',
+            chainId: 'solana:devnet',
+          },
+          { policy: { allowedChainIds: [devnet] } },
+        ).valid,
+      ).toBe(true);
+      expect(validateMessage(solanaFields, { policy: { allowedChainIds: ['solana:testnet'] } }).valid).toBe(false);
+    });
+
     it('enforces requireExpirationTime', () => {
       const withoutExp = { ...VALID_FIELDS, expirationTime: undefined };
       const res = validateMessage(withoutExp, {

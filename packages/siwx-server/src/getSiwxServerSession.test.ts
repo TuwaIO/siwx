@@ -197,4 +197,38 @@ describe('getSiwxServerSession()', () => {
       expect(session).toBeNull();
     });
   });
+
+  describe('Solana chain IDs', () => {
+    const devnet = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
+    const solanaSession: SiwxSession = {
+      ...sampleSession,
+      address: 'solana:devnet:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZAMdL4VZHirAn',
+      chainId: 'solana:devnet',
+    };
+
+    it('keeps a durable session signed for a cluster name when the policy lists its genesis-hash ID', async () => {
+      const sessionStore = new MemorySiwxSessionStore({ allowInProduction: true });
+      const record = await sessionStore.create({ session: solanaSession, ttlSeconds: 3600 });
+
+      const session = await getSiwxServerSession({
+        cookieSource: `siwx-session-v2=${record.id}`,
+        sessionStore,
+        policy: { allowedChainIds: [devnet] },
+      });
+
+      expect(session).toEqual(solanaSession);
+    });
+
+    it('keeps a demo token signed for a cluster name when the policy lists its genesis-hash ID', async () => {
+      const token = await signStatelessDemoSession(solanaSession, TEST_SECRET, 1800);
+
+      const session = await getSiwxServerSession({
+        cookieSource: `siwx-session-v2=${token}`,
+        signingSecret: TEST_SECRET,
+        policy: { allowedChainIds: [devnet] },
+      });
+
+      expect(session?.chainId).toBe('solana:devnet');
+    });
+  });
 });

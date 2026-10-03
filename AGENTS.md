@@ -40,6 +40,7 @@ siwx/
 │   │       ├── errors.ts            # SiwxError and subclasses (machine-readable `code`)
 │   │       ├── buildMessage.ts      # buildMessage()
 │   │       ├── parseMessage.ts      # parseMessage()
+│   │       ├── solanaChainId.ts     # normalizeSolanaChainId(), isChainIdAllowed()
 │   │       └── validateMessage.ts   # validateMessage(), validatePolicy(), generateNonce(), isSessionMatchingTarget()
 │   ├── siwx-evm/                    # L2: EVM (eip155)
 │   │   └── src/                     # signer.ts (createEvmSiwxSigner), verify.ts (EIP-191, EIP-1271), types.ts
@@ -57,7 +58,7 @@ siwx/
 
 ### Module Breakdown
 
-- **`siwx-core`**: Builds, parses and validates CAIP-122 messages, enforces verification policies, generates nonces, matches sessions to addresses. `parseMessage` throws `SiwxParseError`; the validators return results. Policy error classes exist but are not thrown by SIWX.
+- **`siwx-core`**: Builds, parses and validates CAIP-122 messages, enforces verification policies, generates nonces, matches sessions to addresses. Solana chain IDs use the genesis hash of CAIP-30 (`solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` for devnet); `normalizeSolanaChainId` maps the Wallet Standard names (`solana:devnet`), `solana:mainnet-beta` and the old testnet ID to it, so policies and session checks treat both forms as one chain. `parseMessage` throws `SiwxParseError`; the validators return results. Policy error classes exist but are not thrown by SIWX.
 - **`siwx-evm`**: `createEvmSiwxSigner` (wagmi `Config` or viem `WalletClient`), `verifyEip191` (local recovery), `verifyEip1271` (`isValidSignature` via a `PublicClient`), `verifyEvmSignature` (EIP-191 with EIP-1271 fallback). Verifiers never throw.
 - **`siwx-solana`**: `createSolanaSiwxSigner` (duck-typed: `@solana/kit` message signers, Wallet Standard `solana:signMessage`, legacy adapters), `verifyEd25519` (Web Crypto). No RPC calls.
 - **`siwx-react`**: `useSiwx` (`building` → `signing` → `verifying`), `useSiwxSession`, `useSiwxSessionStore` (zustand store; the session is persisted to `localStorage` and restored after mount, never during SSR), duck-typed Satellite Connect helpers. No UI components, no network calls of its own.
@@ -109,6 +110,7 @@ siwx/
   - Do **NOT** import `ethers.js` (We use `viem`).
   - Do **NOT** import `gill` (Eradicated; we use `@solana/kit` and Web Crypto).
   - Do **NOT** import legacy `@solana/web3.js` methods.
+  - Do **NOT** compare Solana chain IDs as plain strings or build them as `solana:${cluster}`: sessions signed before the switch carry `solana:devnet`, new ones the genesis-hash ID. Use `normalizeSolanaChainId` / `isChainIdAllowed`.
   - Do **NOT** assume Starknet or Cosmos support exists (v1 is EVM + Solana only).
   - Do **NOT** treat the persisted `siwx-react` session as proof of identity: it is UI state; servers verify the cookie.
   - Do **NOT** add UI components to any package (`siwx-react` ships only hooks and a store).

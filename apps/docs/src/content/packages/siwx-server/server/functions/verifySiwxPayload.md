@@ -2,7 +2,7 @@
 
 > **verifySiwxPayload**(`payload`, `options?`): `Promise`\<[`ServerVerifyResult`](/packages/siwx-server/server/interfaces/ServerVerifyResult.md)\>
 
-Defined in: [siwx-server/src/server.ts:46](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L46)
+Defined in: [siwx-server/src/server.ts:47](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L47)
 
 Verifies a signed CAIP-122 message on the server, for any supported chain.
 

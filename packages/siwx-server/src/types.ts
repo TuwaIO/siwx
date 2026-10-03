@@ -260,7 +260,9 @@ export interface GetSiwxServerSessionOptions {
 
   /**
    * Policy checked against the stored session. Only a subset applies: `expectedDomain`, `allowedChainIds` (exact
-   * match) and, for durable sessions, `requireExpirationTime`; for demo tokens, expiry with `clockSkewSeconds`.
+   * match, except that a Solana cluster matches under its name and its genesis-hash chain ID, so sessions signed for
+   * `solana:devnet` stay valid) and, for durable sessions, `requireExpirationTime`; for demo tokens, expiry with
+   * `clockSkewSeconds`.
    */
   policy?: SiwxVerificationPolicy;
 }

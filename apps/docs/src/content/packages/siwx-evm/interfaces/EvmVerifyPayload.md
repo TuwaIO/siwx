@@ -15,7 +15,7 @@ signature as separate arguments; this type is provided for typing request bodies
 
 > **message**: `string`
 
-Defined in: [siwx-core/src/types.ts:204](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L204)
+Defined in: [siwx-core/src/types.ts:205](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L205)
 
 The exact CAIP-122 message string that was signed.
 

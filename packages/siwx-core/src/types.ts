@@ -128,7 +128,8 @@ export interface SiwxVerificationPolicy {
 
   /**
    * Allowed CAIP-2 chain IDs. The message `chainId` must equal one of them exactly (bare references such as `"1"`
-   * never match). An empty array allows every chain.
+   * never match), except that a Solana cluster matches under its name and its genesis-hash chain ID (`solana:devnet`
+   * allows `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`, see `isChainIdAllowed`). An empty array allows every chain.
    * @example ["eip155:1", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"]
    */
   allowedChainIds?: string[];

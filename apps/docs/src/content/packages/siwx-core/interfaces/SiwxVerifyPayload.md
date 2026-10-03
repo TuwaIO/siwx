@@ -1,6 +1,6 @@
 # SiwxVerifyPayload
 
-Defined in: [types.ts:202](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L202)
+Defined in: [types.ts:203](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L203)
 
 A signed CAIP-122 message, as sent from the client to the verifier.
 
@@ -14,7 +14,7 @@ A signed CAIP-122 message, as sent from the client to the verifier.
 
 > **message**: `string`
 
-Defined in: [types.ts:204](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L204)
+Defined in: [types.ts:205](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L205)
 
 The exact CAIP-122 message string that was signed.
 
@@ -24,6 +24,6 @@ The exact CAIP-122 message string that was signed.
 
 > **signature**: `string`
 
-Defined in: [types.ts:206](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L206)
+Defined in: [types.ts:207](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L207)
 
 The wallet signature: hex (`0x…`) for EVM, base58 for Solana.

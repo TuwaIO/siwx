@@ -16,10 +16,11 @@ Always set at least `expectedDomain` on the server.
 
 > `optional` **allowedChainIds?**: `string`[]
 
-Defined in: [siwx-core/src/types.ts:134](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L134)
+Defined in: [siwx-core/src/types.ts:135](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L135)
 
 Allowed CAIP-2 chain IDs. The message `chainId` must equal one of them exactly (bare references such as `"1"`
-never match). An empty array allows every chain.
+never match), except that a Solana cluster matches under its name and its genesis-hash chain ID (`solana:devnet`
+allows `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`, see `isChainIdAllowed`). An empty array allows every chain.
 
 #### Example
 
@@ -33,7 +34,7 @@ never match). An empty array allows every chain.
 
 > `optional` **clockSkewSeconds?**: `number`
 
-Defined in: [siwx-core/src/types.ts:159](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L159)
+Defined in: [siwx-core/src/types.ts:160](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L160)
 
 Allowed clock difference between signer and verifier, in seconds. Applied to `issuedAt`, `notBefore` and
 `expirationTime` checks.
@@ -50,7 +51,7 @@ Allowed clock difference between signer and verifier, in seconds. Applied to `is
 
 > `optional` **enforceNotBefore?**: `boolean`
 
-Defined in: [siwx-core/src/types.ts:165](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L165)
+Defined in: [siwx-core/src/types.ts:166](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L166)
 
 Rejects messages whose `notBefore` is still in the future (beyond `clockSkewSeconds`).
 
@@ -103,7 +104,7 @@ starts with it followed by `/`, or has the same origin (scheme, host and port).
 
 > `optional` **maxIssuedAtAgeSeconds?**: `number`
 
-Defined in: [siwx-core/src/types.ts:146](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L146)
+Defined in: [siwx-core/src/types.ts:147](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L147)
 
 Maximum age of the message `issuedAt`, in seconds (plus `clockSkewSeconds`). Rejects stale messages.
 There is no default: when omitted, the age is not checked.
@@ -114,7 +115,7 @@ There is no default: when omitted, the age is not checked.
 
 > `optional` **maxSessionLifetimeSeconds?**: `number`
 
-Defined in: [siwx-core/src/types.ts:152](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L152)
+Defined in: [siwx-core/src/types.ts:153](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L153)
 
 Maximum signed session lifetime (`expirationTime - issuedAt`), in seconds. Checked only when the message
 has an `expirationTime`.
@@ -125,7 +126,7 @@ has an `expirationTime`.
 
 > `optional` **requireExpirationTime?**: `boolean`
 
-Defined in: [siwx-core/src/types.ts:140](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L140)
+Defined in: [siwx-core/src/types.ts:141](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L141)
 
 Rejects messages without an `expirationTime`. Recommended for the stateless demo profile of
 `@tuwaio/siwx-server`.

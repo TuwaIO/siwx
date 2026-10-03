@@ -96,7 +96,7 @@ if (!result.valid) {
 - `validateMessage` checks formats and timing only. It does not verify the signature.
 - Policy rules run only for the fields you set; `maxIssuedAtAgeSeconds` has no default. `clockSkewSeconds` defaults to 60 seconds.
 - Two timing rules always apply, even without a policy: `issuedAt` must not be in the future and `notBefore` must have been reached (turn the latter off with `enforceNotBefore: false`).
-- `allowedChainIds` entries are full CAIP-2 IDs matched exactly: `eip155:1` does not allow `solana:1`, and a bare `1` matches nothing.
+- `allowedChainIds` entries are full CAIP-2 IDs matched exactly: `eip155:1` does not allow `solana:1`, and a bare `1` matches nothing. The one exception is a Solana cluster: its Wallet Standard name and its genesis-hash ID match each other (`solana:devnet` and `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`), so sessions signed before the switch to genesis-hash IDs stay valid. `normalizeSolanaChainId` and `isChainIdAllowed` apply this rule.
 - `validatePolicy(fields, policy, now?)` runs the policy rules alone and returns the list of violations.
 
 ### Matching a session to a wallet
@@ -177,7 +177,9 @@ Licensed under the **Apache-2.0 License**. See the [LICENSE](https://github.com/
 
 - [buildMessage](/packages/siwx-core/functions/buildMessage.md)
 - [generateNonce](/packages/siwx-core/functions/generateNonce.md)
+- [isChainIdAllowed](/packages/siwx-core/functions/isChainIdAllowed.md)
 - [isSessionMatchingTarget](/packages/siwx-core/functions/isSessionMatchingTarget.md)
+- [normalizeSolanaChainId](/packages/siwx-core/functions/normalizeSolanaChainId.md)
 - [parseMessage](/packages/siwx-core/functions/parseMessage.md)
 - [validateMessage](/packages/siwx-core/functions/validateMessage.md)
 - [validatePolicy](/packages/siwx-core/functions/validatePolicy.md)

@@ -1,4 +1,4 @@
-import type { SiwxChainId, SiwxMessageFields } from '@tuwaio/siwx-core';
+import { normalizeSolanaChainId, type SiwxChainId, type SiwxMessageFields } from '@tuwaio/siwx-core';
 
 import type { SiwxClientSession } from './sessionStore';
 
@@ -56,7 +56,9 @@ export interface SatelliteSiwxFieldOptions {
  *
  * The connection is treated as EVM when its address starts with `0x` or `eip155:`, its `chainId` is a number or
  * starts with `eip155:`, or it has a `connector`; otherwise it is treated as Solana. The CAIP-2 `chainId` is
- * `{namespace}:{reference}` and the CAIP-10 `address` is `{chainId}:{account}`.
+ * `{namespace}:{reference}` and the CAIP-10 `address` is `{chainId}:{account}`. A Solana cluster, given as a moniker
+ * (`devnet`, as in a Satellite Connect connection) or a Wallet Standard chain (`solana:devnet`), gets its genesis-hash
+ * chain ID (`solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`) through `normalizeSolanaChainId` from `@tuwaio/siwx-core`.
  *
  * Reads `window.location` for the default `domain` and `uri`. `nonce`, `issuedAt` and `version` are not included;
  * `useSiwx` fills them in.
@@ -88,7 +90,8 @@ export function getSatelliteSiwxFields(
   const chainRef = rawChainId.includes(':') ? rawChainId.split(':').slice(1).join(':') : rawChainId;
   const accountAddr = rawAddress.includes(':') ? rawAddress.split(':').pop()! : rawAddress;
 
-  const caip2ChainId: SiwxChainId = isEvm ? `eip155:${chainRef}` : `solana:${chainRef}`;
+  // Solana clusters get the genesis-hash chain ID of CAIP-30 (`devnet` becomes `solana:EtWTRABZ…`)
+  const caip2ChainId = (isEvm ? `eip155:${chainRef}` : normalizeSolanaChainId(`solana:${chainRef}`)) as SiwxChainId;
   const caip10Address = `${caip2ChainId}:${accountAddr}`;
 
   const now = Date.now();
@@ -135,7 +138,8 @@ export async function createSatelliteSiwxSigner(
  * session after the user switches account or chain.
  *
  * The session `chainId` must equal the connection's CAIP-2 chain ID, and the session `address` must equal its
- * CAIP-10 account ID (compared case-insensitively for `eip155` sessions).
+ * CAIP-10 account ID (compared case-insensitively for `eip155` sessions). A Solana session signed with a cluster name
+ * (`solana:devnet`) matches a connection to that cluster, whose chain ID is now the genesis-hash one.
  *
  * @param session - The current session, for example `useSiwxSession().session`.
  * @param activeConnection - The active connection.
@@ -155,15 +159,15 @@ export function isSessionMatchingConnection(
     const sessionAddr = session.address;
     const activeAddr = fields.address;
 
-    if (session.chainId !== fields.chainId) {
-      return false;
-    }
-
     if (sessionAddr.startsWith('eip155:')) {
-      return sessionAddr.toLowerCase() === activeAddr.toLowerCase();
+      return session.chainId === fields.chainId && sessionAddr.toLowerCase() === activeAddr.toLowerCase();
     }
 
-    return sessionAddr === activeAddr;
+    // A Solana session signed with a cluster name (`solana:devnet`) still belongs to the same cluster
+    const sessionChainId = normalizeSolanaChainId(session.chainId);
+    const separator = sessionAddr.lastIndexOf(':');
+    const sessionAccount = separator === -1 ? sessionAddr : sessionAddr.slice(separator + 1);
+    return sessionChainId === fields.chainId && `${sessionChainId}:${sessionAccount}` === activeAddr;
   } catch {
     return false;
   }

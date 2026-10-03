@@ -143,7 +143,7 @@ export function SatelliteSignIn({ connection }: { connection: MinimalSatelliteCo
 }
 ```
 
-`getSatelliteSiwxFields` treats the connection as EVM when its address starts with `0x` or `eip155:`, its chain ID is a number or starts with `eip155:`, or it has a `connector`, and as Solana otherwise. `domain` and `uri` default to `window.location.host` and `window.location.href`.
+`getSatelliteSiwxFields` treats the connection as EVM when its address starts with `0x` or `eip155:`, its chain ID is a number or starts with `eip155:`, or it has a `connector`, and as Solana otherwise. A Solana cluster (`devnet` in a Satellite Connect connection) gets its genesis-hash chain ID, `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`; `isSessionMatchingConnection` still matches sessions signed for `solana:devnet`. `domain` and `uri` default to `window.location.host` and `window.location.href`.
 
 ---
 

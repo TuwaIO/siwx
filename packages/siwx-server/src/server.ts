@@ -6,6 +6,7 @@
 import type { SiwxVerifyPayload } from '@tuwaio/siwx-core';
 import {
   generateNonce,
+  isChainIdAllowed,
   parseMessage,
   SiwxNonceReplayError,
   SiwxUnsupportedNamespaceError,
@@ -198,8 +199,9 @@ export async function signStatelessDemoSession(
  * Verifies a token created by {@link signStatelessDemoSession}: checks the HMAC signature with Web Crypto, the
  * token version and mode, and its expiry (with `policy.clockSkewSeconds`, 60 seconds by default).
  *
- * Only `expectedDomain` and `allowedChainIds` (exact match) of the policy are applied; other policy fields are
- * ignored because they were checked when the token was issued.
+ * Only `expectedDomain` and `allowedChainIds` (exact match, except that a Solana cluster matches under its name and its
+ * genesis-hash chain ID) of the policy are applied; other policy fields are ignored because they were checked when the
+ * token was issued.
  *
  * @param token - The token from the session cookie.
  * @param secret - The secret the token was signed with.
@@ -253,10 +255,8 @@ export async function verifyStatelessDemoSession(
     }
 
     // Check allowed chains
-    if (policy?.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
-      if (!policy.allowedChainIds.includes(payload.chainId)) {
-        return null;
-      }
+    if (!isChainIdAllowed(payload.chainId, policy?.allowedChainIds)) {
+      return null;
     }
 
     return {
@@ -600,10 +600,8 @@ export async function getSiwxServerSession(options: GetSiwxServerSessionOptions)
           return null;
         }
       }
-      if (policy.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
-        if (!policy.allowedChainIds.includes(record.session.chainId)) {
-          return null;
-        }
+      if (!isChainIdAllowed(record.session.chainId, policy.allowedChainIds)) {
+        return null;
       }
       if (policy.requireExpirationTime && !record.session.expirationTime) {
         return null;

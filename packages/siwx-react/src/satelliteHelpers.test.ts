@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getSatelliteSiwxFields } from './satelliteHelpers';
+import { getSatelliteSiwxFields, isSessionMatchingConnection } from './satelliteHelpers';
 
 describe('getSatelliteSiwxFields', () => {
   it('should generate fields for EVM connection with default expirationTime', () => {
@@ -56,10 +56,18 @@ describe('getSatelliteSiwxFields', () => {
     };
 
     const fields = getSatelliteSiwxFields(activeConnection, { uri: 'https://test.com' });
-    expect(fields.address).toBe('solana:mainnet:4sGjM');
-    expect(fields.chainId).toBe('solana:mainnet');
+    expect(fields.address).toBe('solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjM');
+    expect(fields.chainId).toBe('solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp');
     expect(fields.uri).toBe('https://test.com');
     expect(fields.expirationTime).toBeDefined();
+  });
+
+  it('should use the genesis-hash chain ID for a Solana connection given as a cluster or a Wallet Standard chain', () => {
+    const devnet = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
+
+    expect(getSatelliteSiwxFields({ address: '4sGjM', chainId: 'devnet' }).chainId).toBe(devnet);
+    expect(getSatelliteSiwxFields({ address: '4sGjM', chainId: 'solana:devnet' }).chainId).toBe(devnet);
+    expect(getSatelliteSiwxFields({ address: '4sGjM', chainId: devnet }).chainId).toBe(devnet);
   });
 
   it('should throw if missing address or chainId', () => {
@@ -67,5 +75,27 @@ describe('getSatelliteSiwxFields', () => {
     expect(() => getSatelliteSiwxFields(badConnection as any)).toThrow(
       '[SIWX-REACT] Connection missing address or chainId.',
     );
+  });
+});
+
+describe('isSessionMatchingConnection', () => {
+  const session = {
+    domain: 'app.tuwa.io',
+    issuedAt: new Date().toISOString(),
+  };
+
+  it('matches a Solana session signed with a cluster name to the same cluster', () => {
+    const oldSession = { ...session, address: 'solana:devnet:4sGjM', chainId: 'solana:devnet' };
+
+    expect(isSessionMatchingConnection(oldSession, { address: '4sGjM', chainId: 'devnet' })).toBe(true);
+    expect(isSessionMatchingConnection(oldSession, { address: '4sGjM', chainId: 'testnet' })).toBe(false);
+  });
+
+  it('matches a genesis-hash Solana session to its cluster', () => {
+    const devnet = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
+    const newSession = { ...session, address: `${devnet}:4sGjM`, chainId: devnet };
+
+    expect(isSessionMatchingConnection(newSession, { address: '4sGjM', chainId: 'devnet' })).toBe(true);
+    expect(isSessionMatchingConnection(newSession, { address: 'otherAccount', chainId: 'devnet' })).toBe(false);
   });
 });

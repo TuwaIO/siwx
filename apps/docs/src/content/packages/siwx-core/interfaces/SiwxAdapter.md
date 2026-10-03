@@ -1,6 +1,6 @@
 # SiwxAdapter
 
-Defined in: [types.ts:232](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L232)
+Defined in: [types.ts:233](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L233)
 
 Shape of a verifier for one CAIP-2 namespace.
 
@@ -14,7 +14,7 @@ to build your own namespace registry.
 
 > **namespace**: [`SiwxChainNamespace`](/packages/siwx-core/type-aliases/SiwxChainNamespace.md)
 
-Defined in: [types.ts:236](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L236)
+Defined in: [types.ts:237](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L237)
 
 CAIP-2 namespace handled by the adapter.
 
@@ -24,7 +24,7 @@ CAIP-2 namespace handled by the adapter.
 
 > **verify**(`payload`): `Promise`\<[`SiwxVerifyResult`](/packages/siwx-core/interfaces/SiwxVerifyResult.md)\>
 
-Defined in: [types.ts:243](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L243)
+Defined in: [types.ts:244](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/types.ts#L244)
 
 Verifies a signed CAIP-122 message.
 

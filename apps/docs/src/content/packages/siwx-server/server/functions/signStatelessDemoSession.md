@@ -2,7 +2,7 @@
 
 > **signStatelessDemoSession**(`session`, `secret`, `ttlSeconds?`): `Promise`\<`string`\>
 
-Defined in: [siwx-server/src/server.ts:164](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L164)
+Defined in: [siwx-server/src/server.ts:165](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L165)
 
 Creates a stateless demo session token: the session as base64url JSON ([StatelessDemoTokenPayload](/packages/siwx-server/server/interfaces/StatelessDemoTokenPayload.md)) plus
 an HMAC-SHA256 signature (Web Crypto). The token is signed, not encrypted, and cannot be revoked before it

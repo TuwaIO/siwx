@@ -17,6 +17,7 @@ export {
   SiwxVerificationError,
 } from './errors';
 export { parseMessage } from './parseMessage';
+export { isChainIdAllowed, normalizeSolanaChainId } from './solanaChainId';
 export type {
   ParsedSiwxMessage,
   SiwxAdapter,

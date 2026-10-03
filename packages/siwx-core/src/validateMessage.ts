@@ -3,6 +3,7 @@
  * Provides individual validators and a composite `validateMessage` function.
  */
 
+import { isChainIdAllowed, normalizeSolanaChainId } from './solanaChainId';
 import type { SiwxMessageFields, SiwxValidationResult, SiwxVerificationPolicy, ValidateMessageOptions } from './types';
 
 /** Regex for RFC 3986 URI validation (basic subset). */
@@ -176,11 +177,10 @@ export function validatePolicy(
     }
   }
 
-  // 3. Allowed chain IDs (exact CAIP-2 match, so `eip155:1` never allows `solana:1`)
-  if (policy.allowedChainIds !== undefined && policy.allowedChainIds.length > 0) {
-    if (!policy.allowedChainIds.includes(fields.chainId)) {
-      errors.push(`Chain ID "${fields.chainId}" is not allowed. Allowed: [${policy.allowedChainIds.join(', ')}]`);
-    }
+  // 3. Allowed chain IDs (exact CAIP-2 match, so `eip155:1` never allows `solana:1`; a Solana cluster matches under
+  // its name and its genesis-hash ID)
+  if (!isChainIdAllowed(fields.chainId, policy.allowedChainIds)) {
+    errors.push(`Chain ID "${fields.chainId}" is not allowed. Allowed: [${policy.allowedChainIds?.join(', ')}]`);
   }
 
   // 4. Require expirationTime
@@ -351,7 +351,8 @@ export interface SiwxSessionLike {
  *
  * A target that starts with `0x` or `eip155:` is treated as EVM and only matches `eip155:` sessions, compared
  * case-insensitively; any other target only matches `solana:` sessions, compared case-sensitively. The chain is
- * compared only when `targetChainId` is given and the session has a `chainId`.
+ * compared only when `targetChainId` is given and the session has a `chainId`; a Solana cluster matches under its name
+ * (`devnet`, `solana:devnet`) and its genesis-hash chain ID (see {@link normalizeSolanaChainId}).
  *
  * @param session - The session or parsed message to check. `null` and `undefined` never match.
  * @param targetAddress - The expected account, as a plain address or a CAIP-10 account ID.
@@ -412,7 +413,10 @@ export function isSessionMatchingTarget(
         ? rawTargetChain
         : `solana:${rawTargetChain}`;
 
-    if (session.chainId && session.chainId !== expectedCaip2 && session.chainId !== rawTargetChain) {
+    const sessionChainId =
+      session.chainId && (isSolanaSession ? normalizeSolanaChainId(session.chainId) : session.chainId);
+    const targetCaip2 = isSolanaSession ? normalizeSolanaChainId(expectedCaip2) : expectedCaip2;
+    if (sessionChainId && sessionChainId !== targetCaip2 && session.chainId !== rawTargetChain) {
       return false;
     }
   }

@@ -42,10 +42,12 @@ Where to read the session cookie from:
 
 > `optional` **policy?**: [`SiwxVerificationPolicy`](/packages/siwx-server/server/interfaces/SiwxVerificationPolicy.md)
 
-Defined in: [siwx-server/src/types.ts:265](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L265)
+Defined in: [siwx-server/src/types.ts:267](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L267)
 
 Policy checked against the stored session. Only a subset applies: `expectedDomain`, `allowedChainIds` (exact
-match) and, for durable sessions, `requireExpirationTime`; for demo tokens, expiry with `clockSkewSeconds`.
+match, except that a Solana cluster matches under its name and its genesis-hash chain ID, so sessions signed for
+`solana:devnet` stay valid) and, for durable sessions, `requireExpirationTime`; for demo tokens, expiry with
+`clockSkewSeconds`.
 
 ***
 

@@ -2,14 +2,15 @@
 
 > **isSessionMatchingTarget**(`session`, `targetAddress`, `targetChainId?`): `boolean`
 
-Defined in: [validateMessage.ts:369](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L369)
+Defined in: [validateMessage.ts:370](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L370)
 
 Checks whether a SIWX session belongs to a given wallet address and, optionally, chain. Use it on the server to
 make sure the signed-in account is the one a request acts on.
 
 A target that starts with `0x` or `eip155:` is treated as EVM and only matches `eip155:` sessions, compared
 case-insensitively; any other target only matches `solana:` sessions, compared case-sensitively. The chain is
-compared only when `targetChainId` is given and the session has a `chainId`.
+compared only when `targetChainId` is given and the session has a `chainId`; a Solana cluster matches under its name
+(`devnet`, `solana:devnet`) and its genesis-hash chain ID (see [normalizeSolanaChainId](/packages/siwx-core/functions/normalizeSolanaChainId.md)).
 
 ## Parameters
 
