@@ -8,6 +8,9 @@ minimumReleaseAgeExclude:
   - viem@2.51.3 || 2.55.11 || 2.55.16 || 2.57.1
   - '@wagmi/core@3.5.1'
   - '@tuwaio/*'
+  - framer-motion@14.0.0
+  - motion-dom@14.0.0
+  - motion-utils@14.0.0
   - immer@11.1.16
   - '@next/env@16.3.1 || 16.3.7'
   - '@next/swc-darwin-arm64@16.3.1 || 16.3.7'
