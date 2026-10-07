@@ -1,6 +1,6 @@
 # MemorySiwxNonceStore
 
-Defined in: [siwx-server/src/server.ts:499](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L499)
+Defined in: [siwx-server/src/server.ts:459](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L459)
 
 In-memory [SiwxNonceStore](/packages/siwx-server/server/interfaces/SiwxNonceStore.md) for local development and tests. Nonces live in a `Map` of the current process:
 they are lost on restart and not shared between instances or serverless invocations, so a nonce issued by one
@@ -16,7 +16,7 @@ instance is rejected by another.
 
 > **new MemorySiwxNonceStore**(`options?`): `MemorySiwxNonceStore`
 
-Defined in: [siwx-server/src/server.ts:507](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L507)
+Defined in: [siwx-server/src/server.ts:467](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L467)
 
 #### Parameters
 
@@ -44,7 +44,7 @@ When `process.env.NODE_ENV` is `production` and `allowInProduction` is not `true
 
 > **consume**(`input`): `Promise`\<`boolean`\>
 
-Defined in: [siwx-server/src/server.ts:523](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L523)
+Defined in: [siwx-server/src/server.ts:483](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L483)
 
 Atomically removes a nonce, so that each nonce is accepted once.
 
@@ -76,7 +76,7 @@ The nonce string to consume.
 
 > **issue**(`input`): `Promise`\<`void`\>
 
-Defined in: [siwx-server/src/server.ts:518](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L518)
+Defined in: [siwx-server/src/server.ts:478](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L478)
 
 Stores a newly issued nonce.
 

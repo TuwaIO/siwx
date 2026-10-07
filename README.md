@@ -17,22 +17,22 @@ SIWX is built only on modern Web3 libraries: `viem` and `@wagmi/core` for EVM, `
 
 ## 🏛️ Ecosystem Layer Architecture
 
-TUWA is built in stages. SIWX sits in **Stage 1 (Core Auth & Primitives)** next to [Orbit Utils](https://orbit.docs.tuwa.io/), below [Satellite Connect](https://satellite.docs.tuwa.io/) and [Pulsar](https://pulsar.docs.tuwa.io/) (Stage 2), [Quasar](https://docs.tuwa.io/quasar) (Stage 3) and [Nova UI Kit](https://stories.tuwa.io/) (Stage 4). Higher layers such as Satellite Connect and the TUWA SDK use SIWX; SIWX depends on nothing else in TUWA and can be used on its own.
+TUWA is built in stages. SIWX sits in **Stage 1 (Core Auth & Primitives)** next to [Orbit Utils](https://orbit.docs.tuwa.io/), below [Satellite Connect](https://satellite.docs.tuwa.io/) and [Pulsar](https://pulsar.docs.tuwa.io/) (Stage 2), [Quasar](https://docs.tuwa.io/quasar) (Stage 3) and [Nova UI Kit](https://stories.tuwa.io/) (Stage 4). Higher layers such as Satellite Connect and the TUWA SDK use SIWX. SIWX reads chain and account IDs (CAIP-2, CAIP-10, Solana genesis-hash chain IDs) with `@tuwaio/orbit-core` of Orbit Utils, a package without dependencies of its own, and depends on nothing else in TUWA, so it can be used on its own.
 
 Inside the monorepo, packages are split into two layers:
 
 ### Layer 1: Foundational Core (L1)
 
-- **[`@tuwaio/siwx-core`](./packages/siwx-core)**: the CAIP-122 message format (build, parse, validate), verification policies, session matching, nonces, typed errors and the shared types. Zero runtime dependencies.
+- **[`@tuwaio/siwx-core`](./packages/siwx-core)**: the CAIP-122 message format (build, parse, validate), verification policies, session matching, nonces, typed errors and the shared types. Its only dependency is the peer `@tuwaio/orbit-core`.
 
 ### Layer 2: Chains, React and Server (L2)
 
-- **[`@tuwaio/siwx-evm`](./packages/siwx-evm)**: EVM signer and verifiers: EIP-191 for EOA wallets, EIP-1271 for smart contract wallets. Peer dependencies: `viem`, `@wagmi/core`.
+- **[`@tuwaio/siwx-evm`](./packages/siwx-evm)**: EVM signer and verifiers: EIP-191 for EOA wallets, EIP-1271 and ERC-6492 for smart contract wallets, deployed or not, on the chain they signed for. Peer dependencies: `viem`, `@wagmi/core`.
 - **[`@tuwaio/siwx-solana`](./packages/siwx-solana)**: Solana signer and ed25519 verifier (Web Crypto). Peer dependencies: `@solana/kit`, `@wallet-standard/base`.
 - **[`@tuwaio/siwx-react`](./packages/siwx-react)**: `useSiwx` and `useSiwxSession` hooks, a zustand session store persisted to `localStorage`, and Satellite Connect helpers. Peer dependencies: `react`, `zustand`, `immer`.
-- **[`@tuwaio/siwx-server`](./packages/siwx-server)**: server-side verification, nonce and session stores, cookie helpers and Next.js App Router handlers (`@tuwaio/siwx-server/next`). Optional peer dependencies: `@tuwaio/siwx-evm`, `@tuwaio/siwx-solana`, `viem`.
+- **[`@tuwaio/siwx-server`](./packages/siwx-server)**: server-side verification, nonce and session stores, cookie helpers, Next.js App Router handlers (`@tuwaio/siwx-server/next`) and JWT/JWKS for external auth providers. Optional peer dependencies: `@tuwaio/siwx-evm`, `@tuwaio/siwx-solana`, `viem`.
 
-All L2 packages have `@tuwaio/siwx-core` as a peer dependency.
+All L2 packages have `@tuwaio/siwx-core` and `@tuwaio/orbit-core` as peer dependencies.
 
 ---
 
@@ -46,10 +46,10 @@ siwx/
 │       └── typedoc/            # TypeDoc plugins, Packages overview page and sidebar template
 ├── packages/
 │   ├── siwx-core/              # L1: CAIP-122 message format, validation, policies, errors, types
-│   ├── siwx-evm/               # L2: EVM signer, EIP-191 and EIP-1271 verification (viem, @wagmi/core)
+│   ├── siwx-evm/               # L2: EVM signer, EIP-191, EIP-1271 and ERC-6492 verification (viem, @wagmi/core)
 │   ├── siwx-solana/            # L2: Solana signer, ed25519 verification (@solana/kit, Web Crypto)
 │   ├── siwx-react/             # L2: React hooks and zustand session store
-│   └── siwx-server/            # L2: server verification, nonce/session stores, cookies, Next.js handlers
+│   └── siwx-server/            # L2: server verification, nonce/session stores, cookies, Next.js handlers, JWT/JWKS
 └── typedoc.json                # Reference generation (TypeDoc "packages" strategy)
 ```
 
@@ -61,19 +61,19 @@ Install the L1 core and the L2 packages your app needs:
 
 ```bash
 # L1 Core
-pnpm add @tuwaio/siwx-core
+pnpm add @tuwaio/siwx-core @tuwaio/orbit-core
 
 # L2 EVM
-pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @wagmi/core viem
+pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @tuwaio/orbit-core @wagmi/core viem
 
 # L2 Solana
-pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @solana/kit @wallet-standard/base
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @solana/kit @wallet-standard/base
 
 # L2 React
-pnpm add @tuwaio/siwx-react @tuwaio/siwx-core react zustand immer
+pnpm add @tuwaio/siwx-react @tuwaio/siwx-core @tuwaio/orbit-core react zustand immer
 
 # L2 Server (plus the chain packages of the chains you accept)
-pnpm add @tuwaio/siwx-server @tuwaio/siwx-core
+pnpm add @tuwaio/siwx-server @tuwaio/siwx-core @tuwaio/orbit-core
 ```
 
 ---

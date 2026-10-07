@@ -3,6 +3,8 @@
  * Provides individual validators and a composite `validateMessage` function.
  */
 
+import { parseCaip2ChainId, parseCaip10AccountId } from '@tuwaio/orbit-core';
+
 import { isChainIdAllowed, normalizeSolanaChainId } from './solanaChainId';
 import type { SiwxMessageFields, SiwxValidationResult, SiwxVerificationPolicy, ValidateMessageOptions } from './types';
 
@@ -11,12 +13,6 @@ const URI_REGEX = /^https?:\/\/.+/;
 
 /** Regex for ISO 8601 datetime string validation. */
 const ISO_8601_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
-
-/** Regex for CAIP-10 address validation: `{namespace}:{chainRef}:{address}` */
-const CAIP_10_REGEX = /^[a-z0-9]+:[a-zA-Z0-9-]+:.+$/;
-
-/** Regex for CAIP-2 chain ID: `{namespace}:{reference}` */
-const CAIP_2_REGEX = /^[a-z0-9]+:[a-zA-Z0-9-]+$/;
 
 /**
  * Validates that the `domain` field is a non-empty string.
@@ -35,13 +31,14 @@ function validateDomain(domain: string): string | undefined {
 }
 
 /**
- * Validates that the `address` field is CAIP-10 compliant.
+ * Validates that the `address` field is a CAIP-10 account ID (`parseCaip10AccountId` of `@tuwaio/orbit-core`: the
+ * CAIP-10 grammar, and an EVM or Solana address valid for its chain).
  *
  * @param address - The account address string to validate.
  * @returns An error string if invalid, or undefined if valid.
  */
 function validateAddress(address: string): string | undefined {
-  if (!CAIP_10_REGEX.test(address)) {
+  if (!parseCaip10AccountId(address)) {
     return `address must be CAIP-10 compliant (namespace:chainRef:address). Got: "${address}"`;
   }
   return undefined;
@@ -61,13 +58,13 @@ function validateUri(uri: string): string | undefined {
 }
 
 /**
- * Validates that the `chainId` field is a valid CAIP-2 chain ID string.
+ * Validates that the `chainId` field is a CAIP-2 chain ID (`parseCaip2ChainId` of `@tuwaio/orbit-core`).
  *
  * @param chainId - The chain ID string to validate.
  * @returns An error string if invalid, or undefined if valid.
  */
 function validateChainId(chainId: string): string | undefined {
-  if (!CAIP_2_REGEX.test(chainId)) {
+  if (!parseCaip2ChainId(chainId)) {
     return `chainId must be a valid CAIP-2 identifier (namespace:reference). Got: "${chainId}"`;
   }
   return undefined;
@@ -349,8 +346,10 @@ export interface SiwxSessionLike {
  * Checks whether a SIWX session belongs to a given wallet address and, optionally, chain. Use it on the server to
  * make sure the signed-in account is the one a request acts on.
  *
- * A target that starts with `0x` or `eip155:` is treated as EVM and only matches `eip155:` sessions, compared
- * case-insensitively; any other target only matches `solana:` sessions, compared case-sensitively. The chain is
+ * The session account is read with `parseCaip10AccountId` of `@tuwaio/orbit-core`; a session whose account is not a
+ * valid `eip155` or `solana` CAIP-10 account ID never matches. A CAIP-10 target must have the session's namespace (any
+ * of its chains); a plain target that starts with `0x` only matches `eip155:` sessions, any other plain target only
+ * `solana:` sessions. EVM accounts are compared case-insensitively, Solana accounts case-sensitively. The chain is
  * compared only when `targetChainId` is given and the session has a `chainId`; a Solana cluster matches under its name
  * (`devnet`, `solana:devnet`) and its genesis-hash chain ID (see {@link normalizeSolanaChainId}).
  *
@@ -376,47 +375,37 @@ export function isSessionMatchingTarget(
     return false;
   }
 
-  const sessionCaip10 = session.address;
-  const isEvmSession = sessionCaip10.startsWith('eip155:');
-  const isSolanaSession = sessionCaip10.startsWith('solana:');
-
-  const rawTargetAddr = targetAddress.includes(':') ? targetAddress.split(':').pop()! : targetAddress;
-  const sessionAccountAddr = sessionCaip10.includes(':') ? sessionCaip10.split(':').pop()! : sessionCaip10;
-
-  const isEvmTarget = rawTargetAddr.startsWith('0x') || targetAddress.startsWith('eip155:');
-
-  // 1. Cross-chain namespace mismatch check
-  if (isEvmTarget && !isEvmSession) {
+  const account = parseCaip10AccountId(session.address);
+  if (!account || (account.namespace !== 'eip155' && account.namespace !== 'solana')) {
     return false;
   }
-  if (!isEvmTarget && !isSolanaSession) {
+  const isEvmSession = account.namespace === 'eip155';
+
+  // 1. The target is a CAIP-10 account ID of the session's namespace, or a plain address of its kind
+  let targetAccount = targetAddress;
+  if (targetAddress.includes(':')) {
+    const target = parseCaip10AccountId(targetAddress);
+    if (target?.namespace !== account.namespace) return false;
+    targetAccount = target.address;
+  } else if (targetAddress.startsWith('0x') !== isEvmSession) {
     return false;
   }
 
   // 2. Account address equality check (case-insensitive for EVM, case-sensitive for Solana)
   const isAddressMatch = isEvmSession
-    ? sessionAccountAddr.toLowerCase() === rawTargetAddr.toLowerCase()
-    : sessionAccountAddr === rawTargetAddr;
-
+    ? account.address.toLowerCase() === targetAccount.toLowerCase()
+    : account.address === targetAccount;
   if (!isAddressMatch) {
     return false;
   }
 
   // 3. Optional chainId alignment check
-  if (targetChainId !== undefined && targetChainId !== null) {
+  if (targetChainId !== undefined && targetChainId !== null && session.chainId) {
     const rawTargetChain = String(targetChainId);
-    const expectedCaip2 = isEvmSession
-      ? rawTargetChain.startsWith('eip155:')
-        ? rawTargetChain
-        : `eip155:${rawTargetChain}`
-      : rawTargetChain.startsWith('solana:')
-        ? rawTargetChain
-        : `solana:${rawTargetChain}`;
-
-    const sessionChainId =
-      session.chainId && (isSolanaSession ? normalizeSolanaChainId(session.chainId) : session.chainId);
-    const targetCaip2 = isSolanaSession ? normalizeSolanaChainId(expectedCaip2) : expectedCaip2;
-    if (sessionChainId && sessionChainId !== targetCaip2 && session.chainId !== rawTargetChain) {
+    const targetCaip2 = normalizeSolanaChainId(
+      rawTargetChain.includes(':') ? rawTargetChain : `${account.namespace}:${rawTargetChain}`,
+    );
+    if (normalizeSolanaChainId(session.chainId) !== targetCaip2 && session.chainId !== rawTargetChain) {
       return false;
     }
   }

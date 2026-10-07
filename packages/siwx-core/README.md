@@ -5,14 +5,14 @@
 
 `@tuwaio/siwx-core` is the Layer 1 (L1) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). It implements the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) message format: it builds, parses and validates chain-agnostic sign-in messages for EVM (`eip155`) and Solana accounts, and defines the types and errors that the SIWX L2 packages share.
 
-The package has **zero runtime dependencies** and imports no Web3 SDK. It runs in browsers, Node.js 20+ and edge runtimes; only `generateNonce` needs the Web Crypto API.
+Its only dependency is the peer [`@tuwaio/orbit-core`](https://orbit.docs.tuwa.io/packages/orbit-core), which has no dependencies of its own and reads the CAIP-2 chain and CAIP-10 account IDs and the Solana genesis-hash chain IDs. The package imports no Web3 SDK. It runs in browsers, Node.js 20+ and edge runtimes; only `generateNonce` needs the Web Crypto API.
 
 ---
 
 ## 🏛️ Core Capabilities
 
 - **Message format:** `buildMessage` formats CAIP-122 fields into the text the wallet signs (the EIP-4361 layout used by CAIP-122); `parseMessage` reads the text back and throws `SiwxParseError` when it is malformed.
-- **Validation:** `validateMessage` checks field formats (CAIP-10 address, CAIP-2 chain ID, `http(s)` URI, nonce, ISO 8601 timestamps) and expiration, and reports every failure at once.
+- **Validation:** `validateMessage` checks field formats (CAIP-10 address, CAIP-2 chain ID, `http(s)` URI, nonce, ISO 8601 timestamps) and expiration, and reports every failure at once. Addresses and chain IDs are read with the parsers of `@tuwaio/orbit-core`, so an EVM or Solana account must be a valid address of its chain.
 - **Verification policy:** `validatePolicy` and `SiwxVerificationPolicy` bind a message to your domain, URI, allowed chains and time windows (`issuedAt` age, `notBefore`, maximum lifetime, clock skew).
 - **Session matching:** `isSessionMatchingTarget` checks that a session belongs to a given address and chain, case-insensitively for EVM and case-sensitively for Solana.
 - **Nonces and errors:** `generateNonce` returns 32 random hex characters; `SiwxError` and its subclasses carry machine-readable `code`s.
@@ -24,7 +24,7 @@ Signatures are verified by the chain packages ([`@tuwaio/siwx-evm`](https://siwx
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-core
+pnpm add @tuwaio/siwx-core @tuwaio/orbit-core
 ```
 
 ---

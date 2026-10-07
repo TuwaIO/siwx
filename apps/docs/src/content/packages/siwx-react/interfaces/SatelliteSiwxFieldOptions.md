@@ -1,6 +1,6 @@
 # SatelliteSiwxFieldOptions
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:32](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L32)
+Defined in: [siwx-react/src/satelliteHelpers.ts:33](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L33)
 
 Options of [getSatelliteSiwxFields](/packages/siwx-react/functions/getSatelliteSiwxFields.md). The values are copied into the CAIP-122 fields.
 
@@ -10,7 +10,7 @@ Options of [getSatelliteSiwxFields](/packages/siwx-react/functions/getSatelliteS
 
 > `optional` **domain?**: `string`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:34](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L34)
+Defined in: [siwx-react/src/satelliteHelpers.ts:35](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L35)
 
 Message `domain`. Defaults to `window.location.host` (empty string outside the browser).
 
@@ -20,7 +20,7 @@ Message `domain`. Defaults to `window.location.host` (empty string outside the b
 
 > `optional` **expirationSeconds?**: `number`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:45](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L45)
+Defined in: [siwx-react/src/satelliteHelpers.ts:46](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L46)
 
 Lifetime of the message, in seconds from now, used when `expirationTime` is omitted.
 
@@ -36,7 +36,7 @@ Lifetime of the message, in seconds from now, used when `expirationTime` is omit
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:40](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L40)
+Defined in: [siwx-react/src/satelliteHelpers.ts:41](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L41)
 
 Explicit ISO 8601 `expirationTime`. Takes precedence over `expirationSeconds`.
 
@@ -46,7 +46,7 @@ Explicit ISO 8601 `expirationTime`. Takes precedence over `expirationSeconds`.
 
 > `optional` **notBefore?**: `string`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:47](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L47)
+Defined in: [siwx-react/src/satelliteHelpers.ts:48](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L48)
 
 ISO 8601 `notBefore`.
 
@@ -56,7 +56,7 @@ ISO 8601 `notBefore`.
 
 > `optional` **requestId?**: `string`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:49](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L49)
+Defined in: [siwx-react/src/satelliteHelpers.ts:50](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L50)
 
 Message `requestId`.
 
@@ -66,7 +66,7 @@ Message `requestId`.
 
 > `optional` **resources?**: `string`[]
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:51](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L51)
+Defined in: [siwx-react/src/satelliteHelpers.ts:52](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L52)
 
 Message `resources`.
 
@@ -76,7 +76,7 @@ Message `resources`.
 
 > `optional` **statement?**: `string`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:38](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L38)
+Defined in: [siwx-react/src/satelliteHelpers.ts:39](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L39)
 
 Human-readable statement shown in the wallet.
 
@@ -86,6 +86,6 @@ Human-readable statement shown in the wallet.
 
 > `optional` **uri?**: `string`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:36](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L36)
+Defined in: [siwx-react/src/satelliteHelpers.ts:37](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L37)
 
 Message `uri`. Defaults to `window.location.href` (empty string outside the browser).

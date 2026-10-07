@@ -2,7 +2,7 @@
 
 > **verifyStatelessDemoSession**(`token`, `secret`, `policy?`): `Promise`\<[`SiwxSession`](/packages/siwx-server/server/interfaces/SiwxSession.md) \| `null`\>
 
-Defined in: [siwx-server/src/server.ts:212](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L212)
+Defined in: [siwx-server/src/server.ts:172](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L172)
 
 Verifies a token created by [signStatelessDemoSession](/packages/siwx-server/server/functions/signStatelessDemoSession.md): checks the HMAC signature with Web Crypto, the
 token version and mode, and its expiry (with `policy.clockSkewSeconds`, 60 seconds by default).

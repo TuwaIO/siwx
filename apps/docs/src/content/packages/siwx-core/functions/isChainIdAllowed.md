@@ -2,7 +2,7 @@
 
 > **isChainIdAllowed**(`chainId`, `allowedChainIds?`): `boolean`
 
-Defined in: [solanaChainId.ts:54](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/solanaChainId.ts#L54)
+Defined in: [solanaChainId.ts:41](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/solanaChainId.ts#L41)
 
 Checks a chain ID against the `allowedChainIds` of a verification policy. Chain IDs must match exactly, so `eip155:1`
 never allows `solana:1` or a bare `1`; the only exception is a Solana cluster, which matches under its name and its

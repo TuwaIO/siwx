@@ -4,6 +4,8 @@
  * @module server
  */
 
+export { signSiwxJwt, siwxJwtSubject, verifySiwxJwt } from './jwt';
+export { createSiwxJwks, generateSiwxJwtKey, importSiwxJwtKey, siwxJwkThumbprint } from './jwtKeys';
 export {
   createClearCookie,
   createSessionCookie,
@@ -24,7 +26,13 @@ export type {
   GetSiwxServerSessionOptions,
   ServerVerifyOptions,
   ServerVerifyResult,
+  SiwxJwks,
+  SiwxJwtAlgorithm,
+  SiwxJwtKey,
+  SiwxJwtOptions,
+  SiwxJwtPayload,
   SiwxNonceStore,
+  SiwxPublicJwk,
   SiwxSession,
   SiwxSessionRecord,
   SiwxSessionStore,

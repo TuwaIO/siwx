@@ -3,7 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-server.svg)](https://www.npmjs.com/package/@tuwaio/siwx-server)
 [![License](https://img.shields.io/npm/l/@tuwaio/siwx-server.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/LICENSE)
 
-`@tuwaio/siwx-server` is the server Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`** and the Web platform APIs (`Request`, `Response`, Web Crypto), it verifies signed CAIP-122 messages for EVM and Solana on your backend, issues single-use nonces and sessions through pluggable stores, and formats the session cookie. It runs on Node.js 20+ and does not depend on a web framework, a database or a hosted service.
+`@tuwaio/siwx-server` is the server Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`** and the Web platform APIs (`Request`, `Response`, Web Crypto), it verifies signed CAIP-122 messages for EVM and Solana on your backend, issues single-use nonces and sessions through pluggable stores, formats the session cookie, and can hand the sign-in to external auth providers as a JWT with a JWKS. It runs on Node.js 20+ and does not depend on a web framework, a database or a hosted service.
 
 It has two entry points:
 
@@ -14,10 +14,11 @@ It has two entry points:
 
 ## 🏛️ Core Capabilities
 
-- **Verification:** `verifySiwxPayload` parses the message, validates it against your `SiwxVerificationPolicy` and routes the signature check by chain to `@tuwaio/siwx-evm` (EIP-191, with an EIP-1271 fallback when `publicClient` is set) or `@tuwaio/siwx-solana` (ed25519). It returns a result instead of throwing.
+- **Verification:** `verifySiwxPayload` parses the message, validates it against your `SiwxVerificationPolicy` and routes the signature check by chain to `@tuwaio/siwx-evm` (EIP-191, with a smart contract wallet fallback, EIP-1271 and ERC-6492, when `publicClient` gives a client for the chain of the message) or `@tuwaio/siwx-solana` (ed25519). It returns a result instead of throwing.
 - **Durable profile:** `createSiwxApiHandler` serves the nonce, verify, session and logout routes on top of your `SiwxSessionStore` and `SiwxNonceStore` (Redis, SQL, KV…), with the session ID in an `HttpOnly` cookie.
 - **Stateless demo profile:** `createStatelessDemoSiwxHandler` issues HMAC-signed nonces and keeps the session in an HMAC-signed cookie, for demos without a database.
 - **Server-side session:** `getSiwxServerSession` reads the session from a `Request`, `Headers`, a `Cookie` header or the Next.js `cookies()` store, for Server Actions and API routes.
+- **JWT for external auth:** with the `jwt` option, `createSiwxApiHandler` issues a short-lived ES256 or RS256 JWT for the signed-in wallet and publishes the JWKS, for services that accept a sign-in only as a JWT: embedded wallet providers with custom authentication (for example Coinbase CDP), identity platforms and your own services. `signSiwxJwt`, `createSiwxJwks` and `verifySiwxJwt` do the same outside Next.js.
 - **Building blocks:** `MemorySiwxSessionStore` and `MemorySiwxNonceStore` for development and tests, cookie helpers, demo token and demo nonce signing, and re-exports of the `@tuwaio/siwx-core` validators.
 
 ---
@@ -25,7 +26,7 @@ It has two entry points:
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-server @tuwaio/siwx-core
+pnpm add @tuwaio/siwx-server @tuwaio/siwx-core @tuwaio/orbit-core
 
 # Chain verifiers, loaded at runtime for the chains you accept:
 pnpm add @tuwaio/siwx-evm viem @wagmi/core
@@ -33,7 +34,7 @@ pnpm add @tuwaio/siwx-solana @solana/kit @wallet-standard/base
 ```
 
 > [!IMPORTANT]
-> `@tuwaio/siwx-core` is a required peer dependency. `@tuwaio/siwx-evm`, `@tuwaio/siwx-solana` and `viem` are optional peer dependencies: `verifySiwxPayload` imports the chain package dynamically, depending on the chain of the message, so install the ones you accept together with their own peer dependencies. A message for a chain whose package is missing fails verification. `viem` provides the `PublicClient` type of the EIP-1271 option.
+> `@tuwaio/siwx-core` is a required peer dependency. `@tuwaio/siwx-evm`, `@tuwaio/siwx-solana` and `viem` are optional peer dependencies: `verifySiwxPayload` imports the chain package dynamically, depending on the chain of the message, so install the ones you accept together with their own peer dependencies. A message for a chain whose package is missing fails verification. `viem` provides the `PublicClient` type of the smart contract wallet option.
 
 ---
 
@@ -133,6 +134,29 @@ The handler picks the action from the last path segment:
 
 `POST /verify` responds with 400 for a malformed body, 401 when verification or the nonce check fails, and 413 for a body over 64 KB. On the client, fetch the nonce from `/api/siwx/nonce` (the `getNonce` option of `useSiwx` in [`@tuwaio/siwx-react`](https://siwx.docs.tuwa.io/packages/siwx-react)): the handler only accepts nonces it has issued.
 
+EOA wallets need nothing more on any chain. To accept smart contract wallets (Safe, Coinbase Smart Wallet / Base Account, other ERC-4337 accounts), give `verifyOptions.publicClient` a client for every chain your users sign in on. A deployed account is checked with EIP-1271 and an account that is not deployed yet with ERC-6492, always on the chain of the message:
+
+```typescript
+// app/api/siwx/[...siwx]/route.ts
+import type { EvmVerifyClient } from '@tuwaio/siwx-evm';
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+import { createPublicClient, http } from 'viem';
+import { base, mainnet } from 'viem/chains';
+
+import { nonceStore, sessionStore } from '@/lib/authStores';
+
+const clients = new Map<number, EvmVerifyClient>(
+  [mainnet, base].map((chain) => [chain.id, createPublicClient({ chain, transport: http() })]),
+);
+
+export const { GET, POST, DELETE } = createSiwxApiHandler({
+  sessionStore,
+  nonceStore,
+  policy: { expectedDomain: 'app.tuwa.io', expectedUri: 'https://app.tuwa.io' },
+  verifyOptions: { publicClient: (chainId) => clients.get(chainId) },
+});
+```
+
 ### 3. Reading the session on the server
 
 ```typescript
@@ -220,6 +244,59 @@ export async function handleVerify(request: Request): Promise<Response> {
 }
 ```
 
+### 6. JWT for external auth providers
+
+Some services accept a sign-in only as a JWT they can verify with your public keys: embedded wallet providers with custom authentication (for example Coinbase CDP), identity platforms and your own services. With the `jwt` option, `createSiwxApiHandler` issues a short-lived JWT for the signed-in wallet and publishes its public keys as a JWKS. Keys are handled with the Web Crypto API; nothing else is installed.
+
+Create a key once and store the private JWK as a secret:
+
+```typescript
+// scripts/generate-siwx-jwt-key.mjs
+import { generateSiwxJwtKey } from '@tuwaio/siwx-server';
+
+const { privateJwk, kid } = await generateSiwxJwtKey('ES256');
+console.log(`kid: ${kid}`);
+console.log(`SIWX_JWT_PRIVATE_KEY='${JSON.stringify(privateJwk)}'`);
+```
+
+Enable the routes:
+
+```typescript
+// app/api/siwx/[...siwx]/route.ts
+import { importSiwxJwtKey } from '@tuwaio/siwx-server';
+import { createSiwxApiHandler } from '@tuwaio/siwx-server/next';
+
+import { nonceStore, sessionStore } from '@/lib/authStores';
+
+export const { GET, POST, DELETE } = createSiwxApiHandler({
+  sessionStore,
+  nonceStore,
+  policy: { expectedDomain: 'app.example.com' },
+  jwt: {
+    signingKey: importSiwxJwtKey({ privateKey: process.env.SIWX_JWT_PRIVATE_KEY ?? '' }),
+    issuer: 'https://app.example.com',
+  },
+});
+```
+
+- `GET /api/siwx/token` returns `{ token, expiresAt }` for the session cookie, or `401` without a session. The token lives 10 minutes by default (`ttlSeconds`, at most 7 days) and never outlives the session.
+- `GET /api/siwx/jwks` returns the public keys. Give this URL to the provider.
+
+The `sub` claim is stable for a wallet: the user ID you bound with `bindSubject`, otherwise the account without its chain (`eip155:0x…` in lowercase, `solana:<address>`), so signing in on another network does not create a new user at the provider. The account as signed is in the `caip10` claim, its chain in `chain_id`. To rotate the key, sign with the new one and pass the old one in `previousKeys` until its tokens expire.
+
+A service that receives the token checks it against the JWKS:
+
+```typescript
+import { type SiwxJwks, verifySiwxJwt } from '@tuwaio/siwx-server';
+
+export async function readWallet(request: Request): Promise<string | null> {
+  const token = request.headers.get('authorization')?.replace(/^Bearer /, '') ?? '';
+  const jwks = (await (await fetch('https://app.example.com/api/siwx/jwks')).json()) as SiwxJwks;
+  const claims = await verifySiwxJwt(token, { jwks, issuer: 'https://app.example.com' });
+  return claims?.sub ?? null;
+}
+```
+
 ---
 
 ## 🛡️ Security Notes
@@ -231,12 +308,14 @@ export async function handleVerify(request: Request): Promise<Response> {
 - **Server-side checks:** `getSiwxServerSession` applies only `expectedDomain` and `allowedChainIds` of its `policy`, plus `requireExpirationTime` for durable sessions and the token expiry for demo sessions. The full policy runs when the message is verified.
 - **Cookies:** the session cookie is always `HttpOnly`, and `Secure` and `SameSite=Strict` by default. Keep `secure: true` in production.
 - **Secrets:** the demo `signingSecret` must be at least 32 characters and must never reach the browser. Changing it invalidates every demo session.
+- **JWT keys:** the private JWT key must never reach the browser. Keep tokens short-lived (the default is 10 minutes) and request a fresh one when needed instead of storing it, for example in `localStorage`. If the key leaks, generate a new one and do not list the old one in `previousKeys`: every token it signed stops verifying at once.
+- **JWT subject:** the receiving service identifies the user by `sub`. Do not build it from the CAIP-10 account with its chain reference, or the same wallet becomes a new user on every EVM network.
 
 ---
 
 ## 🌐 External Services
 
-The package contacts no hosts of its own. With `verifyOptions.publicClient` (or `publicClient` in `verifySiwxPayload`), the EIP-1271 fallback sends one `eth_call` to the RPC endpoint of that client. Sessions and nonces go only to the stores you provide.
+The package contacts no hosts of its own. With `verifyOptions.publicClient` (or `publicClient` in `verifySiwxPayload`), the smart contract wallet fallback sends one `eth_call` to the RPC endpoint of the client of the message chain. Sessions and nonces go only to the stores you provide. The `/jwks` route only answers requests; the services you give its URL to fetch it.
 
 ---
 

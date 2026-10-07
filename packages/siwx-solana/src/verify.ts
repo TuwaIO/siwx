@@ -4,6 +4,7 @@
  */
 
 import { address as solanaAddress } from '@solana/kit';
+import { parseCaip2ChainId, parseCaip10AccountId } from '@tuwaio/orbit-core';
 import type { SiwxVerifyResult } from '@tuwaio/siwx-core';
 import {
   parseMessage,
@@ -55,19 +56,6 @@ function base58ToBytes(base58: string): Uint8Array {
   const result = new Uint8Array(leadingZeros + rawBytes.length);
   result.set(rawBytes, leadingZeros);
   return result;
-}
-
-/**
- * Extracts the plain Solana address from a CAIP-10 formatted string.
- * @example "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:4sGjM..." → "4sGjM..."
- * @internal
- */
-function extractSolanaAddress(caip10Address: string): string {
-  const parts = caip10Address.split(':');
-  if (parts.length !== 3 || parts[0] !== 'solana') {
-    throw new SiwxVerificationError(`Expected solana CAIP-10 address format. Got: "${caip10Address}"`);
-  }
-  return parts[2]!;
 }
 
 /**
@@ -135,8 +123,9 @@ export async function verifyEd25519(
     const { messageString, messageBytes, signatureBytes } = normalizeSolanaPayload(payload);
     const parsed = parseMessage(messageString);
 
-    if (!parsed.chainId.startsWith('solana:')) {
-      throw new SiwxUnsupportedNamespaceError(parsed.chainId.split(':')[0] ?? 'unknown');
+    const namespace = parseCaip2ChainId(parsed.chainId)?.namespace;
+    if (namespace !== 'solana') {
+      throw new SiwxUnsupportedNamespaceError(namespace ?? 'unknown');
     }
 
     if (signatureBytes.length !== 64) {
@@ -151,7 +140,11 @@ export async function verifyEd25519(
       throw new SiwxValidationError(validation.errors);
     }
 
-    const rawAddress = extractSolanaAddress(parsed.address);
+    const account = parseCaip10AccountId(parsed.address);
+    if (account?.namespace !== 'solana') {
+      throw new SiwxVerificationError(`Expected solana CAIP-10 address format. Got: "${parsed.address}"`);
+    }
+    const rawAddress = account.address;
 
     // Validate the address using @solana/kit's address utility
     const validatedAddress = solanaAddress(rawAddress);

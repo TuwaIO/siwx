@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { verifySiwxJwt } from './jwt';
+import { generateSiwxJwtKey, importSiwxJwtKey } from './jwtKeys';
 import { createSiwxApiHandler, createStatelessDemoSiwxHandler } from './next';
 import * as serverModule from './server';
 import { MemorySiwxNonceStore, MemorySiwxSessionStore } from './server';
@@ -300,5 +302,145 @@ describe('createStatelessDemoSiwxHandler (Stateless Demo Profile)', () => {
     const replay = await verify();
     expect(replay.status).toBe(401);
     expect(((await replay.json()) as { error: string }).error).toContain('Nonce replay');
+  });
+});
+
+describe('createSiwxApiHandler (JWT routes)', () => {
+  const ISSUER = 'https://app.example.com';
+  const session = {
+    address: 'eip155:8453:0xAbC0000000000000000000000000000000000001',
+    chainId: 'eip155:8453',
+    domain: 'app.example.com',
+    nonce: 'n1234567',
+    issuedAt: new Date().toISOString(),
+  };
+
+  async function setup(jwt: Partial<Parameters<typeof createSiwxApiHandler>[0]['jwt']> = {}) {
+    const sessionStore = new MemorySiwxSessionStore();
+    const nonceStore = new MemorySiwxNonceStore();
+    const signingKey = await importSiwxJwtKey({ privateKey: (await generateSiwxJwtKey()).privateJwk });
+    const handler = createSiwxApiHandler({
+      sessionStore,
+      nonceStore,
+      cookieOptions: { name: 'siwx-jwt-test' },
+      jwt: { signingKey, issuer: ISSUER, ...jwt },
+    });
+    return { handler, sessionStore, nonceStore, signingKey };
+  }
+
+  const get = (path: string, cookie?: string) =>
+    new Request(`http://localhost/api/siwx/${path}`, {
+      method: 'GET',
+      headers: cookie ? { Cookie: `siwx-jwt-test=${cookie}` } : {},
+    });
+
+  it('returns 404 for /token and /jwks without the jwt option', async () => {
+    const { GET } = createSiwxApiHandler({
+      sessionStore: new MemorySiwxSessionStore(),
+      nonceStore: new MemorySiwxNonceStore(),
+    });
+    expect((await GET(get('token'))).status).toBe(404);
+    expect((await GET(get('jwks'))).status).toBe(404);
+  });
+
+  it('returns 401 from /token without a cookie, with an unknown session and with an expired session', async () => {
+    const { handler, sessionStore } = await setup();
+    const expiredRecord = await sessionStore.create({ session, ttlSeconds: 0 });
+    const expiredMessage = await sessionStore.create({
+      session: { ...session, expirationTime: new Date(Date.now() - 1000).toISOString() },
+      ttlSeconds: 300,
+    });
+
+    for (const cookie of [undefined, 'unknown-session-id', expiredRecord.id, expiredMessage.id]) {
+      const response = await handler.GET(get('token', cookie));
+      expect(response.status).toBe(401);
+      expect((await response.json()).error).toBeTruthy();
+    }
+  });
+
+  it('issues a token for the session that verifySiwxJwt accepts with the /jwks response', async () => {
+    const { handler, nonceStore } = await setup({ audience: 'cdp' });
+    const nonce = 'jwt_flow_nonce_1';
+    await nonceStore.issue({ nonce, ttlSeconds: 60 });
+    vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
+      success: true,
+      data: {
+        ...session,
+        chainId: 'eip155:8453' as const,
+        nonce,
+        uri: 'https://app.example.com',
+        version: '1' as const,
+      },
+    });
+    const verifyResponse = await handler.POST(
+      new Request('http://localhost/api/siwx/verify', {
+        method: 'POST',
+        body: JSON.stringify({ message: 'msg', signature: 'sig' }),
+      }),
+    );
+    const sessionId = /siwx-jwt-test=([^;]+)/.exec(verifyResponse.headers.get('Set-Cookie') ?? '')?.[1];
+
+    const tokenResponse = await handler.GET(get('token', sessionId));
+    const jwksResponse = await handler.GET(get('jwks'));
+    const { token, expiresAt } = await tokenResponse.json();
+    const jwks = await jwksResponse.json();
+
+    expect(tokenResponse.status).toBe(200);
+    expect(tokenResponse.headers.get('Cache-Control')).toBe('no-store');
+    expect(jwksResponse.headers.get('Cache-Control')).toBe('public, max-age=300');
+    expect(expiresAt).toBeGreaterThan(Date.now());
+    expect(await verifySiwxJwt(token, { jwks, issuer: ISSUER, audience: 'cdp' })).toMatchObject({
+      sub: 'eip155:0xabc0000000000000000000000000000000000001',
+      caip10: session.address,
+    });
+  });
+
+  it('uses bindSubject, jwt.subject and jwt.claims', async () => {
+    const bound = await setup();
+    const record = await bound.sessionStore.create({ session, ttlSeconds: 300 });
+    await bound.sessionStore.bindSubject(record.id, 'user_42');
+    const { token: boundToken } = await (await bound.handler.GET(get('token', record.id))).json();
+    const boundJwks = await (await bound.handler.GET(get('jwks'))).json();
+    expect((await verifySiwxJwt(boundToken, { jwks: boundJwks, issuer: ISSUER }))?.sub).toBe('user_42');
+
+    const custom = await setup({
+      subject: (r) => `custom:${r.session.domain}`,
+      claims: async () => ({ role: 'member' }),
+    });
+    const customRecord = await custom.sessionStore.create({ session, ttlSeconds: 300 });
+    const { token } = await (await custom.handler.GET(get('token', customRecord.id))).json();
+    const jwks = await (await custom.handler.GET(get('jwks'))).json();
+    expect(await verifySiwxJwt(token, { jwks, issuer: ISSUER })).toMatchObject({
+      sub: 'custom:app.example.com',
+      role: 'member',
+    });
+  });
+
+  it('caps exp by the record expiry', async () => {
+    const { handler, sessionStore } = await setup({ ttlSeconds: 3600 });
+    const record = await sessionStore.create({ session, ttlSeconds: 120 });
+    const { expiresAt } = await (await handler.GET(get('token', record.id))).json();
+    expect(expiresAt).toBeLessThanOrEqual(record.expiresAt);
+  });
+
+  it('accepts signingKey as a promise and publishes previousKeys', async () => {
+    const previous = await generateSiwxJwtKey('RS256');
+    const signingKey = importSiwxJwtKey({ privateKey: (await generateSiwxJwtKey()).privateJwk });
+    const { GET } = createSiwxApiHandler({
+      sessionStore: new MemorySiwxSessionStore(),
+      nonceStore: new MemorySiwxNonceStore(),
+      jwt: { signingKey, previousKeys: [previous.publicJwk], issuer: ISSUER },
+    });
+    const jwks = await (await GET(get('jwks'))).json();
+    expect(jwks.keys.map((key: { kid: string }) => key.kid)).toEqual([(await signingKey).kid, previous.kid]);
+  });
+
+  it('throws on an empty issuer and ttlSeconds 0', async () => {
+    const signingKey = await importSiwxJwtKey({ privateKey: (await generateSiwxJwtKey()).privateJwk });
+    const stores = { sessionStore: new MemorySiwxSessionStore(), nonceStore: new MemorySiwxNonceStore() };
+    expect(() => createSiwxApiHandler({ ...stores, jwt: { signingKey, issuer: '' } })).toThrow(TypeError);
+    expect(() => createSiwxApiHandler({ ...stores, jwt: { signingKey, issuer: ISSUER, ttlSeconds: 0 } })).toThrow(
+      RangeError,
+    );
   });
 });

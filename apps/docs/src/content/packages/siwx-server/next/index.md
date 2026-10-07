@@ -23,3 +23,9 @@ Re-exports [getSiwxServerSession](/packages/siwx-server/server/functions/getSiwx
 ### GetSiwxServerSessionOptions
 
 Re-exports [GetSiwxServerSessionOptions](/packages/siwx-server/server/interfaces/GetSiwxServerSessionOptions.md)
+
+***
+
+### SiwxJwtOptions
+
+Re-exports [SiwxJwtOptions](/packages/siwx-server/server/interfaces/SiwxJwtOptions.md)

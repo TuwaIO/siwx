@@ -1,6 +1,6 @@
 # EvmVerifyResult
 
-Defined in: [siwx-evm/src/types.ts:38](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L38)
+Defined in: [siwx-evm/src/types.ts:56](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L56)
 
 Result of an EVM verification, with the method that succeeded.
 
@@ -40,13 +40,14 @@ Human-readable reason of the failure. Present only when `success` is `false`.
 
 ### method?
 
-> `optional` **method?**: `"eip191"` \| `"eip1271"`
+> `optional` **method?**: `"eip191"` \| `"eip1271"` \| `"erc6492"`
 
-Defined in: [siwx-evm/src/types.ts:44](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L44)
+Defined in: [siwx-evm/src/types.ts:63](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L63)
 
 The verification method, set only when `success` is `true`.
 - `eip191`: EOA signature recovery.
-- `eip1271`: smart contract wallet check via `isValidSignature`.
+- `eip1271`: smart contract wallet check (`isValidSignature` of a deployed wallet).
+- `erc6492`: smart contract wallet that is not deployed yet and signed with an ERC-6492 wrapper.
 
 ***
 

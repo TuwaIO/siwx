@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "L1 core of SIWX (TUWA): zero-dependency CAIP-122 sign-in message builder, parser and validator with verification policies, session matching, nonces and typed errors for EVM and Solana.",
+  "description": "L1 core of SIWX (TUWA): CAIP-122 sign-in message builder, parser and validator with verification policies, session matching, nonces and typed errors for EVM and Solana.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -50,7 +50,11 @@
       "url": "https://github.com/Argeare5"
     }
   ],
+  "peerDependencies": {
+    "@tuwaio/orbit-core": ">=0.5"
+  },
   "devDependencies": {
+    "@tuwaio/orbit-core": "^0.5.0",
     "tsup": "^8.5.1",
     "typescript": "6.0.3"
   }

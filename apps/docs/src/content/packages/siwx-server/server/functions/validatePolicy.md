@@ -2,7 +2,7 @@
 
 > **validatePolicy**(`fields`, `policy?`, `now?`): `string`[]
 
-Defined in: [siwx-core/src/validateMessage.ts:143](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L143)
+Defined in: [siwx-core/src/validateMessage.ts:140](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L140)
 
 Checks message fields against a [SiwxVerificationPolicy](/packages/siwx-server/server/interfaces/SiwxVerificationPolicy.md): domain, URI, allowed chains, required
 `expirationTime`, `issuedAt` age and future skew, `notBefore` and maximum session lifetime. See the policy fields

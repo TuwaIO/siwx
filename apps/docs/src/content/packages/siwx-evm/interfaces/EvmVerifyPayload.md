@@ -1,6 +1,6 @@
 # EvmVerifyPayload
 
-Defined in: [siwx-evm/src/types.ts:30](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L30)
+Defined in: [siwx-evm/src/types.ts:48](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L48)
 
 A signed CAIP-122 message with a hex-typed EVM signature. The verifiers of this package take the message and the
 signature as separate arguments; this type is provided for typing request bodies.
@@ -29,7 +29,7 @@ The exact CAIP-122 message string that was signed.
 
 > **signature**: `` `0x${string}` ``
 
-Defined in: [siwx-evm/src/types.ts:32](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L32)
+Defined in: [siwx-evm/src/types.ts:50](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/types.ts#L50)
 
 The hex-encoded (`0x…`) signature returned by the wallet.
 

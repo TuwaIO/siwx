@@ -25,4 +25,30 @@ describe('isSessionMatchingTarget', () => {
     expect(isSessionMatchingTarget(session, SOLANA_ACCOUNT, 'devnet')).toBe(true);
     expect(isSessionMatchingTarget(session, SOLANA_ACCOUNT, 'solana:testnet')).toBe(false);
   });
+
+  it('accepts the target as a CAIP-10 account ID of any chain of its namespace', () => {
+    const session = { address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', chainId: 'eip155:1' };
+
+    expect(isSessionMatchingTarget(session, 'eip155:10:0xab5801a7d398351b8be11c439e05c5b3259aec9b')).toBe(true);
+    expect(isSessionMatchingTarget(session, `solana:devnet:${SOLANA_ACCOUNT}`)).toBe(false);
+  });
+
+  it('never matches across namespaces and compares Solana accounts case-sensitively', () => {
+    const evm = { address: 'eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B', chainId: 'eip155:1' };
+    const solana = { address: `${DEVNET}:${SOLANA_ACCOUNT}`, chainId: DEVNET };
+
+    expect(isSessionMatchingTarget(evm, SOLANA_ACCOUNT)).toBe(false);
+    expect(isSessionMatchingTarget(solana, '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B')).toBe(false);
+    expect(isSessionMatchingTarget(solana, SOLANA_ACCOUNT.toLowerCase())).toBe(false);
+  });
+
+  it('compares the chain only when the session has one', () => {
+    const session = { address: `${DEVNET}:${SOLANA_ACCOUNT}` };
+
+    expect(isSessionMatchingTarget(session, SOLANA_ACCOUNT, 'solana:testnet')).toBe(true);
+  });
+
+  it('never matches a session whose account is not a CAIP-10 account ID', () => {
+    expect(isSessionMatchingTarget({ address: 'eip155:1:0x1234', chainId: 'eip155:1' }, '0x1234')).toBe(false);
+  });
 });

@@ -7,6 +7,8 @@
 import type { SiwxVerificationPolicy } from '@tuwaio/siwx-core';
 import { generateNonce } from '@tuwaio/siwx-core';
 
+import { assertSiwxJwtSettings, signSiwxJwt, siwxJwtSubject } from './jwt';
+import { createSiwxJwks } from './jwtKeys';
 import {
   createClearCookie,
   createSessionCookie,
@@ -21,6 +23,7 @@ import {
 import type {
   CookieOptions,
   ServerVerifyOptions,
+  SiwxJwtOptions,
   SiwxNonceStore,
   SiwxSessionStore,
   StatelessDemoLimits,
@@ -57,7 +60,8 @@ export interface SiwxApiHandlerOptions {
   cookieOptions?: CookieOptions;
 
   /**
-   * Extra options of `verifySiwxPayload`, for example `publicClient` for EIP-1271 wallets.
+   * Extra options of `verifySiwxPayload`, for example `publicClient` (a client, or a function of the chain number) for
+   * smart contract wallets.
    */
   verifyOptions?: Omit<ServerVerifyOptions, 'policy' | 'usedNonces'>;
 
@@ -66,6 +70,12 @@ export interface SiwxApiHandlerOptions {
    * `cookieOptions.maxAge`, then to 604800 (7 days).
    */
   ttlSeconds?: number;
+  /**
+   * Enables `GET …/token` and `GET …/jwks`: a short-lived JWT for the signed-in wallet and the public keys that verify
+   * it, for services that accept a sign-in only as a JWT (embedded wallet providers with custom authentication such as
+   * Coinbase CDP, identity platforms, your own services). Without it both paths return 404.
+   */
+  jwt?: SiwxJwtOptions;
 }
 
 /**
@@ -117,12 +127,19 @@ export interface StatelessDemoSiwxHandlerOptions {
  *   Responds 400 for a malformed body, 401 for a failed verification or nonce, 413 for a too large body.
  * - `GET …/session`: returns the stored session of the cookie, or `null`.
  * - `DELETE …/session` or `POST …/logout`: revokes the session in the store and clears the cookie.
+ * - `GET …/token` (with the `jwt` option): signs a JWT for the session of the cookie with `signSiwxJwt` and returns
+ *   `{ token, expiresAt }` with `Cache-Control: no-store`. Responds 401 when there is no session or it has expired.
+ *   The token expires after `jwt.ttlSeconds` (600 by default) and never after the session.
+ * - `GET …/jwks` (with the `jwt` option): returns the JWKS of `jwt.signingKey` and `jwt.previousKeys` with
+ *   `Cache-Control: public, max-age=300`. Give its URL to the services that verify the tokens.
  *
  * Other paths return 404; unexpected errors are logged with `console.error` and return 500.
  *
- * @param options - Stores, policy, cookie and verification options.
+ * @param options - Stores, policy, cookie, verification and JWT options.
  * @returns Route handlers to export as `GET`, `POST` and `DELETE`.
  * @throws {Error} If `sessionStore` or `nonceStore` is missing.
+ * @throws {TypeError} If `jwt.issuer` is empty.
+ * @throws {RangeError} If `jwt.ttlSeconds` is not an integer from 1 to 604800.
  *
  * @example
  * ```ts
@@ -147,6 +164,8 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions) {
   const cookieName = options.cookieOptions?.name || 'siwx-session-v2';
   const ttlSeconds = options.ttlSeconds ?? (options.cookieOptions?.maxAge || 60 * 60 * 24 * 7);
   const maxPayloadBytes = 65536; // 64 KB default request boundary limit
+  const jwt = options.jwt;
+  if (jwt) assertSiwxJwtSettings(jwt.issuer, jwt.ttlSeconds ?? 600);
 
   const universalHandler = async (req: Request) => {
     try {
@@ -257,6 +276,50 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions) {
             'Content-Type': 'application/json',
             'Set-Cookie': cookieHeader,
           },
+        });
+      }
+
+      // 5. GET /token -> Sign a short-lived JWT for the session of the cookie
+      if (jwt && req.method === 'GET' && action === 'token') {
+        const sessionId = parseCookie(req.headers.get('cookie'), cookieName);
+        const record = sessionId ? await options.sessionStore.get(sessionId) : null;
+        if (!record) {
+          return new Response(JSON.stringify({ error: 'Not signed in' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+          });
+        }
+
+        try {
+          const signed = await signSiwxJwt({
+            session: record.session,
+            key: await jwt.signingKey,
+            issuer: jwt.issuer,
+            audience: jwt.audience,
+            ttlSeconds: jwt.ttlSeconds,
+            subject: jwt.subject ? await jwt.subject(record) : siwxJwtSubject(record.session, record.subjectId),
+            claims: jwt.claims ? await jwt.claims(record) : undefined,
+            notAfter: record.expiresAt,
+          });
+          return new Response(JSON.stringify(signed), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+          });
+        } catch (error) {
+          if (!(error instanceof RangeError)) throw error;
+          return new Response(JSON.stringify({ error: 'Session expired' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+          });
+        }
+      }
+
+      // 6. GET /jwks -> Public keys that verify the tokens
+      if (jwt && req.method === 'GET' && action === 'jwks') {
+        const jwks = createSiwxJwks([await jwt.signingKey, ...(jwt.previousKeys ?? [])]);
+        return new Response(JSON.stringify(jwks), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
         });
       }
 
@@ -502,4 +565,4 @@ export function createStatelessDemoSiwxHandler(options: StatelessDemoSiwxHandler
 }
 
 export { getSiwxServerSession } from './server';
-export type { GetSiwxServerSessionOptions } from './types';
+export type { GetSiwxServerSessionOptions, SiwxJwtOptions } from './types';

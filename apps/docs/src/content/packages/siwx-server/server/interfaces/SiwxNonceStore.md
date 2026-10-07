@@ -1,6 +1,6 @@
 # SiwxNonceStore
 
-Defined in: [siwx-server/src/types.ts:128](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L128)
+Defined in: [siwx-server/src/types.ts:130](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L130)
 
 Storage contract for single-use challenge nonces, used by `createSiwxApiHandler`. Implementations must be shared
 by every server instance and `consume` must be atomic (for example Redis `GETDEL`).
@@ -12,7 +12,7 @@ by every server instance and `consume` must be atomic (for example Redis `GETDEL
 
 > **consume**(`input`): `Promise`\<`boolean`\>
 
-Defined in: [siwx-server/src/types.ts:144](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L144)
+Defined in: [siwx-server/src/types.ts:146](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L146)
 
 Atomically removes a nonce, so that each nonce is accepted once.
 
@@ -40,7 +40,7 @@ The nonce string to consume.
 
 > **issue**(`input`): `Promise`\<`void`\>
 
-Defined in: [siwx-server/src/types.ts:136](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L136)
+Defined in: [siwx-server/src/types.ts:138](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L138)
 
 Stores a newly issued nonce.
 

@@ -2,7 +2,7 @@
 
 > **createSessionCookie**(`value`, `opts?`): `string`
 
-Defined in: [siwx-server/src/server.ts:372](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L372)
+Defined in: [siwx-server/src/server.ts:332](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L332)
 
 Formats a `Set-Cookie` header value for the session cookie: `HttpOnly`, `Secure` and `SameSite=Strict` by
 default.

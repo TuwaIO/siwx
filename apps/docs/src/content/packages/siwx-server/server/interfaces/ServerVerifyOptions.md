@@ -19,12 +19,14 @@ Verification policy enforced on the message fields (domain, URI, chains, timing)
 
 ### publicClient?
 
-> `optional` **publicClient?**: `PublicClient`
+> `optional` **publicClient?**: [`EvmPublicClientSource`](/packages/siwx-evm/type-aliases/EvmPublicClientSource.md)
 
-Defined in: [siwx-server/src/types.ts:35](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L35)
+Defined in: [siwx-server/src/types.ts:37](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L37)
 
-viem `PublicClient` for the chain of the message. Enables the EIP-1271 (smart contract wallet) fallback for
-`eip155` messages; ignored for Solana.
+Enables the smart contract wallet fallback for `eip155` messages (deployed wallets through EIP-1271, wallets not
+deployed yet through ERC-6492): a viem client, used only for messages of its own chain, or a function that
+returns the client of a chain number, for sign-ins on several chains. See `EvmPublicClientSource` from
+`@tuwaio/siwx-evm`. Ignored for Solana.
 
 ***
 

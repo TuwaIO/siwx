@@ -2,7 +2,7 @@
 
 > **verifyEip191**(`message`, `signature`, `options?`): `Promise`\<[`EvmVerifyResult`](/packages/siwx-evm/interfaces/EvmVerifyResult.md)\>
 
-Defined in: [siwx-evm/src/verify.ts:71](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/verify.ts#L71)
+Defined in: [siwx-evm/src/verify.ts:77](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/src/verify.ts#L77)
 
 Verifies an `eip155` CAIP-122 message signed with EIP-191 (`personal_sign`) by an EOA wallet.
 

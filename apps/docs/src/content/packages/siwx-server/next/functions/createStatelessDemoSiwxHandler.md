@@ -2,7 +2,7 @@
 
 > **createStatelessDemoSiwxHandler**(`options`): `object`
 
-Defined in: [siwx-server/src/next.ts:339](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L339)
+Defined in: [siwx-server/src/next.ts:402](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L402)
 
 Creates the SIWX route handlers of the stateless demo profile for a Next.js App Router catch-all route. The
 session is an HMAC-signed token in an `HttpOnly` cookie (see [signStatelessDemoSession](/packages/siwx-server/server/functions/signStatelessDemoSession.md)), so no database or

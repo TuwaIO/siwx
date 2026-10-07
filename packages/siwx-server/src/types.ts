@@ -3,7 +3,7 @@
  */
 
 import type { ParsedSiwxMessage, SiwxVerificationPolicy, SiwxVerifyResult } from '@tuwaio/siwx-core';
-import type { PublicClient } from 'viem';
+import type { EvmPublicClientSource } from '@tuwaio/siwx-evm';
 
 /**
  * Options of {@link verifySiwxPayload}.
@@ -29,10 +29,12 @@ export interface ServerVerifyOptions {
   policy?: SiwxVerificationPolicy;
 
   /**
-   * viem `PublicClient` for the chain of the message. Enables the EIP-1271 (smart contract wallet) fallback for
-   * `eip155` messages; ignored for Solana.
+   * Enables the smart contract wallet fallback for `eip155` messages (deployed wallets through EIP-1271, wallets not
+   * deployed yet through ERC-6492): a viem client, used only for messages of its own chain, or a function that
+   * returns the client of a chain number, for sign-ins on several chains. See `EvmPublicClientSource` from
+   * `@tuwaio/siwx-evm`. Ignored for Solana.
    */
-  publicClient?: PublicClient;
+  publicClient?: EvmPublicClientSource;
 }
 
 /**
@@ -265,6 +267,120 @@ export interface GetSiwxServerSessionOptions {
    * `clockSkewSeconds`.
    */
   policy?: SiwxVerificationPolicy;
+}
+
+/**
+ * JWS algorithm of the JWTs issued for SIWX sessions: `ES256` (ECDSA with P-256 and SHA-256) or `RS256`
+ * (RSASSA-PKCS1-v1_5 with SHA-256). Both are accepted by embedded wallet providers with custom authentication, such
+ * as Coinbase CDP.
+ */
+export type SiwxJwtAlgorithm = 'ES256' | 'RS256';
+
+/**
+ * Public JSON Web Key of a JWT signing key, as published in a JWKS (see {@link SiwxJwks}). Holds no private members.
+ */
+export interface SiwxPublicJwk {
+  /** Key type: `EC` for ES256, `RSA` for RS256. */
+  kty: 'EC' | 'RSA';
+  /** Curve of an EC key. Always `P-256`. */
+  crv?: 'P-256';
+  /** x coordinate of an EC key, base64url. */
+  x?: string;
+  /** y coordinate of an EC key, base64url. */
+  y?: string;
+  /** Modulus of an RSA key, base64url. */
+  n?: string;
+  /** Public exponent of an RSA key, base64url. */
+  e?: string;
+  /** The algorithm the key signs with. */
+  alg: SiwxJwtAlgorithm;
+  /** Key ID: the RFC 7638 thumbprint of the key. Written into the `kid` header of every token the key signs. */
+  kid: string;
+  /** Public key use. Always `sig`. */
+  use: 'sig';
+}
+
+/**
+ * A JWT signing key, created by `importSiwxJwtKey`.
+ */
+export interface SiwxJwtKey {
+  /** The algorithm the key signs with. */
+  alg: SiwxJwtAlgorithm;
+  /** Key ID: the RFC 7638 thumbprint of the key. */
+  kid: string;
+  /** The private key. Not extractable, usable only to sign. */
+  privateKey: CryptoKey;
+  /** The public key to publish in the JWKS. */
+  publicJwk: SiwxPublicJwk;
+}
+
+/**
+ * JSON Web Key Set (RFC 7517) with the public keys that verify the JWTs of SIWX sessions. Serve it at a public HTTPS
+ * URL and give that URL to the services that accept the tokens.
+ */
+export interface SiwxJwks {
+  /** The public keys. */
+  keys: SiwxPublicJwk[];
+}
+
+/**
+ * The `jwt` option of `createSiwxApiHandler` (`@tuwaio/siwx-server/next`): enables `GET …/token` (a fresh JWT for
+ * the session cookie) and `GET …/jwks` (the public keys).
+ */
+export interface SiwxJwtOptions {
+  /**
+   * The key that signs the tokens, from `importSiwxJwtKey`. A promise is accepted, so the route file needs no
+   * top-level `await`; an import error then surfaces as a 500 on the first `/token` or `/jwks` request.
+   */
+  signingKey: SiwxJwtKey | Promise<SiwxJwtKey>;
+  /**
+   * Keys replaced by `signingKey`, published in the JWKS so that tokens they signed keep verifying until they
+   * expire. Signing keys or public JWKs.
+   */
+  previousKeys?: ReadonlyArray<SiwxJwtKey | SiwxPublicJwk>;
+  /** The `iss` claim: the URL of your app. */
+  issuer: string;
+  /** The `aud` claim, when the receiving service expects one. */
+  audience?: string | string[];
+  /**
+   * Token lifetime in seconds, from 1 to 604800 (7 days). A token never outlives its session.
+   * @default 600
+   */
+  ttlSeconds?: number;
+  /**
+   * Builds the `sub` claim from the session record. Defaults to the bound `subjectId`, otherwise the account without
+   * its chain (see `siwxJwtSubject`).
+   */
+  subject?: (record: SiwxSessionRecord) => string | Promise<string>;
+  /** Extra claims from the session record. Reserved claims cannot be set. */
+  claims?: (record: SiwxSessionRecord) => Record<string, unknown> | Promise<Record<string, unknown>>;
+}
+
+/**
+ * Claims of a JWT issued for a SIWX session. Times are Unix seconds.
+ */
+export interface SiwxJwtPayload {
+  /** Issuer: the URL of your app. */
+  iss: string;
+  /**
+   * Subject: a stable ID of the user. By default the user ID bound with `bindSubject`, otherwise the account without
+   * its chain (`eip155:0x…` in lowercase, `solana:<address>`).
+   */
+  sub: string;
+  /** Audience, when one was set. */
+  aud?: string | string[];
+  /** Issued at. */
+  iat: number;
+  /** Expiration time. */
+  exp: number;
+  /** Unique token ID: 16 random bytes, base64url. */
+  jti: string;
+  /** The signed-in CAIP-10 account as it was signed, with Solana chain IDs in their genesis-hash form. */
+  caip10: string;
+  /** The CAIP-2 chain ID of the sign-in, with Solana chain IDs in their genesis-hash form. */
+  chain_id: string;
+  /** Custom claims added when the token was signed. */
+  [claim: string]: unknown;
 }
 
 /**

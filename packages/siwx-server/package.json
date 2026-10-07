@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "L2 server package of SIWX (TUWA): backend verification of CAIP-122 sign-ins for EVM and Solana, single-use nonce and session stores, HttpOnly cookie helpers and Next.js App Router handlers.",
+  "description": "L2 server package of SIWX (TUWA): backend verification of CAIP-122 sign-ins for EVM and Solana, single-use nonce and session stores, HttpOnly cookie helpers, Next.js App Router handlers, and JWT/JWKS for external auth providers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -54,6 +54,8 @@
     "session",
     "cookie",
     "nonce",
+    "jwt",
+    "jwks",
     "nextjs",
     "typescript"
   ],
@@ -73,8 +75,9 @@
     }
   ],
   "peerDependencies": {
+    "@tuwaio/orbit-core": ">=0.5",
     "@tuwaio/siwx-core": ">=0.5",
-    "@tuwaio/siwx-evm": ">=0.4.2",
+    "@tuwaio/siwx-evm": ">=0.5",
     "@tuwaio/siwx-solana": ">=0.4.2",
     "viem": ">=2"
   },
@@ -90,6 +93,7 @@
     }
   },
   "devDependencies": {
+    "@tuwaio/orbit-core": "^0.5.0",
     "@tuwaio/siwx-core": "workspace:*",
     "@tuwaio/siwx-evm": "workspace:*",
     "@tuwaio/siwx-solana": "workspace:*",

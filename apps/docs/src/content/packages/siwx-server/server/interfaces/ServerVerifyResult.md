@@ -1,6 +1,6 @@
 # ServerVerifyResult
 
-Defined in: [siwx-server/src/types.ts:41](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L41)
+Defined in: [siwx-server/src/types.ts:43](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L43)
 
 Result of [verifySiwxPayload](/packages/siwx-server/server/functions/verifySiwxPayload.md).
 
@@ -42,7 +42,7 @@ Human-readable reason of the failure. Present only when `success` is `false`.
 
 > `optional` **namespace?**: `"solana"` \| `"eip155"`
 
-Defined in: [siwx-server/src/types.ts:46](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L46)
+Defined in: [siwx-server/src/types.ts:48](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L48)
 
 The CAIP-2 namespace whose verifier checked the signature: `eip155` or `solana`. Absent when verification
 failed before the signature check.

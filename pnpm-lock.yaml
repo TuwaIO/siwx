@@ -308,6 +308,9 @@ importers:
 
   packages/siwx-core:
     devDependencies:
+      '@tuwaio/orbit-core':
+        specifier: ^0.5.0
+        version: 0.5.0
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.19)(supports-color@8.1.1)(typescript@6.0.3)(yaml@2.9.0)
@@ -317,6 +320,9 @@ importers:
 
   packages/siwx-evm:
     devDependencies:
+      '@tuwaio/orbit-core':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@tuwaio/siwx-core':
         specifier: workspace:*
         version: link:../siwx-core
@@ -335,6 +341,9 @@ importers:
 
   packages/siwx-react:
     devDependencies:
+      '@tuwaio/orbit-core':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@tuwaio/siwx-core':
         specifier: workspace:*
         version: link:../siwx-core
@@ -359,6 +368,9 @@ importers:
 
   packages/siwx-server:
     devDependencies:
+      '@tuwaio/orbit-core':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@tuwaio/siwx-core':
         specifier: workspace:*
         version: link:../siwx-core
@@ -383,6 +395,9 @@ importers:
       '@solana/kit':
         specifier: ^8.4.0
         version: 8.4.0(typescript@6.0.3)
+      '@tuwaio/orbit-core':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@tuwaio/siwx-core':
         specifier: workspace:*
         version: link:../siwx-core
@@ -2283,6 +2298,9 @@ packages:
       framer-motion: 12.x.x || 13.x.x || 14.x.x
       react: '>=19.2.3'
       tailwind-merge: 3.x.x
+
+  '@tuwaio/orbit-core@0.5.0':
+    resolution: {integrity: sha512-xwv96cSk0NGeZKRh6LYGYO1EQ7Ad+Ytsxnj8msd7w+RuCb3cGMLntwWLmsZVgacjl3XXbeVB2nr7a9vrsvtxHg==}
 
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
@@ -8060,6 +8078,8 @@ snapshots:
       framer-motion: 14.0.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       tailwind-merge: 3.7.0
+
+  '@tuwaio/orbit-core@0.5.0': {}
 
   '@types/aria-query@5.0.4': {}
 

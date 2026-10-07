@@ -58,6 +58,18 @@ describe('validateMessage()', () => {
       expect(result.errors.some((e) => e.includes('address'))).toBe(true);
     });
 
+    it('fails on an account that is not an address of its chain', () => {
+      for (const address of [
+        'eip155:1:0x1234',
+        'eip155:1:4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG',
+        'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
+      ]) {
+        const result = validateMessage({ ...VALID_FIELDS, address });
+        expect(result.valid).toBe(false);
+        expect(result.errors.some((e) => e.includes('address'))).toBe(true);
+      }
+    });
+
     it('accepts a valid Solana CAIP-10 address', () => {
       const result = validateMessage({
         ...VALID_FIELDS,
@@ -103,6 +115,14 @@ describe('validateMessage()', () => {
       const result = validateMessage({ ...VALID_FIELDS, chainId: 'eip155' as `eip155:${string}` });
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.includes('chainId'))).toBe(true);
+    });
+
+    it('fails on a chainId outside the CAIP-2 grammar', () => {
+      for (const chainId of ['ab:1', 'EIP155:1', `eip155:${'1'.repeat(33)}`]) {
+        const result = validateMessage({ ...VALID_FIELDS, chainId: chainId as `eip155:${string}` });
+        expect(result.valid).toBe(false);
+        expect(result.errors.some((e) => e.includes('chainId'))).toBe(true);
+      }
     });
 
     it('accepts a valid Solana chainId', () => {

@@ -2,7 +2,7 @@
 
 > **issueStatelessDemoNonce**(`secret`, `ttlSeconds?`): `Promise`\<`string`\>
 
-Defined in: [siwx-server/src/server.ts:318](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L318)
+Defined in: [siwx-server/src/server.ts:278](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L278)
 
 Issues a challenge nonce for the stateless demo profile: a random value and an expiry time, signed with
 HMAC-SHA256 (Web Crypto), encoded as 106 lowercase hex characters so that it is a valid CAIP-122 nonce.

@@ -3,6 +3,7 @@
  * Backend-agnostic — compatible with Node.js 20+ and Edge runtimes (Cloudflare Workers, Next.js, Fastify).
  */
 
+import { parseCaip2ChainId } from '@tuwaio/orbit-core';
 import type { SiwxVerifyPayload } from '@tuwaio/siwx-core';
 import {
   generateNonce,
@@ -13,6 +14,7 @@ import {
   validateMessage,
 } from '@tuwaio/siwx-core';
 
+import { base64UrlToBytes, base64UrlToUtf8, bytesToBase64Url, utf8ToBase64Url } from './encoding';
 import type {
   CookieOptions,
   GetSiwxServerSessionOptions,
@@ -31,11 +33,12 @@ import { toSession } from './types';
  *
  * Steps: parse the message, run {@link validateMessage} with `options.policy` (format, expiration with
  * `clockSkewSeconds`, `notBefore` and the policy rules), reject nonces listed in `options.usedNonces`, then route by the `chainId` namespace to `verifyEvmSignature`
- * (`@tuwaio/siwx-evm`, with the EIP-1271 fallback when `options.publicClient` is set) or `verifyEd25519`
+ * (`@tuwaio/siwx-evm`, with the smart contract wallet fallback, EIP-1271 and ERC-6492, when `options.publicClient`
+ * gives a client for the chain of the message) or `verifyEd25519`
  * (`@tuwaio/siwx-solana`).
  *
  * Side effects: dynamically imports the chain package of the namespace, so `@tuwaio/siwx-evm` and/or
- * `@tuwaio/siwx-solana` must be installed for the chains you accept; the EIP-1271 fallback makes one RPC call.
+ * `@tuwaio/siwx-solana` must be installed for the chains you accept; the smart contract wallet fallback makes one RPC call.
  * It does not consume nonces or create sessions: pair it with a {@link SiwxNonceStore} and a
  * {@link SiwxSessionStore}, or use the handlers of `@tuwaio/siwx-server/next`.
  *
@@ -64,7 +67,7 @@ export async function verifySiwxPayload(
       throw new SiwxNonceReplayError(parsed.nonce);
     }
 
-    const namespace = parsed.chainId.split(':')[0] as 'eip155' | 'solana' | undefined;
+    const namespace = parseCaip2ChainId(parsed.chainId)?.namespace;
 
     if (!namespace || !['eip155', 'solana'].includes(namespace)) {
       throw new SiwxUnsupportedNamespaceError(namespace ?? 'unknown');
@@ -93,49 +96,6 @@ export async function verifySiwxPayload(
     }
     return { success: false, error: `Server verification failed: ${String(error)}` };
   }
-}
-
-/**
- * Encodes string to base64url.
- * @internal
- */
-function encodeBase64Url(value: string): string {
-  return btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-/**
- * Decodes base64url string.
- * @internal
- */
-function decodeBase64Url(value: string): string {
-  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
-  return atob(base64);
-}
-
-/**
- * Converts Uint8Array to base64url.
- * @internal
- */
-function bytesToBase64Url(bytes: Uint8Array): string {
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-/**
- * Converts base64url to Uint8Array.
- * @internal
- */
-function base64UrlToBytes(base64url: string): Uint8Array {
-  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
 }
 
 /**
@@ -186,7 +146,7 @@ export async function signStatelessDemoSession(
   };
 
   const payloadJson = JSON.stringify(payload);
-  const payloadBase64 = encodeBase64Url(payloadJson);
+  const payloadBase64 = utf8ToBase64Url(payloadJson);
   const key = await getCryptoKey(secret);
   const encoder = new TextEncoder();
   const signature = await globalThis.crypto.subtle.sign('HMAC', key, encoder.encode(payloadBase64));
@@ -232,7 +192,7 @@ export async function verifyStatelessDemoSession(
     );
     if (!isValid) return null;
 
-    const json = decodeBase64Url(payloadBase64);
+    const json = base64UrlToUtf8(payloadBase64);
     const payload = JSON.parse(json) as StatelessDemoTokenPayload;
 
     if (payload.version !== 1 || payload.mode !== 'demo') return null;

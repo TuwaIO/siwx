@@ -3,6 +3,7 @@
  * Supports both EIP-191 (standard EOA wallets) and EIP-1271 (smart contract wallets).
  */
 
+import { parseCaip2ChainId, parseCaip10AccountId, toEvmChainId } from '@tuwaio/orbit-core';
 import {
   parseMessage,
   SiwxUnsupportedNamespaceError,
@@ -11,29 +12,10 @@ import {
   validateMessage,
 } from '@tuwaio/siwx-core';
 import type { Address, Hex } from 'viem';
-import { hashMessage, recoverAddress } from 'viem';
+import { hashMessage, isErc6492Signature, recoverAddress } from 'viem';
+import { verifyMessage } from 'viem/actions';
 
-import type { EvmVerifyOptions, EvmVerifyResult } from './types';
-
-/** EIP-1271 magic value returned by smart contract wallets on valid signatures. */
-const EIP_1271_MAGIC_VALUE = '0x1626ba7e';
-
-/**
- * EIP-1271 `isValidSignature(bytes32,bytes)` ABI fragment.
- * @internal
- */
-const EIP_1271_ABI = [
-  {
-    inputs: [
-      { name: 'hash', type: 'bytes32' },
-      { name: 'signature', type: 'bytes' },
-    ],
-    name: 'isValidSignature',
-    outputs: [{ name: 'magicValue', type: 'bytes4' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as const;
+import type { EvmPublicClientSource, EvmVerifyClient, EvmVerifyOptions, EvmVerifyResult } from './types';
 
 /**
  * Extracts the plain EVM address from a CAIP-10 formatted string.
@@ -41,11 +23,35 @@ const EIP_1271_ABI = [
  * @internal
  */
 function extractEvmAddress(caip10Address: string): Address {
-  const parts = caip10Address.split(':');
-  if (parts.length !== 3 || parts[0] !== 'eip155') {
+  const account = parseCaip10AccountId(caip10Address);
+  if (account?.namespace !== 'eip155') {
     throw new SiwxVerificationError(`Expected eip155 CAIP-10 address format. Got: "${caip10Address}"`);
   }
-  return parts[2] as Address;
+  return account.address as Address;
+}
+
+/**
+ * Returns the client that checks a contract wallet on the chain of a message: the result of a client function for the
+ * chain number, or a single client when its chain is that chain (or it has no chain).
+ * @internal
+ */
+async function clientForChain(source: EvmPublicClientSource, chainId: string): Promise<EvmVerifyClient | undefined> {
+  const chain = toEvmChainId(chainId);
+  if (chain === undefined) return undefined;
+  if (typeof source === 'function') return source(chain);
+  return source.chain === undefined || source.chain.id === chain ? source : undefined;
+}
+
+/**
+ * Throws for a message whose chain is not in the `eip155` namespace.
+ * @throws {SiwxUnsupportedNamespaceError} If the chain ID is not an `eip155` CAIP-2 chain ID.
+ * @internal
+ */
+function assertEip155Chain(chainId: string): void {
+  const namespace = parseCaip2ChainId(chainId)?.namespace;
+  if (namespace !== 'eip155') {
+    throw new SiwxUnsupportedNamespaceError(namespace ?? 'unknown');
+  }
 }
 
 /**
@@ -76,9 +82,7 @@ export async function verifyEip191(
   try {
     const parsed = parseMessage(message);
 
-    if (!parsed.chainId.startsWith('eip155:')) {
-      throw new SiwxUnsupportedNamespaceError(parsed.chainId.split(':')[0] ?? 'unknown');
-    }
+    assertEip155Chain(parsed.chainId);
 
     const validation = validateMessage(parsed, { skipExpiration: options.skipExpiration });
     if (!validation.valid) {
@@ -107,17 +111,21 @@ export async function verifyEip191(
 }
 
 /**
- * Verifies an `eip155` CAIP-122 message signed by a smart contract wallet (e.g. Safe) using EIP-1271.
+ * Verifies an `eip155` CAIP-122 message signed by a smart contract wallet (Safe, Coinbase Smart Wallet / Base
+ * Account, ERC-4337 accounts), deployed or not.
  *
- * Parses and validates the message like {@link verifyEip191}, then calls `isValidSignature(hash, signature)` on the
- * message `address` through `options.publicClient` and expects the magic value `0x1626ba7e`.
- * Side effect: one `eth_call` to the RPC endpoint of the client.
+ * Parses and validates the message like {@link verifyEip191}, takes the client of the message chain from
+ * `options.publicClient` and checks the signature with viem's `verifyMessage`: `isValidSignature` (EIP-1271) of a
+ * deployed wallet, and the ERC-6492 wrapper of a wallet that is not deployed yet, both in one `eth_call` through the
+ * ERC-6492 universal validator (which also accepts an EOA signature). A single client of another chain is never used:
+ * a contract wallet can only be checked on the chain it signed for.
+ * Side effects: calls the client function, if one is given; one `eth_call` to the RPC endpoint of the client.
  *
  * @param message - The exact CAIP-122 message string that was signed.
- * @param signature - The hex-encoded signature returned by the wallet.
+ * @param signature - The hex-encoded signature returned by the wallet, ERC-6492 wrapped or not.
  * @param options - Must contain `publicClient`; `skipExpiration` is optional.
- * @returns `{ success: true, data, method: 'eip1271' }`, or `{ success: false, error }` (also when
- * `publicClient` is missing or the contract call fails). Never throws.
+ * @returns `{ success: true, data, method: 'eip1271' }` (`'erc6492'` for a wrapped signature), or
+ * `{ success: false, error }` (also when there is no client for the message chain or the call fails). Never throws.
  *
  * @example
  * ```ts
@@ -133,16 +141,14 @@ export async function verifyEip1271(
   if (!options.publicClient) {
     return {
       success: false,
-      error: 'EIP-1271 verification requires a publicClient to make on-chain calls.',
+      error: 'Smart contract wallet verification requires a publicClient to make on-chain calls.',
     };
   }
 
   try {
     const parsed = parseMessage(message);
 
-    if (!parsed.chainId.startsWith('eip155:')) {
-      throw new SiwxUnsupportedNamespaceError(parsed.chainId.split(':')[0] ?? 'unknown');
-    }
+    assertEip155Chain(parsed.chainId);
 
     const validation = validateMessage(parsed, { skipExpiration: options.skipExpiration });
     if (!validation.valid) {
@@ -150,25 +156,22 @@ export async function verifyEip1271(
     }
 
     const contractAddress = extractEvmAddress(parsed.address);
-    const messageHash = hashMessage(message);
-
-    const magicValue = await options.publicClient.readContract({
-      address: contractAddress,
-      abi: EIP_1271_ABI,
-      functionName: 'isValidSignature',
-      args: [messageHash, signature],
-    });
-
-    if (magicValue !== EIP_1271_MAGIC_VALUE) {
-      throw new SiwxVerificationError(`EIP-1271: isValidSignature returned invalid magic value: ${magicValue}`);
+    const client = await clientForChain(options.publicClient, parsed.chainId);
+    if (!client) {
+      throw new SiwxVerificationError(`No publicClient for ${parsed.chainId} to check the contract wallet signature.`);
     }
 
-    return { success: true, data: parsed, method: 'eip1271' };
+    const valid = await verifyMessage(client, { address: contractAddress, message, signature });
+    if (!valid) {
+      throw new SiwxVerificationError('Smart contract wallet signature is not valid (EIP-1271 / ERC-6492).');
+    }
+
+    return { success: true, data: parsed, method: isErc6492Signature(signature) ? 'erc6492' : 'eip1271' };
   } catch (error) {
     if (error instanceof SiwxVerificationError || error instanceof SiwxValidationError) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: `EIP-1271 verification failed: ${String(error)}` };
+    return { success: false, error: `Smart contract wallet verification failed: ${String(error)}` };
   }
 }
 
@@ -176,11 +179,13 @@ export async function verifyEip1271(
  * Verifies an `eip155` CAIP-122 signature from an EOA or a smart contract wallet.
  *
  * Tries {@link verifyEip191} first. If it fails and `options.publicClient` is set, falls back to
- * {@link verifyEip1271} (one on-chain `eth_call`).
+ * {@link verifyEip1271} with the client of the message chain (one on-chain `eth_call`), which accepts deployed
+ * (EIP-1271) and not yet deployed (ERC-6492) smart contract wallets.
  *
  * @param message - The exact CAIP-122 message string that was signed.
  * @param signature - The hex-encoded signature returned by the wallet.
- * @param options - `publicClient` enables the EIP-1271 fallback; `skipExpiration` is passed to both checks.
+ * @param options - `publicClient` (a client or a function of the chain number) enables the contract wallet fallback;
+ * `skipExpiration` is passed to both checks.
  * @returns The first successful result (with `method`), otherwise the failed result of the last check that ran.
  * Never throws.
  *

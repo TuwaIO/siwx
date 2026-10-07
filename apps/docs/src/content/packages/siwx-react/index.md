@@ -22,7 +22,7 @@
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-react @tuwaio/siwx-core react zustand immer
+pnpm add @tuwaio/siwx-react @tuwaio/siwx-core @tuwaio/orbit-core react zustand immer
 ```
 
 > [!IMPORTANT]

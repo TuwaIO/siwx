@@ -2,7 +2,7 @@
 
 > **verifyEd25519**(`payload`, `options?`): `Promise`\<[`SiwxVerifyResult`](/packages/siwx-core/interfaces/SiwxVerifyResult.md)\>
 
-Defined in: [verify.ts:130](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/verify.ts#L130)
+Defined in: [verify.ts:118](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/verify.ts#L118)
 
 Verifies a `solana` CAIP-122 message signed with ed25519.
 

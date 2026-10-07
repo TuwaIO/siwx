@@ -2,7 +2,7 @@
 
 > **isSessionMatchingConnection**(`session`, `activeConnection`): `boolean`
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:149](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L149)
+Defined in: [siwx-react/src/satelliteHelpers.ts:159](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L159)
 
 Checks whether a SIWX session was issued for the active Satellite Connect connection, for example to reset the
 session after the user switches account or chain.

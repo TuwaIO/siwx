@@ -2,7 +2,7 @@
 
 > **getSiwxServerSession**(`options`): `Promise`\<[`SiwxSession`](/packages/siwx-server/server/interfaces/SiwxSession.md) \| `null`\>
 
-Defined in: [siwx-server/src/server.ts:558](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L558)
+Defined in: [siwx-server/src/server.ts:518](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/server.ts#L518)
 
 Reads the SIWX session of the current request from its session cookie. Use it in Server Actions, Route Handlers
 or any server code instead of trusting session data sent by the client.

@@ -1,6 +1,6 @@
 # StatelessDemoSiwxHandlerOptions
 
-Defined in: [siwx-server/src/next.ts:74](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L74)
+Defined in: [siwx-server/src/next.ts:84](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L84)
 
 Options of [createStatelessDemoSiwxHandler](/packages/siwx-server/next/functions/createStatelessDemoSiwxHandler.md).
 
@@ -10,7 +10,7 @@ Options of [createStatelessDemoSiwxHandler](/packages/siwx-server/next/functions
 
 > `optional` **cookieOptions?**: [`CookieOptions`](/packages/siwx-server/server/interfaces/CookieOptions.md)
 
-Defined in: [siwx-server/src/next.ts:90](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L90)
+Defined in: [siwx-server/src/next.ts:100](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L100)
 
 Attributes of the session cookie. `maxAge` is replaced by the token TTL.
 
@@ -20,7 +20,7 @@ Attributes of the session cookie. `maxAge` is replaced by the token TTL.
 
 > `optional` **demoLimits?**: [`StatelessDemoLimits`](/packages/siwx-server/server/interfaces/StatelessDemoLimits.md)
 
-Defined in: [siwx-server/src/next.ts:95](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L95)
+Defined in: [siwx-server/src/next.ts:105](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L105)
 
 Request limits (maximum body size of `POST /verify`).
 
@@ -30,7 +30,7 @@ Request limits (maximum body size of `POST /verify`).
 
 > `optional` **policy?**: [`SiwxVerificationPolicy`](/packages/siwx-server/server/interfaces/SiwxVerificationPolicy.md)
 
-Defined in: [siwx-server/src/next.ts:85](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L85)
+Defined in: [siwx-server/src/next.ts:95](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L95)
 
 Policy enforced by `POST /verify`. For the demo profile, set `expectedDomain`, `requireExpirationTime` and a
 short `maxSessionLifetimeSeconds`.
@@ -41,7 +41,7 @@ short `maxSessionLifetimeSeconds`.
 
 > **signingSecret**: `string`
 
-Defined in: [siwx-server/src/next.ts:79](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L79)
+Defined in: [siwx-server/src/next.ts:89](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L89)
 
 Server-only HMAC secret of at least 32 characters. Never expose it to the browser. Rotating it invalidates every
 issued token.
@@ -52,7 +52,7 @@ issued token.
 
 > `optional` **ttlSeconds?**: `number`
 
-Defined in: [siwx-server/src/next.ts:106](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L106)
+Defined in: [siwx-server/src/next.ts:116](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L116)
 
 Token and cookie lifetime in seconds. Defaults to `cookieOptions.maxAge`, then to 1800 (30 minutes). A message
 `expirationTime`, when present, sets the token expiry instead.
@@ -63,6 +63,6 @@ Token and cookie lifetime in seconds. Defaults to `cookieOptions.maxAge`, then t
 
 > `optional` **verifyOptions?**: `Omit`\<[`ServerVerifyOptions`](/packages/siwx-server/server/interfaces/ServerVerifyOptions.md), `"policy"`\>
 
-Defined in: [siwx-server/src/next.ts:100](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L100)
+Defined in: [siwx-server/src/next.ts:110](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/next.ts#L110)
 
 Extra options of `verifySiwxPayload`, for example `publicClient` or `usedNonces`.

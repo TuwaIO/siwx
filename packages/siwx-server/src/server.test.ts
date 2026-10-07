@@ -1,6 +1,7 @@
 import { buildMessage, generateNonce } from '@tuwaio/siwx-core';
+import type { PublicClient } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   createClearCookie,
@@ -110,6 +111,28 @@ describe('verifySiwxPayload()', () => {
     );
     expect(invalidResult.success).toBe(false);
     expect(invalidResult.error).toContain('Domain mismatch');
+  });
+
+  it('checks a smart contract wallet with the client of the chain it signed on', async () => {
+    const wallet = '0x1111111111111111111111111111111111111111';
+    const message = buildMessage({
+      domain: 'app.tuwa.io',
+      address: `eip155:8453:${wallet}`,
+      uri: 'https://app.tuwa.io',
+      version: '1',
+      chainId: 'eip155:8453',
+      nonce: generateNonce(),
+      issuedAt: new Date().toISOString(),
+    });
+    const call = vi.fn(async () => ({ data: '0x01' as const }));
+    const base = { chain: { id: 8453 }, call } as unknown as PublicClient;
+    const clients = vi.fn((chainId: number) => (chainId === 8453 ? base : undefined));
+
+    const result = await verifySiwxPayload({ message, signature: `0x${'ab'.repeat(65)}` }, { publicClient: clients });
+
+    expect(result).toMatchObject({ success: true, namespace: 'eip155' });
+    expect(clients).toHaveBeenCalledWith(8453);
+    expect(call).toHaveBeenCalledTimes(1);
   });
 
   it('rejects verification if signature is invalid or tampered', async () => {

@@ -1,6 +1,6 @@
 # StatelessDemoTokenPayload
 
-Defined in: [siwx-server/src/types.ts:151](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L151)
+Defined in: [siwx-server/src/types.ts:153](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L153)
 
 JSON payload of a stateless demo session token (see [signStatelessDemoSession](/packages/siwx-server/server/functions/signStatelessDemoSession.md)). The token is signed, not
 encrypted: anyone holding it can read these fields.
@@ -11,7 +11,7 @@ encrypted: anyone holding it can read these fields.
 
 > **address**: `string`
 
-Defined in: [siwx-server/src/types.ts:155](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L155)
+Defined in: [siwx-server/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L157)
 
 CAIP-10 account ID of the session.
 
@@ -21,7 +21,7 @@ CAIP-10 account ID of the session.
 
 > **chainId**: `string`
 
-Defined in: [siwx-server/src/types.ts:157](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L157)
+Defined in: [siwx-server/src/types.ts:159](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L159)
 
 CAIP-2 chain ID of the session.
 
@@ -31,7 +31,7 @@ CAIP-2 chain ID of the session.
 
 > **domain**: `string`
 
-Defined in: [siwx-server/src/types.ts:159](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L159)
+Defined in: [siwx-server/src/types.ts:161](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L161)
 
 Domain of the signed message.
 
@@ -41,7 +41,7 @@ Domain of the signed message.
 
 > `optional` **expirationTime?**: `string`
 
-Defined in: [siwx-server/src/types.ts:165](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L165)
+Defined in: [siwx-server/src/types.ts:167](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L167)
 
 Expiry of the token: the message `expirationTime`, or the issuing time plus the token TTL.
 
@@ -51,7 +51,7 @@ Expiry of the token: the message `expirationTime`, or the issuing time plus the 
 
 > **issuedAt**: `string`
 
-Defined in: [siwx-server/src/types.ts:163](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L163)
+Defined in: [siwx-server/src/types.ts:165](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L165)
 
 `issuedAt` of the signed message.
 
@@ -61,7 +61,7 @@ Defined in: [siwx-server/src/types.ts:163](https://github.com/TuwaIO/siwx/blob/m
 
 > **mode**: `"demo"`
 
-Defined in: [siwx-server/src/types.ts:169](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L169)
+Defined in: [siwx-server/src/types.ts:171](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L171)
 
 Token mode.
 
@@ -71,7 +71,7 @@ Token mode.
 
 > **nonce**: `string`
 
-Defined in: [siwx-server/src/types.ts:161](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L161)
+Defined in: [siwx-server/src/types.ts:163](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L163)
 
 Nonce of the signed message.
 
@@ -81,7 +81,7 @@ Nonce of the signed message.
 
 > **sessionId**: `string`
 
-Defined in: [siwx-server/src/types.ts:167](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L167)
+Defined in: [siwx-server/src/types.ts:169](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L169)
 
 Random ID of the token.
 
@@ -91,6 +91,6 @@ Random ID of the token.
 
 > **version**: `1`
 
-Defined in: [siwx-server/src/types.ts:153](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L153)
+Defined in: [siwx-server/src/types.ts:155](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L155)
 
 Token format version.
