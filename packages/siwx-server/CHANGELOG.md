@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.5.1...siwx-server-v0.6.0) (2026-10-07)
+
+
+### Features
+
+* JWT and JWKS, smart wallets on every chain, chain IDs through orbit ([0efe30a](https://github.com/TuwaIO/siwx/commit/0efe30ab353b579dbe0a8f326232bf5563a7263c))
+
 ## [0.5.1](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.5.0...siwx-server-v0.5.1) (2026-10-03)
 
 
