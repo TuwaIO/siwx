@@ -26,7 +26,7 @@ pnpm add @tuwaio/siwx-react @tuwaio/siwx-core @tuwaio/orbit-core react zustand i
 ```
 
 > [!IMPORTANT]
-> `@tuwaio/siwx-core`, `react` (>=19.2.3), `zustand` (>=5) and `immer` (>=11) are peer dependencies and must be installed alongside `@tuwaio/siwx-react`. Add `@tuwaio/siwx-evm` and/or `@tuwaio/siwx-solana` for the wallet signers.
+> `@tuwaio/siwx-core`, `react` (>=18), `zustand` (>=5) and `immer` (>=10) are peer dependencies and must be installed alongside `@tuwaio/siwx-react`. Add `@tuwaio/siwx-evm` and/or `@tuwaio/siwx-solana` for the wallet signers.
 
 ---
 

@@ -22,7 +22,7 @@ pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @solana/kit @w
 ```
 
 > [!IMPORTANT]
-> `@tuwaio/siwx-core`, `@solana/kit` (>=8.2) and `@wallet-standard/base` (>=1.1.1) are peer dependencies and must be installed alongside `@tuwaio/siwx-solana`.
+> `@tuwaio/siwx-core`, `@solana/kit` (>=6) and `@wallet-standard/base` (>=1.1.0) are peer dependencies and must be installed alongside `@tuwaio/siwx-solana`.
 
 ---
 

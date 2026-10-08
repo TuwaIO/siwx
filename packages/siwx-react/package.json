@@ -52,8 +52,8 @@
   "peerDependencies": {
     "@tuwaio/orbit-core": ">=0.5",
     "@tuwaio/siwx-core": ">=0.5",
-    "immer": ">=11.0.0",
-    "react": ">=19.2.3",
+    "immer": ">=10.0.0",
+    "react": ">=18",
     "zustand": ">=5.0.0"
   },
   "devDependencies": {
