@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.6.0...siwx-react-v0.6.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* packages description ([8d9099d](https://github.com/TuwaIO/siwx/commit/8d9099db7ac1c4704e5173a4d43a9bde0c34e33d))
+
 ## [0.6.0](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.5.1...siwx-react-v0.6.0) (2026-10-07)
 
 
