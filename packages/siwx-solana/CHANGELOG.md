@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.5.0...siwx-solana-v0.5.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* accept @solana/kit 6+ and React 18 in siwx-solana and siwx-react ([bfb8073](https://github.com/TuwaIO/siwx/commit/bfb80736b380cccc69358305b66d44fdf0b20d0e))
+
 ## [0.5.0](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.4.3...siwx-solana-v0.5.0) (2026-10-07)
 
 
