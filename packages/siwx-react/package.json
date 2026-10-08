@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "L2 React package of SIWX (TUWA): useSiwx and useSiwxSession hooks with a zustand session store for the CAIP-122 sign-in flow, plus Satellite Connect helpers.",
+  "description": "L2 React package of SIWX (TUWA): useSiwx and useSiwxSession hooks with a Zustand session store for the CAIP-122 sign-in flow, plus Satellite Connect helpers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

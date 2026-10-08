@@ -4,7 +4,7 @@
   "private": false,
   "author": "Oleksandr Tkach",
   "license": "Apache-2.0",
-  "description": "L2 EVM package of SIWX (TUWA): CAIP-122 signer for wagmi and viem wallets, and EIP-191 (EOA) and EIP-1271 (smart contract wallet) signature verification, built on viem and @wagmi/core.",
+  "description": "L2 EVM package of SIWX (TUWA): CAIP-122 signer for wagmi and viem wallets, and EIP-191 (EOA), EIP-1271 (smart contract wallet) and ERC-6492 (not yet deployed smart wallet) verification on the chain of the message, built on viem and @wagmi/core.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
