@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.5.1...siwx-solana-v0.6.0) (2026-10-09)
+
+
+### Features
+
+* sign in with Solana off-chain messages, support useWallet() of wallet-adapter v3, validate buildMessage fields and accept only RFC 3986 domains ([bae3ee0](https://github.com/TuwaIO/siwx/commit/bae3ee067f88015a97e5572c0dc19a0f7db7e3fe))
+
 ## [0.5.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.5.0...siwx-solana-v0.5.1) (2026-10-08)
 
 
