@@ -2,12 +2,14 @@
 
 > **buildMessage**(`fields`): `string`
 
-Defined in: [buildMessage.ts:31](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/buildMessage.ts#L31)
+Defined in: [buildMessage.ts:38](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/buildMessage.ts#L38)
 
 Formats CAIP-122 message fields into the plain-text message that the wallet signs (the EIP-4361 layout used by
 CAIP-122). Optional fields are omitted when empty.
 
-Pure function: it does not validate the fields. Run [validateMessage](/packages/siwx-core/functions/validateMessage.md) first if the input is untrusted.
+Pure function. It only checks that the message can be built: every required field is a non-empty string and no
+field contains a line break (which would add or change lines of the signed message). It does not check formats or
+timing: run [validateMessage](/packages/siwx-core/functions/validateMessage.md) for that, as verifiers do.
 
 ## Parameters
 
@@ -22,6 +24,10 @@ The message fields to format.
 `string`
 
 The message lines joined with `\n`, ready to be signed and parseable by [parseMessage](/packages/siwx-core/functions/parseMessage.md).
+
+## Throws
+
+[SiwxValidationError](/packages/siwx-core/classes/SiwxValidationError.md) When a required field is missing or empty, or a field contains a line break.
 
 ## Example
 

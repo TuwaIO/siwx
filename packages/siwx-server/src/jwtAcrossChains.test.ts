@@ -108,3 +108,80 @@ describe('JWT subjects across networks', () => {
     expect(mainnet.chain_id).toBe(MAINNET);
   });
 });
+
+describe('Solana sign-in with an off-chain message signature', () => {
+  /** The version 1 off-chain message of `text` with one signer, built by hand from the specification. */
+  function offchainMessageV1(publicKey: Uint8Array, text: string): Uint8Array<ArrayBuffer> {
+    const signingDomain = [0xff, ...new TextEncoder().encode('solana offchain')];
+    return new Uint8Array([...signingDomain, 1, 1, ...publicKey, ...new TextEncoder().encode(text)]);
+  }
+
+  async function hardwareWalletAccount() {
+    const keys = (await globalThis.crypto.subtle.generateKey('Ed25519', true, ['sign', 'verify'])) as CryptoKeyPair;
+    const publicKey = new Uint8Array(await globalThis.crypto.subtle.exportKey('raw', keys.publicKey));
+    const sign = async (message: string) =>
+      toBase58(
+        new Uint8Array(
+          await globalThis.crypto.subtle.sign('Ed25519', keys.privateKey, offchainMessageV1(publicKey, message)),
+        ),
+      );
+    return { address: toBase58(publicKey), sign };
+  }
+
+  it('signs in and issues the same JWT subject as a plain message signature', async () => {
+    const account = await hardwareWalletAccount();
+
+    const claims = await jwtFor({ address: account.address, chainId: MAINNET }, account.sign);
+
+    expect(claims.sub).toBe(`solana:${account.address}`);
+    expect(claims.caip10).toBe(`${MAINNET}:${account.address}`);
+  });
+
+  it('rejects the same off-chain signature twice, because the nonce is spent', async () => {
+    const account = await hardwareWalletAccount();
+    const { nonce } = (await (await handler.POST(new Request(`${BASE}/nonce`, { method: 'POST' }))).json()) as {
+      nonce: string;
+    };
+    const message = buildMessage({
+      domain: 'app.example.com',
+      uri: 'https://app.example.com',
+      version: '1',
+      nonce,
+      issuedAt: new Date().toISOString(),
+      address: `${MAINNET}:${account.address}`,
+      chainId: MAINNET,
+    });
+    const body = JSON.stringify({ message, signature: await account.sign(message) });
+
+    const first = await handler.POST(new Request(`${BASE}/verify`, { method: 'POST', body }));
+    const replay = await handler.POST(new Request(`${BASE}/verify`, { method: 'POST', body }));
+
+    expect(first.status).toBe(200);
+    expect(replay.status).not.toBe(200);
+  });
+
+  it('rejects an off-chain signature of a message for another domain', async () => {
+    const account = await hardwareWalletAccount();
+    const { nonce } = (await (await handler.POST(new Request(`${BASE}/nonce`, { method: 'POST' }))).json()) as {
+      nonce: string;
+    };
+    const message = buildMessage({
+      domain: 'phishing.example.net',
+      uri: 'https://phishing.example.net',
+      version: '1',
+      nonce,
+      issuedAt: new Date().toISOString(),
+      address: `${MAINNET}:${account.address}`,
+      chainId: MAINNET,
+    });
+
+    const response = await handler.POST(
+      new Request(`${BASE}/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ message, signature: await account.sign(message) }),
+      }),
+    );
+
+    expect(response.status).not.toBe(200);
+  });
+});

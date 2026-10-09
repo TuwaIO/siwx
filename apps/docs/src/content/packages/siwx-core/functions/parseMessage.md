@@ -2,7 +2,7 @@
 
 > **parseMessage**(`message`): [`SiwxMessageFields`](/packages/siwx-core/interfaces/SiwxMessageFields.md)
 
-Defined in: [parseMessage.ts:35](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/parseMessage.ts#L35)
+Defined in: [parseMessage.ts:42](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/parseMessage.ts#L42)
 
 Parses a CAIP-122 message string (as produced by [buildMessage](/packages/siwx-core/functions/buildMessage.md)) back into its fields.
 

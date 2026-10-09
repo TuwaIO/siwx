@@ -9,8 +9,9 @@
 
 ## 🏛️ Core Capabilities
 
-- **Signing:** `createSolanaSiwxSigner` turns a Wallet Standard wallet and account (typed with `@wallet-standard/base`), an `@solana/kit` message signer or a legacy adapter into the `(message) => signature` function that `useSiwx` from [`@tuwaio/siwx-react`](https://siwx.docs.tuwa.io/packages/siwx-react) expects. Signatures are returned as base58 strings.
-- **Verification:** `verifyEd25519` accepts a `{ message, signature }` payload (base58 strings or bytes) or the output of the Wallet Standard `solana:signIn` feature. It requires a `solana` chain and a 64-byte signature, validates the message (format, expiration, `notBefore` and an `issuedAt` in the future) and the address, and checks the signature with `crypto.subtle`. It runs locally, without RPC calls, and returns `{ success, data, error }` instead of throwing.
+- **Signing:** `createSolanaSiwxSigner` turns a Wallet Standard wallet and account (typed with `@wallet-standard/base`), an `@solana/kit` message signer, a legacy adapter or `useWallet()` of `@solana/wallet-adapter` (v1 or v3) into the `(message) => signature` function that `useSiwx` from [`@tuwaio/siwx-react`](https://siwx.docs.tuwa.io/packages/siwx-react) expects. Signatures are returned as base58 strings.
+- **Off-chain messages and hardware wallets:** the wallet signs either the UTF-8 bytes of the message (`solana:signMessage`) or its [version 1 off-chain message](https://github.com/solana-foundation/SRFCs/discussions/3) (`solana:signOffchainMessage`), which hardware wallets can show and sign. By default the signer picks the off-chain message when the account supports it but not `solana:signMessage`; `messageFormat` forces one or the other.
+- **Verification:** `verifyEd25519` accepts a `{ message, signature }` payload (base58 strings or bytes) or the output of the Wallet Standard `solana:signIn` feature, signed as the message itself or as its version 1 off-chain message. It requires a `solana` chain and a 64-byte signature, validates the message (format, expiration, `notBefore` and an `issuedAt` in the future) and the address, and checks the signature with `crypto.subtle`. It runs locally, without RPC calls, and returns `{ success, data, error }` instead of throwing.
 - **Runtimes:** any runtime whose Web Crypto API supports Ed25519, such as Node.js 20+ and current browsers. No native modules or polyfills.
 
 ---
@@ -59,7 +60,25 @@ const signWithKit = createSolanaSiwxSigner(kitSigner);
 const signWithAdapter = createSolanaSiwxSigner(walletAdapter);
 ```
 
-The signer uses the first capability it finds: `modifyAndSignMessages` (an `@solana/kit` `MessageModifyingSigner`), the `solana:signMessage` feature of `wallet.features`, a `signMessages` method, or a legacy `signMessage` method (also on `adapter`).
+The signer uses the first capability it finds: `modifyAndSignMessages` (an `@solana/kit` `MessageModifyingSigner`), the `solana:signMessage` feature of `wallet.features`, a `signMessages` method, or a legacy `signMessage` method (on the wallet, its `adapter`, the account or the target itself, so `useWallet()` of `@solana/wallet-adapter` v1 and v3 can be passed as is).
+
+### Off-chain messages (hardware wallets)
+
+```typescript
+import { createSolanaSiwxSigner } from '@tuwaio/siwx-solana';
+import type { Wallet, WalletAccount } from '@wallet-standard/base';
+
+declare const wallet: Wallet; // a wallet with the `solana:signOffchainMessage` feature
+declare const account: WalletAccount;
+declare const message: string;
+
+// 'auto' (default): the off-chain message when the account has `solana:signOffchainMessage` but not
+// `solana:signMessage`. 'offchainMessage' always signs it, 'message' never does.
+const signer = createSolanaSiwxSigner({ wallet, account }, { messageFormat: 'offchainMessage' });
+const signature = await signer(message); // base58; verifyEd25519 and @tuwaio/siwx-server accept it as is
+```
+
+The wallet signs the [version 1 off-chain message](https://github.com/solana-foundation/SRFCs/discussions/3) of the text with the account as its only signer. When the wallet returns the bytes it signed, the signer checks that they are that envelope and rejects otherwise. The signature is sent to the server like any other: the envelope is fully determined by the text and the address, so no server option is needed. A `signOffchainMessage(message)` method, as on `useWallet()` of `@solana/wallet-adapter` v3, works too.
 
 ### Verifying a signature
 
@@ -78,7 +97,7 @@ if (result.success) {
 }
 ```
 
-The output of the Wallet Standard `solana:signIn` feature can be passed as-is (or as `{ output }`); the signed message must be a CAIP-122 message.
+The output of the Wallet Standard `solana:signIn` feature can be passed as-is (or as `{ output }`); the signed message must be a CAIP-122 message. The signature may cover the message itself or its version 1 off-chain message; signed message bytes that are such an envelope are decoded, and its only signer must be the address of the message.
 
 `verifyEd25519` does not check the domain, URI, nonce or other policy rules. On a server, use [`@tuwaio/siwx-server`](https://siwx.docs.tuwa.io/packages/siwx-server), which adds the policy and single-use nonces, or run `validatePolicy` from `@tuwaio/siwx-core` yourself.
 

@@ -2,7 +2,7 @@
 
 > **isSessionMatchingTarget**(`session`, `targetAddress`, `targetChainId?`): `boolean`
 
-Defined in: [validateMessage.ts:369](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L369)
+Defined in: [validateMessage.ts:379](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L379)
 
 Checks whether a SIWX session belongs to a given wallet address and, optionally, chain. Use it on the server to
 make sure the signed-in account is the one a request acts on.

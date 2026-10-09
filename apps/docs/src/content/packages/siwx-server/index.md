@@ -14,7 +14,7 @@ It has two entry points:
 
 ## 🏛️ Core Capabilities
 
-- **Verification:** `verifySiwxPayload` parses the message, validates it against your `SiwxVerificationPolicy` and routes the signature check by chain to `@tuwaio/siwx-evm` (EIP-191, with a smart contract wallet fallback, EIP-1271 and ERC-6492, when `publicClient` gives a client for the chain of the message) or `@tuwaio/siwx-solana` (ed25519). It returns a result instead of throwing.
+- **Verification:** `verifySiwxPayload` parses the message, validates it against your `SiwxVerificationPolicy` and routes the signature check by chain to `@tuwaio/siwx-evm` (EIP-191, with a smart contract wallet fallback, EIP-1271 and ERC-6492, when `publicClient` gives a client for the chain of the message) or `@tuwaio/siwx-solana` (ed25519, over the message or its version 1 off-chain message, which hardware wallets sign). It returns a result instead of throwing.
 - **Durable profile:** `createSiwxApiHandler` serves the nonce, verify, session and logout routes on top of your `SiwxSessionStore` and `SiwxNonceStore` (Redis, SQL, KV…), with the session ID in an `HttpOnly` cookie.
 - **Stateless demo profile:** `createStatelessDemoSiwxHandler` issues HMAC-signed nonces and keeps the session in an HMAC-signed cookie, for demos without a database.
 - **Server-side session:** `getSiwxServerSession` reads the session from a `Request`, `Headers`, a `Cookie` header or the Next.js `cookies()` store, for Server Actions and API routes.

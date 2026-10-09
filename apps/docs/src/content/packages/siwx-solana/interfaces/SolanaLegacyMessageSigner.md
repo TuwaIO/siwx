@@ -1,6 +1,6 @@
 # SolanaLegacyMessageSigner
 
-Defined in: [signer.ts:39](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L39)
+Defined in: [signer.ts:91](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L91)
 
 A legacy wallet adapter (for example from `@solana/wallet-adapter-react`) that signs raw message bytes.
 
@@ -10,7 +10,7 @@ A legacy wallet adapter (for example from `@solana/wallet-adapter-react`) that s
 
 > **signMessage**(`message`): `Promise`\<`Uint8Array`\<`ArrayBufferLike`\> \| \{ `signature`: `Uint8Array`; \}\>
 
-Defined in: [signer.ts:45](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L45)
+Defined in: [signer.ts:97](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L97)
 
 Signs the message bytes.
 

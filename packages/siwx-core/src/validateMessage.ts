@@ -8,6 +8,13 @@ import { parseCaip2ChainId, parseCaip10AccountId } from '@tuwaio/orbit-core';
 import { isChainIdAllowed, normalizeSolanaChainId } from './solanaChainId';
 import type { SiwxMessageFields, SiwxValidationResult, SiwxVerificationPolicy, ValidateMessageOptions } from './types';
 
+/**
+ * The characters of an RFC 3986 authority (`[userinfo@]host[:port]`, IP literals in brackets), which EIP-4361 and
+ * CAIP-122 require for `domain`. Browsers give the host in this form (`location.host`, IDN hosts in punycode).
+ * @internal
+ */
+export const AUTHORITY_REGEX = /^[A-Za-z0-9\-._~%!$&'()*+,;=:@[\]]+$/;
+
 /** Regex for RFC 3986 URI validation (basic subset). */
 const URI_REGEX = /^https?:\/\/.+/;
 
@@ -26,6 +33,9 @@ function validateDomain(domain: string): string | undefined {
   }
   if (domain.includes('\n')) {
     return 'domain must not contain newline characters.';
+  }
+  if (!AUTHORITY_REGEX.test(domain)) {
+    return `domain must be an RFC 3986 authority such as "app.example.com" or "localhost:3000". Got: ${JSON.stringify(domain)}`;
   }
   return undefined;
 }

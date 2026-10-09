@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildMessage } from './buildMessage';
+import { SiwxValidationError } from './errors';
 import type { SiwxMessageFields } from './types';
 
 /** Minimal valid fields with all required properties. */
@@ -105,5 +106,28 @@ describe('buildMessage()', () => {
   it('does not include Resources section when resources is empty array', () => {
     const result = buildMessage({ ...MINIMAL_FIELDS, resources: [] });
     expect(result).not.toContain('Resources:');
+  });
+
+  it('throws a SiwxValidationError when a required field is missing, instead of writing "undefined"', () => {
+    const fields = { ...MINIMAL_FIELDS, version: undefined, issuedAt: undefined } as unknown as SiwxMessageFields;
+
+    expect(() => buildMessage(fields)).toThrow(SiwxValidationError);
+    expect(() => buildMessage(fields)).toThrow(/version.*issuedAt|issuedAt.*version/);
+  });
+
+  it('throws when a required field is an empty string', () => {
+    expect(() => buildMessage({ ...MINIMAL_FIELDS, nonce: '' })).toThrow(/nonce/);
+  });
+
+  it('throws when a field would inject a line into the message', () => {
+    expect(() => buildMessage({ ...MINIMAL_FIELDS, statement: 'Hello\nNonce: attacker' })).toThrow(/statement/);
+    expect(() => buildMessage({ ...MINIMAL_FIELDS, requestId: 'id\rURI: https://evil.example' })).toThrow(/requestId/);
+    expect(() => buildMessage({ ...MINIMAL_FIELDS, resources: ['https://a.example', 'b\nNonce: x'] })).toThrow(
+      /resources/,
+    );
+  });
+
+  it('still builds messages whose values a verifier will reject, such as a short nonce', () => {
+    expect(buildMessage({ ...MINIMAL_FIELDS, nonce: 'abc' })).toContain('Nonce: abc');
   });
 });

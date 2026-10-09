@@ -5,9 +5,16 @@
 
 import { SiwxParseError } from './errors';
 import type { ParsedSiwxMessage, SiwxChainId } from './types';
+import { AUTHORITY_REGEX } from './validateMessage';
 
-/** Regex to parse the CAIP-122 header line: `{domain} wants you to sign in with your blockchain account:` */
-const HEADER_REGEX = /^(?<domain>.+) wants you to sign in with your blockchain account:$/;
+/**
+ * Regex to parse the CAIP-122 header line: `{domain} wants you to sign in with your blockchain account:`. The domain
+ * must be an RFC 3986 authority, so bytes that are not a sign-in message (for example a Solana off-chain message
+ * envelope decoded as text) are rejected instead of becoming part of the domain.
+ */
+const HEADER_REGEX = new RegExp(
+  `^(?<domain>${AUTHORITY_REGEX.source.slice(1, -1)}) wants you to sign in with your blockchain account:$`,
+);
 
 /** Regex to match labeled field lines like `URI: value` */
 const FIELD_REGEX = /^(?<key>[A-Za-z ]+): (?<value>.+)$/;

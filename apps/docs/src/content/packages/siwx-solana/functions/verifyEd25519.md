@@ -2,7 +2,7 @@
 
 > **verifyEd25519**(`payload`, `options?`): `Promise`\<[`SiwxVerifyResult`](/packages/siwx-core/interfaces/SiwxVerifyResult.md)\>
 
-Defined in: [verify.ts:118](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/verify.ts#L118)
+Defined in: [verify.ts:199](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/verify.ts#L199)
 
 Verifies a `solana` CAIP-122 message signed with ed25519.
 
@@ -10,6 +10,12 @@ Parses the message, requires a `solana` chain and a 64-byte signature, runs `val
 expiration, `notBefore` and an `issuedAt` in the future), validates the message `address` with `@solana/kit` and checks the signature against
 that public key with Web Crypto (`crypto.subtle`, algorithm `Ed25519`). Runs locally, without RPC calls. Nonce,
 domain and policy checks are the caller's job (see `@tuwaio/siwx-server`).
+
+Accepts the two ways a Solana wallet signs text: the UTF-8 bytes of the message (`solana:signMessage`) or the
+version 1 off-chain message envelope of the message (`solana:signOffchainMessage`, which hardware wallets can show
+and sign). With a string message both are tried, since the envelope is fully determined by the text and the address
+of the message. Signed message bytes that are a version 1 envelope are decoded, and their only required signatory
+must be the address of the message; other off-chain message versions are rejected.
 
 Requires a runtime with Ed25519 support in Web Crypto (current browsers, Node.js 20+, edge runtimes).
 

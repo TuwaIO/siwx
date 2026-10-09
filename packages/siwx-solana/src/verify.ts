@@ -3,7 +3,7 @@
  * Uses ed25519 cryptography via the native SubtleCrypto API (Node.js & browser compatible).
  */
 
-import { address as solanaAddress } from '@solana/kit';
+import { address as solanaAddress, compileOffchainMessageV1Envelope, getOffchainMessageDecoder } from '@solana/kit';
 import { parseCaip2ChainId, parseCaip10AccountId } from '@tuwaio/orbit-core';
 import type { SiwxVerifyResult } from '@tuwaio/siwx-core';
 import {
@@ -59,14 +59,69 @@ function base58ToBytes(base58: string): Uint8Array {
 }
 
 /**
+ * The 16-byte signing domain that starts every Solana off-chain message: `0xff` followed by `solana offchain`.
+ * @internal
+ */
+const OFFCHAIN_MESSAGE_SIGNING_DOMAIN = new Uint8Array([0xff, ...new TextEncoder().encode('solana offchain')]);
+
+/**
+ * Tells whether `bytes` start with the off-chain message signing domain.
+ * @internal
+ */
+function isOffchainMessageEnvelope(bytes: Uint8Array): boolean {
+  return (
+    bytes.length > OFFCHAIN_MESSAGE_SIGNING_DOMAIN.length &&
+    OFFCHAIN_MESSAGE_SIGNING_DOMAIN.every((byte, index) => bytes[index] === byte)
+  );
+}
+
+/**
+ * Decodes the bytes of a version 1 off-chain message. Throws a `SiwxVerificationError` for any other version or
+ * malformed bytes.
+ * @internal
+ */
+function decodeOffchainMessageV1(bytes: Uint8Array): { content: string; signatories: string[] } {
+  let decoded: ReturnType<ReturnType<typeof getOffchainMessageDecoder>['decode']>;
+  try {
+    decoded = getOffchainMessageDecoder().decode(bytes);
+  } catch (error) {
+    throw new SiwxVerificationError(`Invalid off-chain message: ${String(error)}`);
+  }
+  if (decoded.version !== 1) {
+    throw new SiwxVerificationError(`Unsupported off-chain message version: ${decoded.version} (expected 1)`);
+  }
+  return { content: decoded.content, signatories: decoded.requiredSignatories.map(({ address }) => address) };
+}
+
+/**
+ * Builds the version 1 off-chain message envelope of `content` with `signatory` as its only required signatory, or
+ * returns `undefined` when the content cannot be an off-chain message (for example, longer than the format allows).
+ * @internal
+ */
+function compileOffchainEnvelope(content: string, signatory: string): Uint8Array | undefined {
+  try {
+    return compileOffchainMessageV1Envelope({
+      version: 1,
+      content,
+      requiredSignatories: [{ address: solanaAddress(signatory) }],
+    }).content as unknown as Uint8Array;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Normalizes input payload formats into raw message bytes, CAIP-122 string, and signature bytes.
- * Handles Wallet Standard `solana:signIn` output, `Uint8Array`, and standard base58 payloads.
+ * Handles Wallet Standard `solana:signIn` output, `Uint8Array`, and standard base58 payloads. Signed message bytes
+ * that are a version 1 off-chain message are decoded: `messageString` is its content and `offchainSignatories` its
+ * required signatories.
  * @internal
  */
 function normalizeSolanaPayload(payload: SolanaVerifyPayload): {
   messageString: string;
   messageBytes: Uint8Array;
   signatureBytes: Uint8Array;
+  offchainSignatories?: string[];
 } {
   const rawPayload = 'output' in payload ? payload.output : payload;
 
@@ -75,10 +130,17 @@ function normalizeSolanaPayload(payload: SolanaVerifyPayload): {
 
   let messageString: string;
   let messageBytes: Uint8Array;
+  let offchainSignatories: string[] | undefined;
 
   if (rawMessage instanceof Uint8Array) {
     messageBytes = rawMessage;
-    messageString = new TextDecoder().decode(rawMessage);
+    if (isOffchainMessageEnvelope(rawMessage)) {
+      const offchainMessage = decodeOffchainMessageV1(rawMessage);
+      messageString = offchainMessage.content;
+      offchainSignatories = offchainMessage.signatories;
+    } else {
+      messageString = new TextDecoder().decode(rawMessage);
+    }
   } else {
     messageString = rawMessage;
     messageBytes = new TextEncoder().encode(rawMessage);
@@ -91,7 +153,20 @@ function normalizeSolanaPayload(payload: SolanaVerifyPayload): {
     signatureBytes = base58ToBytes(rawSignature);
   }
 
-  return { messageString, messageBytes, signatureBytes };
+  return { messageString, messageBytes, signatureBytes, offchainSignatories };
+}
+
+/**
+ * Checks an ed25519 signature with Web Crypto.
+ * @internal
+ */
+async function verifyBytes(publicKey: CryptoKey, signature: Uint8Array, data: Uint8Array): Promise<boolean> {
+  return globalThis.crypto.subtle.verify(
+    { name: 'Ed25519' },
+    publicKey,
+    signature.buffer.slice(signature.byteOffset, signature.byteOffset + signature.byteLength) as ArrayBuffer,
+    data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer,
+  );
 }
 
 /**
@@ -101,6 +176,12 @@ function normalizeSolanaPayload(payload: SolanaVerifyPayload): {
  * expiration, `notBefore` and an `issuedAt` in the future), validates the message `address` with `@solana/kit` and checks the signature against
  * that public key with Web Crypto (`crypto.subtle`, algorithm `Ed25519`). Runs locally, without RPC calls. Nonce,
  * domain and policy checks are the caller's job (see `@tuwaio/siwx-server`).
+ *
+ * Accepts the two ways a Solana wallet signs text: the UTF-8 bytes of the message (`solana:signMessage`) or the
+ * version 1 off-chain message envelope of the message (`solana:signOffchainMessage`, which hardware wallets can show
+ * and sign). With a string message both are tried, since the envelope is fully determined by the text and the address
+ * of the message. Signed message bytes that are a version 1 envelope are decoded, and their only required signatory
+ * must be the address of the message; other off-chain message versions are rejected.
  *
  * Requires a runtime with Ed25519 support in Web Crypto (current browsers, Node.js 20+, edge runtimes).
  *
@@ -120,7 +201,7 @@ export async function verifyEd25519(
   options?: { skipExpiration?: boolean },
 ): Promise<SiwxVerifyResult> {
   try {
-    const { messageString, messageBytes, signatureBytes } = normalizeSolanaPayload(payload);
+    const { messageString, messageBytes, signatureBytes, offchainSignatories } = normalizeSolanaPayload(payload);
     const parsed = parseMessage(messageString);
 
     const namespace = parseCaip2ChainId(parsed.chainId)?.namespace;
@@ -158,12 +239,24 @@ export async function verifyEd25519(
       ['verify'],
     );
 
-    const isValid = await globalThis.crypto.subtle.verify(
-      { name: 'Ed25519' },
-      cryptoKey,
-      signatureBytes.buffer as ArrayBuffer,
-      messageBytes.buffer as ArrayBuffer,
-    );
+    let isValid: boolean;
+    if (offchainSignatories) {
+      // The wallet signed an off-chain message envelope: its only signatory must be the address of the message.
+      if (offchainSignatories.length !== 1 || offchainSignatories[0] !== validatedAddress) {
+        throw new SiwxVerificationError(
+          `Off-chain message signatory must be the message address only. Got: ${offchainSignatories.join(', ')}`,
+        );
+      }
+      isValid = await verifyBytes(cryptoKey, signatureBytes, messageBytes);
+    } else {
+      isValid = await verifyBytes(cryptoKey, signatureBytes, messageBytes);
+      if (!isValid) {
+        // Wallets that sign with `solana:signOffchainMessage` (hardware wallets among them) sign the version 1
+        // off-chain message envelope of the text, which is fully determined by the text and the signer.
+        const envelope = compileOffchainEnvelope(messageString, validatedAddress);
+        if (envelope) isValid = await verifyBytes(cryptoKey, signatureBytes, envelope);
+      }
+    }
 
     if (!isValid) {
       throw new SiwxVerificationError(`ed25519 signature verification failed for address: ${rawAddress}`);

@@ -2,7 +2,7 @@
 
 > **SolanaSiwxSignerTarget** = [`SolanaWalletStandardSignerTarget`](/packages/siwx-solana/interfaces/SolanaWalletStandardSignerTarget.md) \| `MessageModifyingSigner` \| [`SolanaLegacyMessageSigner`](/packages/siwx-solana/interfaces/SolanaLegacyMessageSigner.md) \| \{ `account?`: `object`; `wallet?`: `object`; \}
 
-Defined in: [signer.ts:60](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L60)
+Defined in: [signer.ts:114](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L114)
 
 What [createSolanaSiwxSigner](/packages/siwx-solana/functions/createSolanaSiwxSigner.md) can sign with:
 
@@ -13,4 +13,6 @@ What [createSolanaSiwxSigner](/packages/siwx-solana/functions/createSolanaSiwxSi
   `signMessages` method.
 
 The signer uses the first capability it finds: `modifyAndSignMessages`, the `solana:signMessage` feature of
-`wallet.features`, a `signMessages` method, or a `signMessage` method (also looked up on `adapter`).
+`wallet.features`, a `signMessages` method, or a `signMessage` method (looked up on `wallet`, its `adapter`, `account`
+and the target itself, so `useWallet()` of `@solana/wallet-adapter` v1 and v3 works as is). Off-chain messages use
+the `solana:signOffchainMessage` feature of `wallet.features` or a `signOffchainMessage` method.

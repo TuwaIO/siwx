@@ -2,7 +2,7 @@
 
 > **validateMessage**(`fields`, `options?`): [`SiwxValidationResult`](/packages/siwx-core/interfaces/SiwxValidationResult.md)
 
-Defined in: [validateMessage.ts:263](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L263)
+Defined in: [validateMessage.ts:273](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L273)
 
 Validates the format of CAIP-122 message fields and, optionally, a verification policy. Collects every failure
 instead of stopping at the first one.

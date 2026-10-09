@@ -35,6 +35,20 @@ describe('validateMessage()', () => {
       expect(result.errors.some((e) => e.includes('domain'))).toBe(true);
     });
 
+    it('fails on a domain with characters outside an RFC 3986 authority', () => {
+      for (const domain of ['app tuwa.io', '\uFFFDsolana offchain\u0001app.tuwa.io', 'app.tuwa.io/path']) {
+        const result = validateMessage({ ...VALID_FIELDS, domain });
+        expect(result.valid, domain).toBe(false);
+        expect(result.errors.some((e) => e.includes('domain'))).toBe(true);
+      }
+    });
+
+    it('accepts a host with a port, an IP literal and userinfo', () => {
+      for (const domain of ['localhost:3000', '[::1]:3000', 'user@app.tuwa.io']) {
+        expect(validateMessage({ ...VALID_FIELDS, domain }).valid, domain).toBe(true);
+      }
+    });
+
     it('fails on domain containing newline', () => {
       const result = validateMessage({ ...VALID_FIELDS, domain: 'app.tuwa.io\nevil.com' });
       expect(result.valid).toBe(false);

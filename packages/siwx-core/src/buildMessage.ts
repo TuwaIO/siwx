@@ -3,16 +3,23 @@
  * Generates the human-readable sign-in message string from structured fields.
  */
 
+import { SiwxValidationError } from './errors';
 import type { SiwxMessageFields } from './types';
+
+const REQUIRED_FIELDS = ['domain', 'address', 'uri', 'version', 'chainId', 'nonce', 'issuedAt'] as const;
+const SINGLE_LINE_FIELDS = [...REQUIRED_FIELDS, 'statement', 'expirationTime', 'notBefore', 'requestId'] as const;
 
 /**
  * Formats CAIP-122 message fields into the plain-text message that the wallet signs (the EIP-4361 layout used by
  * CAIP-122). Optional fields are omitted when empty.
  *
- * Pure function: it does not validate the fields. Run {@link validateMessage} first if the input is untrusted.
+ * Pure function. It only checks that the message can be built: every required field is a non-empty string and no
+ * field contains a line break (which would add or change lines of the signed message). It does not check formats or
+ * timing: run {@link validateMessage} for that, as verifiers do.
  *
  * @param fields - The message fields to format.
  * @returns The message lines joined with `\n`, ready to be signed and parseable by {@link parseMessage}.
+ * @throws {@link SiwxValidationError} When a required field is missing or empty, or a field contains a line break.
  *
  * @example
  * ```ts
@@ -29,6 +36,20 @@ import type { SiwxMessageFields } from './types';
  * ```
  */
 export function buildMessage(fields: SiwxMessageFields): string {
+  const errors: string[] = [];
+  for (const name of REQUIRED_FIELDS) {
+    const value: unknown = fields[name];
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      errors.push(`${name} is required. Got: ${JSON.stringify(value) ?? 'undefined'}`);
+    }
+  }
+  const hasLineBreak = (value: unknown) => typeof value === 'string' && /[\r\n]/.test(value);
+  for (const name of SINGLE_LINE_FIELDS) {
+    if (hasLineBreak(fields[name])) errors.push(`${name} must not contain line breaks.`);
+  }
+  if (fields.resources?.some(hasLineBreak)) errors.push('resources must not contain line breaks.');
+  if (errors.length > 0) throw new SiwxValidationError(errors);
+
   const {
     domain,
     address,

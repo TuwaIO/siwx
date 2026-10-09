@@ -11,8 +11,8 @@ Its only dependency is the peer [`@tuwaio/orbit-core`](https://orbit.docs.tuwa.i
 
 ## 🏛️ Core Capabilities
 
-- **Message format:** `buildMessage` formats CAIP-122 fields into the text the wallet signs (the EIP-4361 layout used by CAIP-122); `parseMessage` reads the text back and throws `SiwxParseError` when it is malformed.
-- **Validation:** `validateMessage` checks field formats (CAIP-10 address, CAIP-2 chain ID, `http(s)` URI, nonce, ISO 8601 timestamps) and expiration, and reports every failure at once. Addresses and chain IDs are read with the parsers of `@tuwaio/orbit-core`, so an EVM or Solana account must be a valid address of its chain.
+- **Message format:** `buildMessage` formats CAIP-122 fields into the text the wallet signs (the EIP-4361 layout used by CAIP-122) and throws `SiwxValidationError` when a required field is missing or a field contains a line break; `parseMessage` reads the text back and throws `SiwxParseError` when it is malformed, including a header whose domain is not an RFC 3986 authority.
+- **Validation:** `validateMessage` checks field formats (`domain` as an RFC 3986 authority such as `app.example.com` or `localhost:3000`, CAIP-10 address, CAIP-2 chain ID, `http(s)` URI, nonce, ISO 8601 timestamps) and expiration, and reports every failure at once. Addresses and chain IDs are read with the parsers of `@tuwaio/orbit-core`, so an EVM or Solana account must be a valid address of its chain.
 - **Verification policy:** `validatePolicy` and `SiwxVerificationPolicy` bind a message to your domain, URI, allowed chains and time windows (`issuedAt` age, `notBefore`, maximum lifetime, clock skew).
 - **Session matching:** `isSessionMatchingTarget` checks that a session belongs to a given address and chain, case-insensitively for EVM and case-sensitively for Solana.
 - **Nonces and errors:** `generateNonce` returns 32 random hex characters; `SiwxError` and its subclasses carry machine-readable `code`s.
@@ -68,7 +68,7 @@ Issued At: 2026-09-26T10:00:00.000Z
 Expiration Time: 2026-09-26T10:10:00.000Z
 ```
 
-`buildMessage` does not validate its input; run `validateMessage` on untrusted fields.
+`buildMessage` only checks that the message can be built: every required field is a non-empty string and no field contains a line break, which would add lines to the signed text (it throws `SiwxValidationError` otherwise). Run `validateMessage` on untrusted fields for the formats and timing.
 
 ### Validating fields and a policy
 

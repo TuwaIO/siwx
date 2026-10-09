@@ -123,4 +123,23 @@ describe('parseMessage()', () => {
       expect(() => parseMessage(bad)).toThrowError(SiwxParseError);
     });
   });
+
+  describe('domain of the header', () => {
+    it.each(['localhost:3000', '127.0.0.1:8080', '[::1]:3000', 'app.tuwa.io', 'xn--e1afmkfd.xn--p1ai'])(
+      'accepts the RFC 3986 authority %s',
+      (domain) => {
+        expect(parseMessage(buildMessage({ ...MINIMAL_FIELDS, domain })).domain).toBe(domain);
+      },
+    );
+
+    it.each([
+      ['a binary prefix, such as a Solana off-chain message envelope', '\uFFFDsolana offchain\u0001\u0001app.tuwa.io'],
+      ['a space', 'app tuwa.io'],
+      ['a control character', 'app.tuwa.io\u0000'],
+    ])('rejects a domain with %s', (_, domain) => {
+      const message = buildMessage(MINIMAL_FIELDS).replace('app.tuwa.io wants', `${domain} wants`);
+
+      expect(() => parseMessage(message)).toThrow(SiwxParseError);
+    });
+  });
 });

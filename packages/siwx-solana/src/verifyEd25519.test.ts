@@ -1,3 +1,4 @@
+import { address, compileOffchainMessageV1Envelope, signOffchainMessageEnvelope } from '@solana/kit';
 import { buildMessage } from '@tuwaio/siwx-core';
 import { describe, expect, it } from 'vitest';
 
@@ -293,5 +294,120 @@ describe('verifyEd25519()', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+});
+
+describe('verifyEd25519() with off-chain message v1 signatures', () => {
+  async function createKey(): Promise<{ keyPair: CryptoKeyPair; solanaAddress: string }> {
+    const keyPair = (await globalThis.crypto.subtle.generateKey('Ed25519', true, ['sign', 'verify'])) as CryptoKeyPair;
+    const rawPublicKey = await globalThis.crypto.subtle.exportKey('raw', keyPair.publicKey);
+    return { keyPair, solanaAddress: bytesToBase58(new Uint8Array(rawPublicKey)) };
+  }
+
+  function messageFor(solanaAddress: string): string {
+    return buildMessage({
+      domain: 'app.tuwa.io',
+      address: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`,
+      uri: 'https://app.tuwa.io',
+      version: '1',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+      nonce: 'a4f3b2c1d0e5f678',
+      issuedAt: '2026-08-06T08:00:00.000Z',
+    });
+  }
+
+  /** Signs `content` the way a wallet's `solana:signOffchainMessage` does: a version 1 envelope. */
+  async function signOffchain(
+    keyPairs: CryptoKeyPair[],
+    signatories: string[],
+    content: string,
+  ): Promise<{ envelope: Uint8Array; signatures: Record<string, Uint8Array> }> {
+    const envelope = compileOffchainMessageV1Envelope({
+      version: 1,
+      content,
+      requiredSignatories: signatories.map((signatory) => ({ address: address(signatory) })),
+    });
+    const signed = await signOffchainMessageEnvelope(keyPairs, envelope);
+    const signatures: Record<string, Uint8Array> = {};
+    for (const [signatory, signature] of Object.entries(signed.signatures)) {
+      if (signature) signatures[signatory] = signature;
+    }
+    return { envelope: signed.content as unknown as Uint8Array, signatures };
+  }
+
+  it('verifies a base58 signature over the off-chain message v1 envelope of the message', async () => {
+    const { keyPair, solanaAddress } = await createKey();
+    const message = messageFor(solanaAddress);
+    const { signatures } = await signOffchain([keyPair], [solanaAddress], message);
+
+    const result = await verifyEd25519({ message, signature: bytesToBase58(signatures[solanaAddress]) });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.address).toBe(`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${solanaAddress}`);
+  });
+
+  it('verifies an off-chain message v1 envelope passed as the signed message bytes', async () => {
+    const { keyPair, solanaAddress } = await createKey();
+    const message = messageFor(solanaAddress);
+    const { envelope, signatures } = await signOffchain([keyPair], [solanaAddress], message);
+
+    const result = await verifyEd25519({
+      account: { address: solanaAddress },
+      signedMessage: envelope,
+      signature: signatures[solanaAddress],
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.nonce).toBe('a4f3b2c1d0e5f678');
+  });
+
+  it('rejects an off-chain envelope signed by another key', async () => {
+    const { solanaAddress } = await createKey();
+    const other = await createKey();
+    const message = messageFor(solanaAddress);
+    const { signatures } = await signOffchain([other.keyPair], [other.solanaAddress], message);
+
+    const result = await verifyEd25519({ message, signature: bytesToBase58(signatures[other.solanaAddress]) });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('ed25519 signature verification failed');
+  });
+
+  it('rejects an envelope whose signatory is not the address of the message', async () => {
+    const { solanaAddress } = await createKey();
+    const other = await createKey();
+    const { envelope, signatures } = await signOffchain(
+      [other.keyPair],
+      [other.solanaAddress],
+      messageFor(solanaAddress),
+    );
+
+    const result = await verifyEd25519({
+      account: { address: other.solanaAddress },
+      signedMessage: envelope,
+      signature: signatures[other.solanaAddress],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('signatory');
+  });
+
+  it('rejects an envelope with more than one required signatory', async () => {
+    const { keyPair, solanaAddress } = await createKey();
+    const other = await createKey();
+    const { envelope, signatures } = await signOffchain(
+      [keyPair, other.keyPair],
+      [solanaAddress, other.solanaAddress],
+      messageFor(solanaAddress),
+    );
+
+    const result = await verifyEd25519({
+      account: { address: solanaAddress },
+      signedMessage: envelope,
+      signature: signatures[solanaAddress],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('signatory');
   });
 });

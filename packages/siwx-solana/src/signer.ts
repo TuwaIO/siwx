@@ -3,7 +3,14 @@
  */
 
 import type { Address, MessageModifyingSigner, SignableMessage, SignatureBytes } from '@solana/kit';
-import { createSignableMessage, getBase58Decoder, getUtf8Encoder } from '@solana/kit';
+import {
+  address as toAddress,
+  compileOffchainMessageV1Envelope,
+  createSignableMessage,
+  getAddressEncoder,
+  getBase58Decoder,
+  getUtf8Encoder,
+} from '@solana/kit';
 import type { Wallet, WalletAccount } from '@wallet-standard/base';
 
 export interface SolanaSignMessageInput {
@@ -23,8 +30,53 @@ export interface SolanaSignMessageFeature {
   };
 }
 
+export interface SolanaSignOffchainMessageInput {
+  readonly account: unknown;
+  readonly message: string;
+  readonly messageVersion: 1;
+  readonly requiredSigners: readonly Uint8Array[];
+}
+
+export interface SolanaSignOffchainMessageOutput {
+  readonly signedOffchainMessage?: Uint8Array;
+  readonly signature: Uint8Array;
+}
+
+export interface SolanaSignOffchainMessageFeature {
+  readonly 'solana:signOffchainMessage': {
+    readonly version: '1.0.0';
+    readonly supportedMessageVersions: readonly number[];
+    readonly signOffchainMessage: (
+      ...inputs: readonly SolanaSignOffchainMessageInput[]
+    ) => Promise<readonly SolanaSignOffchainMessageOutput[]>;
+  };
+}
+
 /**
- * A Wallet Standard wallet and the account to sign with. The wallet must provide the `solana:signMessage` feature.
+ * How {@link createSolanaSiwxSigner} has the wallet sign the message:
+ *
+ * - `'auto'` (default): the UTF-8 bytes of the message, or its version 1 off-chain message when the account supports
+ *   `solana:signOffchainMessage` but not `solana:signMessage` (as hardware wallet accounts may), or when the target
+ *   has no other way to sign;
+ * - `'message'`: always the UTF-8 bytes (`solana:signMessage` and the fallbacks of {@link SolanaSiwxSignerTarget});
+ * - `'offchainMessage'`: always the version 1 off-chain message (`solana:signOffchainMessage`, or a
+ *   `signOffchainMessage(message)` method such as the one of `useWallet()` from `@solana/wallet-adapter` v3).
+ *
+ * `verifyEd25519` and `@tuwaio/siwx-server` accept both, so the format needs no server setting.
+ */
+export type SolanaSiwxMessageFormat = 'auto' | 'message' | 'offchainMessage';
+
+/**
+ * Options of {@link createSolanaSiwxSigner}.
+ */
+export interface SolanaSiwxSignerOptions {
+  /** How the wallet signs the message. Defaults to `'auto'`; see {@link SolanaSiwxMessageFormat}. */
+  messageFormat?: SolanaSiwxMessageFormat;
+}
+
+/**
+ * A Wallet Standard wallet and the account to sign with. The wallet must provide the `solana:signMessage` feature,
+ * or `solana:signOffchainMessage` (see {@link SolanaSiwxMessageFormat}).
  */
 export interface SolanaWalletStandardSignerTarget {
   /** The Wallet Standard wallet. */
@@ -55,7 +107,9 @@ export interface SolanaLegacyMessageSigner {
  *   `signMessages` method.
  *
  * The signer uses the first capability it finds: `modifyAndSignMessages`, the `solana:signMessage` feature of
- * `wallet.features`, a `signMessages` method, or a `signMessage` method (also looked up on `adapter`).
+ * `wallet.features`, a `signMessages` method, or a `signMessage` method (looked up on `wallet`, its `adapter`, `account`
+ * and the target itself, so `useWallet()` of `@solana/wallet-adapter` v1 and v3 works as is). Off-chain messages use
+ * the `solana:signOffchainMessage` feature of `wallet.features` or a `signOffchainMessage` method.
  */
 export type SolanaSiwxSignerTarget =
   | SolanaWalletStandardSignerTarget
@@ -79,6 +133,7 @@ function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
 function createMessageModifyingSigner(
   wallet: Record<string, unknown> | undefined,
   account: Record<string, unknown> | undefined,
+  root?: Record<string, unknown>,
 ): MessageModifyingSigner<string> {
   // If the passed object already implements modifyAndSignMessages, return it directly
   if (typeof (wallet as { modifyAndSignMessages?: unknown })?.modifyAndSignMessages === 'function') {
@@ -106,10 +161,10 @@ function createMessageModifyingSigner(
   }
 
   const adapter = (wallet as { adapter?: unknown })?.adapter ?? (account as { adapter?: unknown })?.adapter;
-  const legacySignMessage =
-    (wallet as { signMessage?: unknown })?.signMessage ??
-    (adapter as { signMessage?: unknown })?.signMessage ??
-    (account as { signMessage?: unknown })?.signMessage;
+  const legacySignMessageOwner = [wallet, adapter, account, root].find(
+    (candidate) => typeof (candidate as { signMessage?: unknown } | undefined)?.signMessage === 'function',
+  );
+  const legacySignMessage = (legacySignMessageOwner as { signMessage?: unknown } | undefined)?.signMessage;
   const signMessages =
     (wallet as { signMessages?: unknown })?.signMessages ?? (account as { signMessages?: unknown })?.signMessages;
 
@@ -172,7 +227,7 @@ function createMessageModifyingSigner(
         // 3. Fallback to legacy single signMessage adapter
         else if (typeof legacySignMessage === 'function') {
           const result = await (legacySignMessage as (content: Uint8Array) => Promise<unknown>).call(
-            adapter ?? wallet ?? account,
+            legacySignMessageOwner,
             originalMessage.content,
           );
           signedMessageBytes = originalMessage.content;
@@ -222,16 +277,144 @@ function createMessageModifyingSigner(
 }
 
 /**
- * Creates a SIWX signer for Solana wallets: a function that signs a message (UTF-8 bytes) with the wallet and returns
- * the ed25519 signature as a base58 string. Pass it as `signer` to `useSiwx().signIn` from `@tuwaio/siwx-react`.
+ * How the target signs off-chain messages: a function, or why it cannot.
+ * @internal
+ */
+type OffchainMessageSigning =
+  | { sign: (message: string) => Promise<SolanaSignOffchainMessageOutput>; error?: undefined }
+  | { sign?: undefined; error: string }
+  | undefined;
+
+/**
+ * Finds how the target signs version 1 off-chain messages: the `solana:signOffchainMessage` feature of the wallet, or
+ * a `signOffchainMessage(message)` method of the wallet, the account or the target itself.
+ * @internal
+ */
+function findOffchainMessageSigning(
+  wallet: Record<string, unknown>,
+  account: Record<string, unknown>,
+  root: Record<string, unknown>,
+): OffchainMessageSigning {
+  const walletFeatures = (wallet as { features?: unknown }).features;
+  const feature =
+    walletFeatures && typeof walletFeatures === 'object' && !Array.isArray(walletFeatures)
+      ? ((walletFeatures as Record<string, unknown>)['solana:signOffchainMessage'] as
+          SolanaSignOffchainMessageFeature['solana:signOffchainMessage'] | undefined)
+      : undefined;
+
+  if (feature && typeof feature.signOffchainMessage === 'function') {
+    if (!feature.supportedMessageVersions?.includes(1)) {
+      return { error: 'The wallet cannot sign version 1 off-chain messages.' };
+    }
+    return {
+      async sign(message) {
+        const outputs = await feature.signOffchainMessage({
+          account,
+          message,
+          messageVersion: 1,
+          requiredSigners: [accountPublicKey(account)],
+        });
+        const output = outputs[0];
+        if (!output?.signature) throw new Error('[SIWX-SOLANA] Wallet returned invalid signOffchainMessage output.');
+        return output;
+      },
+    };
+  }
+
+  const owner = [wallet, account, root].find(
+    (candidate) => typeof (candidate as { signOffchainMessage?: unknown }).signOffchainMessage === 'function',
+  );
+  if (owner) {
+    const method = (owner as { signOffchainMessage: (message: string) => Promise<SolanaSignOffchainMessageOutput> })
+      .signOffchainMessage;
+    return {
+      async sign(message) {
+        const output = await method.call(owner, message);
+        if (!output?.signature) throw new Error('[SIWX-SOLANA] Wallet returned invalid signOffchainMessage output.');
+        return output;
+      },
+    };
+  }
+  return undefined;
+}
+
+/**
+ * The 32-byte public key of a Wallet Standard account: its `publicKey`, or the bytes of its base58 `address`.
+ * @internal
+ */
+function accountPublicKey(account: Record<string, unknown>): Uint8Array {
+  const publicKey = (account as { publicKey?: unknown }).publicKey;
+  if (publicKey instanceof Uint8Array) return publicKey;
+  return new Uint8Array(getAddressEncoder().encode(toAddress(String((account as { address?: unknown }).address))));
+}
+
+/**
+ * The base58 address of the signing account, if the target names one.
+ * @internal
+ */
+function signerAddress(
+  wallet: Record<string, unknown>,
+  account: Record<string, unknown>,
+  root: Record<string, unknown>,
+): string | undefined {
+  for (const candidate of [account, wallet, root]) {
+    const value = (candidate as { address?: unknown }).address;
+    if (typeof value === 'string') return value;
+  }
+  const publicKey = (root as { publicKey?: { toBase58?: () => string } }).publicKey;
+  return typeof publicKey?.toBase58 === 'function' ? publicKey.toBase58() : undefined;
+}
+
+/**
+ * Signs `message` as a version 1 off-chain message and returns the base58 signature. When the wallet returns the
+ * bytes it signed and the signing address is known, checks that they are the envelope of `message`.
+ * @internal
+ */
+async function signAsOffchainMessage(
+  signing: NonNullable<OffchainMessageSigning>,
+  message: string,
+  address: string | undefined,
+): Promise<string> {
+  if (!signing.sign) throw new Error(`[SIWX-SOLANA] ${signing.error}`);
+  const output = await signing.sign(message);
+  if (output.signedOffchainMessage && address) {
+    const expected = compileOffchainMessageV1Envelope({
+      version: 1,
+      content: message,
+      requiredSignatories: [{ address: toAddress(address) }],
+    }).content as unknown as Uint8Array;
+    if (!bytesEqual(new Uint8Array(output.signedOffchainMessage), expected)) {
+      throw new Error('[SIWX-SOLANA] Wallet signed a different off-chain message than requested.');
+    }
+  }
+  return getBase58Decoder().decode(new Uint8Array(output.signature));
+}
+
+/**
+ * Tells whether the account lists `feature` among its features. Accounts that do not list features support all of
+ * the wallet's.
+ * @internal
+ */
+function accountSupports(account: Record<string, unknown>, feature: string): boolean {
+  const features = (account as { features?: unknown }).features;
+  return !Array.isArray(features) || features.includes(feature);
+}
+
+/**
+ * Creates a SIWX signer for Solana wallets: a function that signs a message with the wallet and returns the ed25519
+ * signature as a base58 string. Pass it as `signer` to `useSiwx().signIn` from `@tuwaio/siwx-react`.
  *
- * Works with Wallet Standard wallets, `@solana/kit` message signers and legacy adapters; see
- * {@link SolanaSiwxSignerTarget} for how the signing method is chosen.
+ * Works with Wallet Standard wallets, `@solana/kit` message signers, legacy adapters and `useWallet()` of
+ * `@solana/wallet-adapter`; see {@link SolanaSiwxSignerTarget} for how the signing method is chosen. The wallet signs
+ * the UTF-8 bytes of the message or its version 1 off-chain message (which hardware wallets can show and sign), as
+ * `options.messageFormat` decides ({@link SolanaSiwxMessageFormat}); servers verify both.
  *
  * @param target - The Wallet Standard wallet and account, an `@solana/kit` message signer or a legacy adapter.
+ * @param options - `messageFormat`: `'auto'` (default), `'message'` or `'offchainMessage'`.
  * @returns An async signer. Calling it opens the wallet signature prompt; it rejects with an `Error` whose message
  * starts with `[SIWX-SOLANA] Signing failed:` (original error in `cause`) when the target has no signing
- * capability, the wallet rejects, or no signature is returned for the account address.
+ * capability, the wallet rejects, cannot sign version 1 off-chain messages or signs a different off-chain message, or
+ * no signature is returned for the account address.
  *
  * @example
  * ```ts
@@ -239,22 +422,43 @@ function createMessageModifyingSigner(
  * const signature = await signer(message);
  * ```
  */
-export function createSolanaSiwxSigner(target: SolanaSiwxSignerTarget) {
+export function createSolanaSiwxSigner(target: SolanaSiwxSignerTarget, options: SolanaSiwxSignerOptions = {}) {
+  const messageFormat = options.messageFormat ?? 'auto';
   return async (message: string): Promise<string> => {
     try {
       if (!target) {
         throw new Error('[SIWX-SOLANA] Invalid signer target.');
       }
 
+      const root = target as Record<string, unknown>;
       const { wallet: targetWallet, account: targetAccount } = target as { wallet?: object; account?: object };
       const wallet = (targetWallet ?? target) as Record<string, unknown>;
       const account = (targetAccount ?? target) as Record<string, unknown>;
 
+      const offchainSigning =
+        messageFormat === 'message' ? undefined : findOffchainMessageSigning(wallet, account, root);
+      if (messageFormat === 'offchainMessage') {
+        if (!offchainSigning) throw new Error('[SIWX-SOLANA] Signer cannot sign off-chain messages.');
+        return await signAsOffchainMessage(offchainSigning, message, signerAddress(wallet, account, root));
+      }
+
+      let signer: MessageModifyingSigner<string> | undefined;
+      try {
+        signer = createMessageModifyingSigner(wallet, account, root);
+      } catch (error) {
+        if (!offchainSigning?.sign) throw error;
+      }
+
+      const preferOffchain =
+        offchainSigning?.sign &&
+        (!signer ||
+          (!accountSupports(account, 'solana:signMessage') && accountSupports(account, 'solana:signOffchainMessage')));
+      if (preferOffchain || !signer) {
+        return await signAsOffchainMessage(offchainSigning!, message, signerAddress(wallet, account, root));
+      }
+
       const encoder = getUtf8Encoder();
       const messageBytes = encoder.encode(message) as unknown as Uint8Array;
-
-      // Wrap into unified MessageModifyingSigner
-      const signer = createMessageModifyingSigner(wallet, account);
 
       const signableMessage = createSignableMessage(
         messageBytes as unknown as Parameters<typeof createSignableMessage>[0],
