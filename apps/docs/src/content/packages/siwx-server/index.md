@@ -239,7 +239,9 @@ export async function handleVerify(request: Request): Promise<Response> {
     return Response.json({ error: 'Invalid nonce' }, { status: 401 });
   }
 
-  const record = await sessionStore.create({ session: toSession(result.data), ttlSeconds: 7 * 24 * 60 * 60 });
+  // Keep how the wallet signed (its key or a smart contract wallet): the JWT subject depends on it.
+  const session = toSession(result.data, result.method);
+  const record = await sessionStore.create({ session, ttlSeconds: 7 * 24 * 60 * 60 });
   return Response.json(record.session, { headers: { 'Set-Cookie': createSessionCookie(record.id) } });
 }
 ```
@@ -282,7 +284,7 @@ export const { GET, POST, DELETE } = createSiwxApiHandler({
 - `GET /api/siwx/token` returns `{ token, expiresAt }` for the session cookie, or `401` without a session. The token lives 10 minutes by default (`ttlSeconds`, at most 7 days) and never outlives the session.
 - `GET /api/siwx/jwks` returns the public keys. Give this URL to the provider.
 
-The `sub` claim is stable for a wallet: the user ID you bound with `bindSubject`, otherwise the account without its chain (`eip155:0x…` in lowercase, `solana:<address>`), so signing in on another network does not create a new user at the provider. The account as signed is in the `caip10` claim, its chain in `chain_id`. To rotate the key, sign with the new one and pass the old one in `previousKeys` until its tokens expire.
+The `sub` claim identifies the user: the user ID you bound with `bindSubject`; otherwise, for a wallet that signs with its own key, the account without its chain (`eip155:0x…` in lowercase, `solana:<address>`), so signing in on another network does not create a new user at the provider. A smart contract wallet (Safe, Coinbase Smart Wallet, other ERC-4337 accounts) gets the account with its chain (`eip155:8453:0x…` in lowercase): its owners are set on each chain separately, so the same address on another network can belong to someone else. When your app links several wallets or networks to one account, bind its user ID. The account as signed is in the `caip10` claim, its chain in `chain_id`. To rotate the key, sign with the new one and pass the old one in `previousKeys` until its tokens expire.
 
 A service that receives the token checks it against the JWKS:
 
@@ -309,7 +311,7 @@ export async function readWallet(request: Request): Promise<string | null> {
 - **Cookies:** the session cookie is always `HttpOnly`, and `Secure` and `SameSite=Strict` by default. Keep `secure: true` in production.
 - **Secrets:** the demo `signingSecret` must be at least 32 characters and must never reach the browser. Changing it invalidates every demo session.
 - **JWT keys:** the private JWT key must never reach the browser. Keep tokens short-lived (the default is 10 minutes) and request a fresh one when needed instead of storing it, for example in `localStorage`. If the key leaks, generate a new one and do not list the old one in `previousKeys`: every token it signed stops verifying at once.
-- **JWT subject:** the receiving service identifies the user by `sub`. Do not build it from the CAIP-10 account with its chain reference, or the same wallet becomes a new user on every EVM network.
+- **JWT subject:** the receiving service identifies the user by `sub`. Keep the default or build it with `siwxJwtSubject`: it is the same on every EVM network for a wallet that signs with its own key, and bound to the chain for a smart contract wallet, whose owners can differ per chain. In your own handlers, create sessions with `toSession(result.data, result.method)`; without the method, every EVM subject is bound to its chain.
 
 ---
 

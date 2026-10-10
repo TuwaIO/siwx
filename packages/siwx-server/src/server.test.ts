@@ -12,6 +12,7 @@ import {
   MemorySiwxSessionStore,
   parseCookie,
   signStatelessDemoSession,
+  toSession,
   verifySiwxPayload,
   verifyStatelessDemoNonce,
   verifyStatelessDemoSession,
@@ -49,6 +50,7 @@ describe('verifySiwxPayload()', () => {
 
     expect(result.success).toBe(true);
     expect(result.namespace).toBe('eip155');
+    expect(result.method).toBe('eip191');
     expect(result.data?.address).toBe(`eip155:1:${account.address}`);
     expect(result.data?.domain).toBe('app.tuwa.io');
   });
@@ -130,7 +132,7 @@ describe('verifySiwxPayload()', () => {
 
     const result = await verifySiwxPayload({ message, signature: `0x${'ab'.repeat(65)}` }, { publicClient: clients });
 
-    expect(result).toMatchObject({ success: true, namespace: 'eip155' });
+    expect(result).toMatchObject({ success: true, namespace: 'eip155', method: 'eip1271' });
     expect(clients).toHaveBeenCalledWith(8453);
     expect(call).toHaveBeenCalledTimes(1);
   });
@@ -144,6 +146,16 @@ describe('verifySiwxPayload()', () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe('toSession()', () => {
+  it('keeps how the signature was verified, when given', async () => {
+    const { message, signature } = await createEvmPayload();
+    const { data } = await verifySiwxPayload({ message, signature });
+
+    expect(toSession(data!, 'eip1271').verificationMethod).toBe('eip1271');
+    expect(toSession(data!)).not.toHaveProperty('verificationMethod');
   });
 });
 

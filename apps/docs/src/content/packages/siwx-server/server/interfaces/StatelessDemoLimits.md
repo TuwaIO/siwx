@@ -1,6 +1,6 @@
 # StatelessDemoLimits
 
-Defined in: [siwx-server/src/types.ts:178](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L178)
+Defined in: [siwx-server/src/types.ts:199](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L199)
 
 Request limits of `createStatelessDemoSiwxHandler`. Only the body size is limited; rate limiting is not part of
 SIWX.
@@ -11,7 +11,7 @@ SIWX.
 
 > `optional` **maxTransactionPayloadBytes?**: `number`
 
-Defined in: [siwx-server/src/types.ts:184](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L184)
+Defined in: [siwx-server/src/types.ts:205](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L205)
 
 Maximum body size of `POST /verify`. Larger requests are rejected with HTTP 413. The durable handler always
 uses 65536.

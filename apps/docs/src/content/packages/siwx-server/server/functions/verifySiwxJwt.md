@@ -2,7 +2,7 @@
 
 > **verifySiwxJwt**(`token`, `params`): `Promise`\<[`SiwxJwtPayload`](/packages/siwx-server/server/interfaces/SiwxJwtPayload.md) \| `null`\>
 
-Defined in: [siwx-server/src/jwt.ts:173](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/jwt.ts#L173)
+Defined in: [siwx-server/src/jwt.ts:181](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/jwt.ts#L181)
 
 Verifies a JWT issued by [signSiwxJwt](/packages/siwx-server/server/functions/signSiwxJwt.md), for services that receive the token instead of the session cookie.
 

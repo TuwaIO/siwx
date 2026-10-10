@@ -36,6 +36,7 @@ export type {
   SiwxSession,
   SiwxSessionRecord,
   SiwxSessionStore,
+  SiwxVerificationMethod,
   StatelessDemoLimits,
   StatelessDemoTokenPayload,
 } from './types';

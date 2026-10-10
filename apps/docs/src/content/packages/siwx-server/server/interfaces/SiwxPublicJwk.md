@@ -1,6 +1,6 @@
 # SiwxPublicJwk
 
-Defined in: [siwx-server/src/types.ts:282](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L282)
+Defined in: [siwx-server/src/types.ts:303](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L303)
 
 Public JSON Web Key of a JWT signing key, as published in a JWKS (see [SiwxJwks](/packages/siwx-server/server/interfaces/SiwxJwks.md)). Holds no private members.
 
@@ -10,7 +10,7 @@ Public JSON Web Key of a JWT signing key, as published in a JWKS (see [SiwxJwks]
 
 > **alg**: [`SiwxJwtAlgorithm`](/packages/siwx-server/server/type-aliases/SiwxJwtAlgorithm.md)
 
-Defined in: [siwx-server/src/types.ts:296](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L296)
+Defined in: [siwx-server/src/types.ts:317](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L317)
 
 The algorithm the key signs with.
 
@@ -20,7 +20,7 @@ The algorithm the key signs with.
 
 > `optional` **crv?**: `"P-256"`
 
-Defined in: [siwx-server/src/types.ts:286](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L286)
+Defined in: [siwx-server/src/types.ts:307](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L307)
 
 Curve of an EC key. Always `P-256`.
 
@@ -30,7 +30,7 @@ Curve of an EC key. Always `P-256`.
 
 > `optional` **e?**: `string`
 
-Defined in: [siwx-server/src/types.ts:294](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L294)
+Defined in: [siwx-server/src/types.ts:315](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L315)
 
 Public exponent of an RSA key, base64url.
 
@@ -40,7 +40,7 @@ Public exponent of an RSA key, base64url.
 
 > **kid**: `string`
 
-Defined in: [siwx-server/src/types.ts:298](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L298)
+Defined in: [siwx-server/src/types.ts:319](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L319)
 
 Key ID: the RFC 7638 thumbprint of the key. Written into the `kid` header of every token the key signs.
 
@@ -50,7 +50,7 @@ Key ID: the RFC 7638 thumbprint of the key. Written into the `kid` header of eve
 
 > **kty**: `"EC"` \| `"RSA"`
 
-Defined in: [siwx-server/src/types.ts:284](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L284)
+Defined in: [siwx-server/src/types.ts:305](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L305)
 
 Key type: `EC` for ES256, `RSA` for RS256.
 
@@ -60,7 +60,7 @@ Key type: `EC` for ES256, `RSA` for RS256.
 
 > `optional` **n?**: `string`
 
-Defined in: [siwx-server/src/types.ts:292](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L292)
+Defined in: [siwx-server/src/types.ts:313](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L313)
 
 Modulus of an RSA key, base64url.
 
@@ -70,7 +70,7 @@ Modulus of an RSA key, base64url.
 
 > **use**: `"sig"`
 
-Defined in: [siwx-server/src/types.ts:300](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L300)
+Defined in: [siwx-server/src/types.ts:321](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L321)
 
 Public key use. Always `sig`.
 
@@ -80,7 +80,7 @@ Public key use. Always `sig`.
 
 > `optional` **x?**: `string`
 
-Defined in: [siwx-server/src/types.ts:288](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L288)
+Defined in: [siwx-server/src/types.ts:309](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L309)
 
 x coordinate of an EC key, base64url.
 
@@ -90,6 +90,6 @@ x coordinate of an EC key, base64url.
 
 > `optional` **y?**: `string`
 
-Defined in: [siwx-server/src/types.ts:290](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L290)
+Defined in: [siwx-server/src/types.ts:311](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L311)
 
 y coordinate of an EC key, base64url.

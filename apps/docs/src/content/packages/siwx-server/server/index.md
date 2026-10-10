@@ -33,6 +33,7 @@ Framework-agnostic server utilities, imported from `@tuwaio/siwx-server`.
 
 - [ParsedSiwxMessage](/packages/siwx-server/server/type-aliases/ParsedSiwxMessage.md)
 - [SiwxJwtAlgorithm](/packages/siwx-server/server/type-aliases/SiwxJwtAlgorithm.md)
+- [SiwxVerificationMethod](/packages/siwx-server/server/type-aliases/SiwxVerificationMethod.md)
 
 ## Functions
 

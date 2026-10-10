@@ -15,6 +15,7 @@ const evmSession: SiwxSession = {
   domain: 'app.example.com',
   nonce: 'n1234567',
   issuedAt: new Date(NOW - 1000).toISOString(),
+  verificationMethod: 'eip191',
 };
 
 const SOLANA_ADDRESS = '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV';
@@ -67,6 +68,28 @@ describe('siwxJwtSubject', () => {
   it('prefers subjectId', () => {
     expect(siwxJwtSubject(evmSession, 'user_42')).toBe('user_42');
     expect(siwxJwtSubject(evmSession, '')).toBe('eip155:0xabc0000000000000000000000000000000000001');
+  });
+
+  it('binds the subject of a smart contract wallet to its chain', () => {
+    const contractOnBase: SiwxSession = { ...evmSession, verificationMethod: 'eip1271' };
+    const contractOnMainnet: SiwxSession = {
+      ...contractOnBase,
+      address: 'eip155:1:0xAbC0000000000000000000000000000000000001',
+      chainId: 'eip155:1',
+    };
+    expect(siwxJwtSubject(contractOnBase)).toBe('eip155:8453:0xabc0000000000000000000000000000000000001');
+    expect(siwxJwtSubject({ ...evmSession, verificationMethod: 'erc6492' })).toBe(siwxJwtSubject(contractOnBase));
+    expect(siwxJwtSubject(contractOnMainnet)).toBe('eip155:1:0xabc0000000000000000000000000000000000001');
+  });
+
+  it('binds the subject to the chain when the session does not say how it was verified', () => {
+    expect(siwxJwtSubject({ ...evmSession, verificationMethod: undefined })).toBe(
+      'eip155:8453:0xabc0000000000000000000000000000000000001',
+    );
+  });
+
+  it('prefers subjectId for smart contract wallets too', () => {
+    expect(siwxJwtSubject({ ...evmSession, verificationMethod: 'eip1271' }, 'user_42')).toBe('user_42');
   });
 });
 

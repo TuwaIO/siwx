@@ -86,7 +86,7 @@ export async function verifySiwxPayload(
     if (namespace === 'solana') {
       const { verifyEd25519 } = await import('@tuwaio/siwx-solana');
       const result = await verifyEd25519(payload, { skipExpiration: options.skipExpiration });
-      return { ...result, namespace };
+      return result.success ? { ...result, namespace, method: 'ed25519' } : { ...result, namespace };
     }
 
     return { success: false, error: 'Unsupported namespace.' };

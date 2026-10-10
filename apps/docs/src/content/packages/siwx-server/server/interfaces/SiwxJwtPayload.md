@@ -1,6 +1,6 @@
 # SiwxJwtPayload
 
-Defined in: [siwx-server/src/types.ts:362](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L362)
+Defined in: [siwx-server/src/types.ts:384](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L384)
 
 Claims of a JWT issued for a SIWX session. Times are Unix seconds.
 
@@ -16,7 +16,7 @@ Custom claims added when the token was signed.
 
 > `optional` **aud?**: `string` \| `string`[]
 
-Defined in: [siwx-server/src/types.ts:371](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L371)
+Defined in: [siwx-server/src/types.ts:394](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L394)
 
 Audience, when one was set.
 
@@ -26,7 +26,7 @@ Audience, when one was set.
 
 > **caip10**: `string`
 
-Defined in: [siwx-server/src/types.ts:379](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L379)
+Defined in: [siwx-server/src/types.ts:402](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L402)
 
 The signed-in CAIP-10 account as it was signed, with Solana chain IDs in their genesis-hash form.
 
@@ -36,7 +36,7 @@ The signed-in CAIP-10 account as it was signed, with Solana chain IDs in their g
 
 > **chain\_id**: `string`
 
-Defined in: [siwx-server/src/types.ts:381](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L381)
+Defined in: [siwx-server/src/types.ts:404](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L404)
 
 The CAIP-2 chain ID of the sign-in, with Solana chain IDs in their genesis-hash form.
 
@@ -46,7 +46,7 @@ The CAIP-2 chain ID of the sign-in, with Solana chain IDs in their genesis-hash 
 
 > **exp**: `number`
 
-Defined in: [siwx-server/src/types.ts:375](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L375)
+Defined in: [siwx-server/src/types.ts:398](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L398)
 
 Expiration time.
 
@@ -56,7 +56,7 @@ Expiration time.
 
 > **iat**: `number`
 
-Defined in: [siwx-server/src/types.ts:373](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L373)
+Defined in: [siwx-server/src/types.ts:396](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L396)
 
 Issued at.
 
@@ -66,7 +66,7 @@ Issued at.
 
 > **iss**: `string`
 
-Defined in: [siwx-server/src/types.ts:364](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L364)
+Defined in: [siwx-server/src/types.ts:386](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L386)
 
 Issuer: the URL of your app.
 
@@ -76,7 +76,7 @@ Issuer: the URL of your app.
 
 > **jti**: `string`
 
-Defined in: [siwx-server/src/types.ts:377](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L377)
+Defined in: [siwx-server/src/types.ts:400](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L400)
 
 Unique token ID: 16 random bytes, base64url.
 
@@ -86,7 +86,8 @@ Unique token ID: 16 random bytes, base64url.
 
 > **sub**: `string`
 
-Defined in: [siwx-server/src/types.ts:369](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L369)
+Defined in: [siwx-server/src/types.ts:392](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L392)
 
-Subject: a stable ID of the user. By default the user ID bound with `bindSubject`, otherwise the account without
-its chain (`eip155:0x…` in lowercase, `solana:<address>`).
+Subject: a stable ID of the user. By default the user ID bound with `bindSubject`, otherwise the account: without
+its chain for a wallet that signed with its own key (`eip155:0x…` in lowercase, `solana:<address>`), with its
+chain for an EVM smart contract wallet (`eip155:<chain>:0x…` in lowercase), whose owners are set on each chain.

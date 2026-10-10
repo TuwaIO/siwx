@@ -1,8 +1,9 @@
 import { buildMessage, type SiwxChainId } from '@tuwaio/siwx-core';
+import type { Hex, PublicClient } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { describe, expect, it } from 'vitest';
 
-import { type SiwxJwks, verifySiwxJwt } from './index';
+import { type SiwxJwks, type SiwxSession, verifySiwxJwt } from './index';
 import { generateSiwxJwtKey, importSiwxJwtKey } from './jwtKeys';
 import { createSiwxApiHandler } from './next';
 import { MemorySiwxNonceStore, MemorySiwxSessionStore } from './server';
@@ -11,11 +12,22 @@ const BASE = 'https://app.example.com/api/siwx';
 const ISSUER = 'https://app.example.com';
 const MAINNET = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
 const DEVNET = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
+const CONTRACT_WALLET = '0x1111111111111111111111111111111111111111';
+const CONTRACT_SIGNATURE = `0x${'ab'.repeat(65)}`;
+
+/** A client whose `eth_call` answers like the ERC-6492 universal validator: valid only for `CONTRACT_WALLET`. */
+function contractWalletClient(chainId: number): PublicClient {
+  const call = async ({ data }: { data: Hex }) => ({
+    data: (data.toLowerCase().includes(CONTRACT_WALLET.slice(2)) ? '0x01' : '0x00') as Hex,
+  });
+  return { chain: { id: chainId }, call } as unknown as PublicClient;
+}
 
 const handler = createSiwxApiHandler({
   sessionStore: new MemorySiwxSessionStore(),
   nonceStore: new MemorySiwxNonceStore(),
   policy: { expectedDomain: 'app.example.com' },
+  verifyOptions: { publicClient: contractWalletClient },
   jwt: {
     signingKey: generateSiwxJwtKey().then(({ privateJwk }) => importSiwxJwtKey({ privateKey: privateJwk })),
     issuer: ISSUER,
@@ -37,8 +49,21 @@ function toBase58(bytes: Uint8Array): string {
   return out;
 }
 
-/** Signs in through the handler like a browser would, then asks `/token` for a JWT and checks it against `/jwks`. */
-async function jwtFor(account: { address: string; chainId: SiwxChainId }, sign: (message: string) => Promise<string>) {
+/** A Solana account with a Web Crypto Ed25519 key that signs the message text. */
+async function ed25519Account() {
+  const keys = (await globalThis.crypto.subtle.generateKey('Ed25519', true, ['sign', 'verify'])) as CryptoKeyPair;
+  const address = toBase58(new Uint8Array(await globalThis.crypto.subtle.exportKey('raw', keys.publicKey)));
+  const sign = async (message: string) =>
+    toBase58(
+      new Uint8Array(
+        await globalThis.crypto.subtle.sign('Ed25519', keys.privateKey, new TextEncoder().encode(message)),
+      ),
+    );
+  return { address, sign };
+}
+
+/** Signs in through the handler like a browser would and returns the session cookie and the session. */
+async function signIn(account: { address: string; chainId: SiwxChainId }, sign: (message: string) => Promise<string>) {
   const { nonce } = (await (await handler.POST(new Request(`${BASE}/nonce`, { method: 'POST' }))).json()) as {
     nonce: string;
   };
@@ -58,7 +83,12 @@ async function jwtFor(account: { address: string; chainId: SiwxChainId }, sign: 
     }),
   );
   expect(verified.status, `sign-in on ${account.chainId}`).toBe(200);
-  const cookie = verified.headers.get('set-cookie')!.split(';')[0];
+  return { cookie: verified.headers.get('set-cookie')!.split(';')[0], session: (await verified.json()) as SiwxSession };
+}
+
+/** Signs in through the handler, then asks `/token` for a JWT and checks it against `/jwks`. */
+async function jwtFor(account: { address: string; chainId: SiwxChainId }, sign: (message: string) => Promise<string>) {
+  const { cookie } = await signIn(account, sign);
 
   const { token } = (await (await handler.GET(new Request(`${BASE}/token`, { headers: { cookie } }))).json()) as {
     token: string;
@@ -87,14 +117,7 @@ describe('JWT subjects across networks', () => {
   });
 
   it('signs in a Solana wallet on every cluster and both chain ID forms, with one subject per account', async () => {
-    const keys = (await globalThis.crypto.subtle.generateKey('Ed25519', true, ['sign', 'verify'])) as CryptoKeyPair;
-    const address = toBase58(new Uint8Array(await globalThis.crypto.subtle.exportKey('raw', keys.publicKey)));
-    const sign = async (message: string) =>
-      toBase58(
-        new Uint8Array(
-          await globalThis.crypto.subtle.sign('Ed25519', keys.privateKey, new TextEncoder().encode(message)),
-        ),
-      );
+    const { address, sign } = await ed25519Account();
 
     const devnetByName = await jwtFor({ address, chainId: 'solana:devnet' }, sign);
     const devnetByHash = await jwtFor({ address, chainId: DEVNET }, sign);
@@ -106,6 +129,33 @@ describe('JWT subjects across networks', () => {
     expect(devnetByName.chain_id).toBe(DEVNET);
     expect(devnetByName.caip10).toBe(`${DEVNET}:${address}`);
     expect(mainnet.chain_id).toBe(MAINNET);
+  });
+
+  it('gives a smart contract wallet a subject per network, because its owners are set on each chain', async () => {
+    const sign = async () => CONTRACT_SIGNATURE;
+
+    const onMainnet = await jwtFor({ address: CONTRACT_WALLET, chainId: 'eip155:1' }, sign);
+    const onBase = await jwtFor({ address: CONTRACT_WALLET, chainId: 'eip155:8453' }, sign);
+
+    expect(onMainnet.sub).toBe(`eip155:1:${CONTRACT_WALLET}`);
+    expect(onBase.sub).toBe(`eip155:8453:${CONTRACT_WALLET}`);
+    expect(onBase.caip10).toBe(`eip155:8453:${CONTRACT_WALLET}`);
+    expect(onBase.chain_id).toBe('eip155:8453');
+  });
+
+  it('keeps in the session how each wallet signed in', async () => {
+    const wallet = privateKeyToAccount(generatePrivateKey());
+    const solana = await ed25519Account();
+
+    const eoa = await signIn({ address: wallet.address, chainId: 'eip155:1' }, (message) =>
+      wallet.signMessage({ message }),
+    );
+    const contract = await signIn({ address: CONTRACT_WALLET, chainId: 'eip155:1' }, async () => CONTRACT_SIGNATURE);
+    const ed25519 = await signIn({ address: solana.address, chainId: MAINNET }, solana.sign);
+
+    expect(eoa.session.verificationMethod).toBe('eip191');
+    expect(contract.session.verificationMethod).toBe('eip1271');
+    expect(ed25519.session.verificationMethod).toBe('ed25519');
   });
 });
 

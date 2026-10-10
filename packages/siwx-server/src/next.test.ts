@@ -151,6 +151,36 @@ describe('createSiwxApiHandler (Durable Profile)', () => {
       expect(cookieHeader).toContain('siwx-test-session=');
       expect(cookieHeader).toContain('HttpOnly');
     });
+
+    it('keeps in the session how the signature was verified', async () => {
+      const validNonce = 'method_nonce_12345';
+      await nonceStore.issue({ nonce: validNonce, ttlSeconds: 60 });
+      vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
+        success: true,
+        namespace: 'eip155',
+        method: 'eip1271',
+        data: {
+          nonce: validNonce,
+          address: 'eip155:8453:0x1111111111111111111111111111111111111111',
+          chainId: 'eip155:8453' as const,
+          domain: 'tuwa.io',
+          uri: 'https://tuwa.io',
+          version: '1' as const,
+          issuedAt: new Date().toISOString(),
+        },
+      });
+
+      const response = await POST(
+        new Request('http://localhost/api/siwx/verify', {
+          method: 'POST',
+          body: JSON.stringify({ message: 'msg', signature: 'sig' }),
+        }),
+      );
+      const sessionId = /siwx-test-session=([^;]+)/.exec(response.headers.get('Set-Cookie') ?? '')?.[1];
+
+      expect((await response.json()).verificationMethod).toBe('eip1271');
+      expect((await sessionStore.get(sessionId!))?.session.verificationMethod).toBe('eip1271');
+    });
   });
 
   describe('DELETE /session', () => {
@@ -364,6 +394,8 @@ describe('createSiwxApiHandler (JWT routes)', () => {
     await nonceStore.issue({ nonce, ttlSeconds: 60 });
     vi.spyOn(serverModule, 'verifySiwxPayload').mockResolvedValueOnce({
       success: true,
+      namespace: 'eip155',
+      method: 'eip191',
       data: {
         ...session,
         chainId: 'eip155:8453' as const,
@@ -393,6 +425,18 @@ describe('createSiwxApiHandler (JWT routes)', () => {
       sub: 'eip155:0xabc0000000000000000000000000000000000001',
       caip10: session.address,
     });
+  });
+
+  it('binds the subject to the chain for a session that does not say how it was verified', async () => {
+    const { handler, sessionStore } = await setup();
+    const record = await sessionStore.create({ session, ttlSeconds: 300 });
+
+    const { token } = await (await handler.GET(get('token', record.id))).json();
+    const jwks = await (await handler.GET(get('jwks'))).json();
+
+    expect((await verifySiwxJwt(token, { jwks, issuer: ISSUER }))?.sub).toBe(
+      'eip155:8453:0xabc0000000000000000000000000000000000001',
+    );
   });
 
   it('uses bindSubject, jwt.subject and jwt.claims', async () => {

@@ -33,12 +33,16 @@ function sessionAccount(session: SiwxSession): { chainId: string; namespace: str
 }
 
 /**
- * Returns the default `sub` of the JWT of a session: a stable ID of the user, so that signing in on another network
- * does not look like another user to the service that receives the token.
+ * Returns the default `sub` of the JWT of a session: a stable ID of the user for the service that receives the token.
  *
  * - `subjectId`, when set and not empty (your own user ID, bound with `SiwxSessionStore.bindSubject`);
- * - otherwise the account without its chain reference: `eip155:<address in lowercase>` for EVM,
- *   `solana:<address>` for Solana (base58 is case-sensitive and kept as is), `<namespace>:<address>` otherwise.
+ * - an EVM account that signed with its own key (`verificationMethod` `eip191`): the account without its chain,
+ *   `eip155:<address in lowercase>`, so signing in on another network is the same user;
+ * - an EVM smart contract wallet (`eip1271`, `erc6492`) or an EVM session without `verificationMethod`: the account
+ *   with its chain, `eip155:<chain>:<address in lowercase>`. A contract wallet is controlled on each chain
+ *   separately: the same address can have other owners on another network;
+ * - a Solana account: `solana:<address>` (base58 is case-sensitive and kept as is) under either form of its chain ID;
+ *   `<namespace>:<address>` otherwise.
  *
  * Pure function.
  *
@@ -49,13 +53,17 @@ function sessionAccount(session: SiwxSession): { chainId: string; namespace: str
  *
  * @example
  * ```ts
- * siwxJwtSubject({ ...session, address: 'eip155:8453:0xAbC…' }); // "eip155:0xabc…"
+ * siwxJwtSubject({ ...session, address: 'eip155:8453:0xAbC…', verificationMethod: 'eip191' }); // "eip155:0xabc…"
+ * siwxJwtSubject({ ...session, address: 'eip155:8453:0xAbC…', verificationMethod: 'eip1271' }); // "eip155:8453:0xabc…"
  * ```
  */
 export function siwxJwtSubject(session: SiwxSession, subjectId?: string): string {
   if (subjectId) return subjectId;
-  const { namespace, address } = sessionAccount(session);
-  return `${namespace}:${namespace === 'eip155' ? address.toLowerCase() : address}`;
+  const { chainId, namespace, address } = sessionAccount(session);
+  if (namespace !== 'eip155') return `${namespace}:${address}`;
+  if (session.verificationMethod === 'eip191') return `eip155:${address.toLowerCase()}`;
+  // A contract wallet is controlled on each chain separately; a session without the method may be one
+  return formatCaip10AccountId(chainId, address.toLowerCase()) ?? session.address.toLowerCase();
 }
 
 /**

@@ -38,6 +38,19 @@ export interface ServerVerifyOptions {
 }
 
 /**
+ * How a signature was verified:
+ *
+ * - `eip191`: by the key of an EVM account, which controls the address on every chain;
+ * - `eip1271`: by a deployed EVM smart contract wallet, on the chain it signed on;
+ * - `erc6492`: by an EVM smart contract wallet that is not deployed yet, on the chain it signed on;
+ * - `ed25519`: by the key of a Solana account.
+ *
+ * A smart contract wallet is controlled on each chain separately: the same address can have other owners on another
+ * network.
+ */
+export type SiwxVerificationMethod = 'eip191' | 'eip1271' | 'erc6492' | 'ed25519';
+
+/**
  * Result of {@link verifySiwxPayload}.
  */
 export interface ServerVerifyResult extends SiwxVerifyResult {
@@ -46,6 +59,8 @@ export interface ServerVerifyResult extends SiwxVerifyResult {
    * failed before the signature check.
    */
   namespace?: 'eip155' | 'solana';
+  /** How the signature was verified. Present only when `success` is `true`; pass it to {@link toSession}. */
+  method?: SiwxVerificationMethod;
 }
 
 /**
@@ -65,6 +80,12 @@ export interface SiwxSession {
   issuedAt: string;
   /** ISO 8601 timestamp when the session expires, if set. */
   expirationTime?: string;
+  /**
+   * How the signature was verified (see {@link SiwxVerificationMethod}). Set by `createSiwxApiHandler`; in your own
+   * handlers, pass `result.method` of {@link verifySiwxPayload} to {@link toSession}. {@link siwxJwtSubject} reads
+   * it: without it, the subject of an EVM session keeps its chain.
+   */
+  verificationMethod?: SiwxVerificationMethod;
 }
 
 /**
@@ -348,8 +369,9 @@ export interface SiwxJwtOptions {
    */
   ttlSeconds?: number;
   /**
-   * Builds the `sub` claim from the session record. Defaults to the bound `subjectId`, otherwise the account without
-   * its chain (see `siwxJwtSubject`).
+   * Builds the `sub` claim from the session record. Defaults to the bound `subjectId`, otherwise the account: without
+   * its chain for a wallet that signed with its own key, with its chain for a smart contract wallet (see
+   * `siwxJwtSubject`).
    */
   subject?: (record: SiwxSessionRecord) => string | Promise<string>;
   /** Extra claims from the session record. Reserved claims cannot be set. */
@@ -363,8 +385,9 @@ export interface SiwxJwtPayload {
   /** Issuer: the URL of your app. */
   iss: string;
   /**
-   * Subject: a stable ID of the user. By default the user ID bound with `bindSubject`, otherwise the account without
-   * its chain (`eip155:0x…` in lowercase, `solana:<address>`).
+   * Subject: a stable ID of the user. By default the user ID bound with `bindSubject`, otherwise the account: without
+   * its chain for a wallet that signed with its own key (`eip155:0x…` in lowercase, `solana:<address>`), with its
+   * chain for an EVM smart contract wallet (`eip155:<chain>:0x…` in lowercase), whose owners are set on each chain.
    */
   sub: string;
   /** Audience, when one was set. */
@@ -385,12 +408,22 @@ export interface SiwxJwtPayload {
 
 /**
  * Converts a verified CAIP-122 message into a {@link SiwxSession}: keeps `address`, `chainId`, `domain`, `nonce`,
- * `issuedAt` and `expirationTime`. Pure function.
+ * `issuedAt` and `expirationTime`, plus `verificationMethod` when given. Pure function.
  *
  * @param parsed - The verified message, for example `result.data` of {@link verifySiwxPayload}.
+ * @param verificationMethod - How the signature was verified: `result.method` of {@link verifySiwxPayload}. Without
+ * it, {@link siwxJwtSubject} keeps the chain in the subject of an EVM session.
  * @returns The session object to store or sign.
+ *
+ * @example
+ * ```ts
+ * const result = await verifySiwxPayload(payload, { policy });
+ * if (result.success && result.data) {
+ *   const session = toSession(result.data, result.method);
+ * }
+ * ```
  */
-export function toSession(parsed: ParsedSiwxMessage): SiwxSession {
+export function toSession(parsed: ParsedSiwxMessage, verificationMethod?: SiwxVerificationMethod): SiwxSession {
   return {
     address: parsed.address,
     chainId: parsed.chainId,
@@ -398,5 +431,6 @@ export function toSession(parsed: ParsedSiwxMessage): SiwxSession {
     nonce: parsed.nonce,
     issuedAt: parsed.issuedAt,
     expirationTime: parsed.expirationTime,
+    ...(verificationMethod === undefined ? {} : { verificationMethod }),
   };
 }

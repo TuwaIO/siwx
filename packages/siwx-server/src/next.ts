@@ -261,7 +261,7 @@ export function createSiwxApiHandler(options: SiwxApiHandlerOptions) {
           });
         }
 
-        const session = toSession(result.data);
+        const session = toSession(result.data, result.method);
         const record = await options.sessionStore.create({ session, ttlSeconds });
 
         const cookieHeader = createSessionCookie(record.id, {

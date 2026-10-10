@@ -2,7 +2,7 @@
 
 > **signSiwxJwt**(`params`): `Promise`\<\{ `expiresAt`: `number`; `token`: `string`; \}\>
 
-Defined in: [siwx-server/src/jwt.ts:93](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/jwt.ts#L93)
+Defined in: [siwx-server/src/jwt.ts:101](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/jwt.ts#L101)
 
 Signs a JWT for a SIWX session with ES256 or RS256 (Web Crypto API).
 

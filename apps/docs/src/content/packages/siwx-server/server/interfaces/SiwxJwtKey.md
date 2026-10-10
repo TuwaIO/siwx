@@ -1,6 +1,6 @@
 # SiwxJwtKey
 
-Defined in: [siwx-server/src/types.ts:306](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L306)
+Defined in: [siwx-server/src/types.ts:327](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L327)
 
 A JWT signing key, created by `importSiwxJwtKey`.
 
@@ -10,7 +10,7 @@ A JWT signing key, created by `importSiwxJwtKey`.
 
 > **alg**: [`SiwxJwtAlgorithm`](/packages/siwx-server/server/type-aliases/SiwxJwtAlgorithm.md)
 
-Defined in: [siwx-server/src/types.ts:308](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L308)
+Defined in: [siwx-server/src/types.ts:329](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L329)
 
 The algorithm the key signs with.
 
@@ -20,7 +20,7 @@ The algorithm the key signs with.
 
 > **kid**: `string`
 
-Defined in: [siwx-server/src/types.ts:310](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L310)
+Defined in: [siwx-server/src/types.ts:331](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L331)
 
 Key ID: the RFC 7638 thumbprint of the key.
 
@@ -30,7 +30,7 @@ Key ID: the RFC 7638 thumbprint of the key.
 
 > **privateKey**: `CryptoKey`
 
-Defined in: [siwx-server/src/types.ts:312](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L312)
+Defined in: [siwx-server/src/types.ts:333](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L333)
 
 The private key. Not extractable, usable only to sign.
 
@@ -40,6 +40,6 @@ The private key. Not extractable, usable only to sign.
 
 > **publicJwk**: [`SiwxPublicJwk`](/packages/siwx-server/server/interfaces/SiwxPublicJwk.md)
 
-Defined in: [siwx-server/src/types.ts:314](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L314)
+Defined in: [siwx-server/src/types.ts:335](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L335)
 
 The public key to publish in the JWKS.
