@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.7.0...siwx-server-v0.7.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* scope the JWT subject of smart contract wallets to their chain ([1cb7f03](https://github.com/TuwaIO/siwx/commit/1cb7f0393f702dbf848f72eadfb6b35bfa2a952e))
+
 ## [0.7.0](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.6.0...siwx-server-v0.7.0) (2026-10-09)
 
 
