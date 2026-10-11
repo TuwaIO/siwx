@@ -3,6 +3,7 @@ export type {
   SolanaSiwxMessageFormat,
   SolanaSiwxSignerOptions,
   SolanaSiwxSignerTarget,
+  SolanaWalletAdapterSignerTarget,
   SolanaWalletStandardSignerTarget,
 } from './signer';
 export { createSolanaSiwxSigner } from './signer';

@@ -346,6 +346,73 @@ describe('createSolanaSiwxSigner with off-chain messages', () => {
     expect((await verifyEd25519({ message, signature })).success).toBe(true);
   });
 
+  /** The shape of `useWallet()` from `@solana/wallet-adapter-react` 0.15 (`WalletContextState`), with `wallet: null`. */
+  function walletAdapterV1(account: Awaited<ReturnType<typeof createAccount>>) {
+    return {
+      wallet: null,
+      publicKey: { toBase58: () => account.address },
+      connected: true,
+      signMessage: vi.fn(
+        async (message: Uint8Array) =>
+          new Uint8Array(
+            await globalThis.crypto.subtle.sign('Ed25519', account.keyPair.privateKey, new Uint8Array(message)),
+          ),
+      ),
+    };
+  }
+
+  it('signs with useWallet() of @solana/wallet-adapter-react 0.15 when its wallet is null', async () => {
+    const account = await createAccount();
+    const target = walletAdapterV1(account);
+    const message = messageFor(account.address);
+
+    const signature = await createSolanaSiwxSigner(target)(message);
+
+    expect(target.signMessage).toHaveBeenCalledWith(new TextEncoder().encode(message));
+    expect((await verifyEd25519({ message, signature })).success).toBe(true);
+  });
+
+  it('rejects useWallet() of @solana/wallet-adapter-react 0.15 before a wallet connects', async () => {
+    const target = { wallet: null, publicKey: null, connected: false, signMessage: undefined };
+
+    await expect(createSolanaSiwxSigner(target)('test')).rejects.toThrow(
+      '[SIWX-SOLANA] Signer lacks known message signing capabilities.',
+    );
+  });
+
+  it('signs the off-chain message with useWallet() of @solana/wallet-adapter v3 when its wallet and account are null', async () => {
+    const account = await createAccount();
+    const target = {
+      wallet: null,
+      account: null,
+      address: account.address,
+      publicKey: { toBase58: () => account.address },
+      signMessage: undefined,
+      signOffchainMessage: vi.fn((message: string) => signEnvelope(account.keyPair, account.address, message)),
+    };
+    const message = messageFor(account.address);
+
+    const signature = await createSolanaSiwxSigner(target)(message);
+
+    expect(target.signOffchainMessage).toHaveBeenCalledWith(message);
+    expect((await verifyEd25519({ message, signature })).success).toBe(true);
+  });
+
+  it('rejects when useWallet() of @solana/wallet-adapter v3 signed a different off-chain message', async () => {
+    const account = await createAccount();
+    const target = {
+      wallet: null,
+      account: null,
+      address: account.address,
+      publicKey: { toBase58: () => account.address },
+      signOffchainMessage: vi.fn(() => signEnvelope(account.keyPair, account.address, 'something else')),
+    };
+
+    await expect(createSolanaSiwxSigner(target)(messageFor(account.address))).rejects.toThrow(
+      'different off-chain message',
+    );
+  });
+
   it('rejects when the wallet signed a different off-chain message', async () => {
     const account = await createAccount();
     const { wallet, account: walletAccount, signOffchainMessage } = walletWith(account, ['solana:signOffchainMessage']);

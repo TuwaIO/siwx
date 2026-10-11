@@ -18,7 +18,7 @@
   "scripts": {
     "start": "tsup src/index.ts --watch",
     "build": "tsup",
-    "test": "vitest run",
+    "test": "vitest run --typecheck",
     "test:coverage": "vitest run --coverage"
   },
   "keywords": [

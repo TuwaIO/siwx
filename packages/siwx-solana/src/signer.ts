@@ -11,7 +11,7 @@ import {
   getBase58Decoder,
   getUtf8Encoder,
 } from '@solana/kit';
-import type { Wallet, WalletAccount } from '@wallet-standard/base';
+import type { ReadonlyUint8Array, Wallet, WalletAccount } from '@wallet-standard/base';
 
 export interface SolanaSignMessageInput {
   readonly account: unknown;
@@ -98,13 +98,52 @@ export interface SolanaLegacyMessageSigner {
 }
 
 /**
+ * The value of `useWallet()` from `@solana/wallet-adapter-react` (v1) or `@solana/wallet-adapter` (v3), or any other
+ * `{ wallet, account }` objects with a signing capability, such as a wallet exposing an `adapter` or a `signMessages`
+ * method.
+ *
+ * Every field may be missing or `null`, as in `useWallet()` before a wallet connects: the signer looks for a signing
+ * capability only when it is called, and rejects when it finds none.
+ */
+export interface SolanaWalletAdapterSignerTarget {
+  /**
+   * The selected wallet. Its `solana:signMessage` and `solana:signOffchainMessage` features, its `adapter` and its
+   * `signMessages` and `signMessage` methods are used when present.
+   */
+  wallet?: object | null;
+  /** The connected account. Its `address`, `publicKey` and `features` are used when present. */
+  account?: object | null;
+  /** The base58 address of the connected account (v3). Used to check the bytes of a signed off-chain message. */
+  address?: string | null;
+  /**
+   * The public key of the connected account (`PublicKey` of `@solana/web3.js`). Used to check the bytes of a signed
+   * off-chain message when no address is given.
+   */
+  publicKey?: { toBase58: () => string } | null;
+  /**
+   * Signs the UTF-8 bytes of the message.
+   * @param message - UTF-8 bytes of the message.
+   * @returns The 64-byte ed25519 signature, or an object that contains it.
+   */
+  signMessage?: (message: Uint8Array) => Promise<Uint8Array | { signature: Uint8Array }>;
+  /**
+   * Signs the version 1 off-chain message of the text with the connected account as its only signer (v3).
+   * @param message - The message text.
+   * @returns The ed25519 signature and, optionally, the bytes the wallet signed.
+   */
+  signOffchainMessage?: (
+    message: string,
+  ) => Promise<{ signedOffchainMessage?: ReadonlyUint8Array; signature: ReadonlyUint8Array }>;
+}
+
+/**
  * What {@link createSolanaSiwxSigner} can sign with:
  *
  * - a Wallet Standard `{ wallet, account }` pair ({@link SolanaWalletStandardSignerTarget});
  * - an `@solana/kit` `MessageModifyingSigner`;
  * - a legacy adapter with `signMessage(bytes)` ({@link SolanaLegacyMessageSigner});
- * - any `{ wallet, account }` objects with one of these capabilities, such as a wallet exposing an `adapter` or a
- *   `signMessages` method.
+ * - `useWallet()` of `@solana/wallet-adapter` v1 or v3, or any `{ wallet, account }` objects with one of these
+ *   capabilities ({@link SolanaWalletAdapterSignerTarget}).
  *
  * The signer uses the first capability it finds: `modifyAndSignMessages`, the `solana:signMessage` feature of
  * `wallet.features`, a `signMessages` method, or a `signMessage` method (looked up on `wallet`, its `adapter`, `account`
@@ -115,7 +154,7 @@ export type SolanaSiwxSignerTarget =
   | SolanaWalletStandardSignerTarget
   | MessageModifyingSigner
   | SolanaLegacyMessageSigner
-  | { wallet?: object; account?: object };
+  | SolanaWalletAdapterSignerTarget;
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a === b) return true;
@@ -431,7 +470,10 @@ export function createSolanaSiwxSigner(target: SolanaSiwxSignerTarget, options: 
       }
 
       const root = target as Record<string, unknown>;
-      const { wallet: targetWallet, account: targetAccount } = target as { wallet?: object; account?: object };
+      const { wallet: targetWallet, account: targetAccount } = target as {
+        wallet?: object | null;
+        account?: object | null;
+      };
       const wallet = (targetWallet ?? target) as Record<string, unknown>;
       const account = (targetAccount ?? target) as Record<string, unknown>;
 

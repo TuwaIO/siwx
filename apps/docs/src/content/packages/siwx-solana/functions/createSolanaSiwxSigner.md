@@ -2,7 +2,7 @@
 
 > **createSolanaSiwxSigner**(`target`, `options?`): (`message`) => `Promise`\<`string`\>
 
-Defined in: [signer.ts:425](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L425)
+Defined in: [signer.ts:464](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L464)
 
 Creates a SIWX signer for Solana wallets: a function that signs a message with the wallet and returns the ed25519
 signature as a base58 string. Pass it as `signer` to `useSiwx().signIn` from `@tuwaio/siwx-react`.

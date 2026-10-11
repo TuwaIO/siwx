@@ -117,6 +117,7 @@ Licensed under the **Apache-2.0 License**. See the [LICENSE](https://github.com/
 - [SolanaSignInAccount](/packages/siwx-solana/interfaces/SolanaSignInAccount.md)
 - [SolanaSignInOutput](/packages/siwx-solana/interfaces/SolanaSignInOutput.md)
 - [SolanaSiwxSignerOptions](/packages/siwx-solana/interfaces/SolanaSiwxSignerOptions.md)
+- [SolanaWalletAdapterSignerTarget](/packages/siwx-solana/interfaces/SolanaWalletAdapterSignerTarget.md)
 - [SolanaWalletStandardSignerTarget](/packages/siwx-solana/interfaces/SolanaWalletStandardSignerTarget.md)
 
 ## Type Aliases
