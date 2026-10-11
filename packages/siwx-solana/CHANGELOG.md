@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.6.0...siwx-solana-v0.6.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* accept useWallet() of @solana/wallet-adapter v1 and v3 in createSolanaSiwxSigner types ([3387604](https://github.com/TuwaIO/siwx/commit/338760452df6f16bbb6af39dd5ffa7201594c737))
+
 ## [0.6.0](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.5.1...siwx-solana-v0.6.0) (2026-10-09)
 
 
