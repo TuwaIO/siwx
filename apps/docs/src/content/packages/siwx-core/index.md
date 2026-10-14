@@ -1,8 +1,5 @@
 # @tuwaio/siwx-core
 
-[![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-core.svg)](https://www.npmjs.com/package/@tuwaio/siwx-core)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-core.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/LICENSE)
-
 `@tuwaio/siwx-core` is the Layer 1 (L1) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). It implements the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) message format: it builds, parses and validates chain-agnostic sign-in messages for EVM (`eip155`) and Solana accounts, and defines the types and errors that the SIWX L2 packages share.
 
 Its only dependency is the peer [`@tuwaio/orbit-core`](https://orbit.docs.tuwa.io/packages/orbit-core), which has no dependencies of its own and reads the CAIP-2 chain and CAIP-10 account IDs and the Solana genesis-hash chain IDs. The package imports no Web3 SDK. It runs in browsers, Node.js 20+ and edge runtimes; only `generateNonce` needs the Web Crypto API.

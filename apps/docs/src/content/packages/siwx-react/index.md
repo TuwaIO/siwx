@@ -1,8 +1,5 @@
 # @tuwaio/siwx-react
 
-[![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-react.svg)](https://www.npmjs.com/package/@tuwaio/siwx-react)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-react.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/LICENSE)
-
 `@tuwaio/siwx-react` is the React Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`**, **`react`** and **`zustand`** (with the `immer` middleware), it runs the CAIP-122 sign-in flow in React apps with two hooks and a session store. It ships no UI components and makes no network requests of its own: you pass the wallet signer and the calls to your backend.
 
 ---

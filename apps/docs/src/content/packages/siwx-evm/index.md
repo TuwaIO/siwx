@@ -1,8 +1,5 @@
 # @tuwaio/siwx-evm
 
-[![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-evm.svg)](https://www.npmjs.com/package/@tuwaio/siwx-evm)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-evm.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-evm/LICENSE)
-
 `@tuwaio/siwx-evm` is the EVM Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`**, **`viem`** and **`@wagmi/core`**, it signs CAIP-122 messages with EVM wallets and verifies `eip155` signatures: EIP-191 for EOA wallets, EIP-1271 for deployed smart contract wallets and ERC-6492 for smart contract wallets that are not deployed yet. It does not use `ethers.js` or `web3.js`.
 
 ---

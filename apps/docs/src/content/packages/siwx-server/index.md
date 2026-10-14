@@ -1,8 +1,5 @@
 # @tuwaio/siwx-server
 
-[![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-server.svg)](https://www.npmjs.com/package/@tuwaio/siwx-server)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-server.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/LICENSE)
-
 `@tuwaio/siwx-server` is the server Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`** and the Web platform APIs (`Request`, `Response`, Web Crypto), it verifies signed CAIP-122 messages for EVM and Solana on your backend, issues single-use nonces and sessions through pluggable stores, formats the session cookie, and can hand the sign-in to external auth providers as a JWT with a JWKS. It runs on Node.js 20+ and does not depend on a web framework, a database or a hosted service.
 
 It has two entry points:

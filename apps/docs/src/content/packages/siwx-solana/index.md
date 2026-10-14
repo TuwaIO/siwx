@@ -1,8 +1,5 @@
 # @tuwaio/siwx-solana
 
-[![NPM Version](https://img.shields.io/npm/v/@tuwaio/siwx-solana.svg)](https://www.npmjs.com/package/@tuwaio/siwx-solana)
-[![License](https://img.shields.io/npm/l/@tuwaio/siwx-solana.svg)](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/LICENSE)
-
 `@tuwaio/siwx-solana` is the Solana Layer 2 (L2) package of **SIWX** (Sign-In With X), the authentication project of TUWA Stage 1 ("Core Auth & Primitives", next to Orbit Utils). Built on **`@tuwaio/siwx-core`** and **`@solana/kit`**, it signs CAIP-122 messages with Solana wallets and verifies `solana` ed25519 signatures with the native Web Crypto API. It does not use the legacy `@solana/web3.js` or `gill`.
 
 ---
