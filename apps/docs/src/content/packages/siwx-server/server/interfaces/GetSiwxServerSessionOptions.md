@@ -24,7 +24,7 @@ The name of the cookie.
 
 ### cookieSource
 
-> **cookieSource**: `string` \| `Request` \| `Headers` \| \{ `get`: `string` \| \{ `value`: `string`; \} \| `null` \| `undefined`; \} \| `null` \| `undefined`
+> **cookieSource**: `string` \| `Request` \| `Headers` \| \{ `get`(`name`): `string` \| \{ `value`: `string`; \} \| `null` \| `undefined`; \} \| `null` \| `undefined`
 
 Defined in: [siwx-server/src/types.ts:258](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-server/src/types.ts#L258)
 
