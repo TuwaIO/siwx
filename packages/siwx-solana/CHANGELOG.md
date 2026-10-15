@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.6.1...siwx-solana-v0.6.2) (2026-10-15)
+
+
+### Bug Fixes
+
+* updated packages ([b29a7c3](https://github.com/TuwaIO/siwx/commit/b29a7c3f6541e2ee47447bd8e2a52924f4a255ef))
+
 ## [0.6.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.6.0...siwx-solana-v0.6.1) (2026-10-11)
 
 
