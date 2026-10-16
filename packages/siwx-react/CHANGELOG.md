@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.6.3...siwx-react-v0.6.4) (2026-10-16)
+
+
+### Bug Fixes
+
+* session storage removing ([cd3a7f2](https://github.com/TuwaIO/siwx/commit/cd3a7f2d09a7e8ae973068739a476c6c90790e6f))
+
 ## [0.6.3](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.6.2...siwx-react-v0.6.3) (2026-10-15)
 
 
