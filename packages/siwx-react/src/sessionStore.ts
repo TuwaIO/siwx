@@ -6,7 +6,13 @@
 
 import type { ParsedSiwxMessage, SiwxStatus } from '@tuwaio/siwx-core';
 import { create } from 'zustand';
-import { createJSONStorage, persist, type PersistStorage, type StateStorage } from 'zustand/middleware';
+import {
+  createJSONStorage,
+  persist,
+  type PersistStorage,
+  type StateStorage,
+  type StorageValue,
+} from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 /**
@@ -132,12 +138,34 @@ type PersistedSession = Pick<SiwxSessionState, 'session'>;
 const jsonStorage = createJSONStorage<PersistedSession>(getSessionStorage);
 
 /**
+ * Removes a stored session that cannot be restored (expired or incomplete), so an expired sign-in is not kept in the
+ * browser after the page reads it.
+ * @internal
+ */
+function withoutStaleSession(
+  name: string,
+  stored: StorageValue<PersistedSession> | null,
+): StorageValue<PersistedSession> | null {
+  const session = stored?.state?.session;
+  if (session && !isRestorableSession(session)) {
+    jsonStorage?.removeItem(name);
+    return null;
+  }
+  return stored;
+}
+
+/**
  * Persist storage that ignores writes until the stored session has been restored, so that an early `reset` or
  * `setError` cannot erase it.
  * @internal
  */
 const sessionPersistStorage: PersistStorage<PersistedSession> = {
-  getItem: (name) => jsonStorage?.getItem(name) ?? null,
+  getItem: (name) => {
+    const value = jsonStorage?.getItem(name) ?? null;
+    return value instanceof Promise
+      ? value.then((stored) => withoutStaleSession(name, stored))
+      : withoutStaleSession(name, value);
+  },
   setItem: (name, value) => {
     if (useSiwxSessionStore.persist.hasHydrated()) jsonStorage?.setItem(name, value);
   },
@@ -151,7 +179,8 @@ const sessionPersistStorage: PersistStorage<PersistedSession> = {
  * @remarks
  * The authenticated session is saved to `localStorage` under the key `siwx-react:session` and cleared by `reset`.
  * It is restored after a page reload when {@link useSiwx} or {@link useSiwxSession} first mounts (not during
- * server rendering, so there is no hydration mismatch), unless its `expirationTime` has passed; outside React call
+ * server rendering, so there is no hydration mismatch), unless its `expirationTime` has passed: an expired or
+ * incomplete stored session is removed from `localStorage` then. Outside React call
  * `useSiwxSessionStore.persist.rehydrate()`. Only the session is saved, never the status of a sign-in in progress.
  *
  * The store is a module-level singleton shared by every component, and it is UI state only: servers must verify

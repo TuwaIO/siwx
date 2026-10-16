@@ -58,6 +58,17 @@ describe('useSiwxSessionStore persistence', () => {
     expect(store.getState().session).toBeNull();
   });
 
+  // The Cookie Policy of TUWA (lawyer, 2026-10-16): a sign-in that has expired is not kept in the browser
+  it('removes an expired or incomplete session from storage when it reads it', async () => {
+    storeSession({ ...SESSION, expirationTime: '2020-01-01T00:00:00.000Z' });
+    await (await loadStore()).persist.rehydrate();
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+
+    storeSession({ address: SESSION.address });
+    await (await loadStore()).persist.rehydrate();
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+  });
+
   it('keeps the stored session when the store is reset before rehydration', async () => {
     storeSession(SESSION);
     const store = await loadStore();
