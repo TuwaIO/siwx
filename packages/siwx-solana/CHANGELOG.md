@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.6.2...siwx-solana-v0.7.0) (2026-10-20)
+
+
+### Features
+
+* sign with the shared message signer of @tuwaio/orbit-solana ([0588d2e](https://github.com/TuwaIO/siwx/commit/0588d2e42aa68450ffb74b2d07db202f8fd76ad9))
+
 ## [0.6.2](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.6.1...siwx-solana-v0.6.2) (2026-10-15)
 
 
