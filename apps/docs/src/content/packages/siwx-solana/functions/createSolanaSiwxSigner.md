@@ -2,7 +2,7 @@
 
 > **createSolanaSiwxSigner**(`target`, `options?`): (`message`) => `Promise`\<`string`\>
 
-Defined in: [signer.ts:464](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L464)
+Defined in: [signer.ts:135](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L135)
 
 Creates a SIWX signer for Solana wallets: a function that signs a message with the wallet and returns the ed25519
 signature as a base58 string. Pass it as `signer` to `useSiwx().signIn` from `@tuwaio/siwx-react`.
@@ -10,7 +10,8 @@ signature as a base58 string. Pass it as `signer` to `useSiwx().signIn` from `@t
 Works with Wallet Standard wallets, `@solana/kit` message signers, legacy adapters and `useWallet()` of
 `@solana/wallet-adapter`; see [SolanaSiwxSignerTarget](/packages/siwx-solana/type-aliases/SolanaSiwxSignerTarget.md) for how the signing method is chosen. The wallet signs
 the UTF-8 bytes of the message or its version 1 off-chain message (which hardware wallets can show and sign), as
-`options.messageFormat` decides ([SolanaSiwxMessageFormat](/packages/siwx-solana/type-aliases/SolanaSiwxMessageFormat.md)); servers verify both.
+`options.messageFormat` decides ([SolanaSiwxMessageFormat](/packages/siwx-solana/type-aliases/SolanaSiwxMessageFormat.md)); servers verify both. An `@solana/kit` signer
+always signs the UTF-8 bytes, unless `messageFormat` is `'offchainMessage'`.
 
 ## Parameters
 

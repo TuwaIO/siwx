@@ -30,7 +30,7 @@ pnpm add @tuwaio/siwx-server @tuwaio/siwx-core @tuwaio/orbit-core
 
 # Chain verifiers, loaded at runtime for the chains you accept:
 pnpm add @tuwaio/siwx-evm viem @wagmi/core
-pnpm add @tuwaio/siwx-solana @solana/kit @wallet-standard/base
+pnpm add @tuwaio/siwx-solana @tuwaio/orbit-solana @solana/kit @wallet-standard/base
 ```
 
 > [!IMPORTANT]

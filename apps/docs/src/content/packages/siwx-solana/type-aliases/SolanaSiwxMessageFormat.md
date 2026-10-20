@@ -1,8 +1,8 @@
 # SolanaSiwxMessageFormat
 
-> **SolanaSiwxMessageFormat** = `"auto"` \| `"message"` \| `"offchainMessage"`
+> **SolanaSiwxMessageFormat** = `SolanaMessageFormat`
 
-Defined in: [signer.ts:67](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L67)
+Defined in: [signer.ts:28](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-solana/src/signer.ts#L28)
 
 How [createSolanaSiwxSigner](/packages/siwx-solana/functions/createSolanaSiwxSigner.md) has the wallet sign the message:
 
@@ -13,4 +13,5 @@ How [createSolanaSiwxSigner](/packages/siwx-solana/functions/createSolanaSiwxSig
 - `'offchainMessage'`: always the version 1 off-chain message (`solana:signOffchainMessage`, or a
   `signOffchainMessage(message)` method such as the one of `useWallet()` from `@solana/wallet-adapter` v3).
 
-`verifyEd25519` and `@tuwaio/siwx-server` accept both, so the format needs no server setting.
+`verifyEd25519` and `@tuwaio/siwx-server` accept both, so the format needs no server setting. The same type as
+`SolanaMessageFormat` of `@tuwaio/orbit-solana`.

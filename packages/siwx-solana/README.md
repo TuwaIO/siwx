@@ -9,7 +9,7 @@
 
 ## 🏛️ Core Capabilities
 
-- **Signing:** `createSolanaSiwxSigner` turns a Wallet Standard wallet and account (typed with `@wallet-standard/base`), an `@solana/kit` message signer, a legacy adapter or `useWallet()` of `@solana/wallet-adapter` (v1 or v3) into the `(message) => signature` function that `useSiwx` from [`@tuwaio/siwx-react`](https://siwx.docs.tuwa.io/packages/siwx-react) expects. Signatures are returned as base58 strings.
+- **Signing:** `createSolanaSiwxSigner` turns a Wallet Standard wallet and account (typed with `@wallet-standard/base`), an `@solana/kit` message signer, a legacy adapter or `useWallet()` of `@solana/wallet-adapter` (v1 or v3) into the `(message) => signature` function that `useSiwx` from [`@tuwaio/siwx-react`](https://siwx.docs.tuwa.io/packages/siwx-react) expects. Signatures are returned as base58 strings. It signs with the message signer shared with Satellite Connect, `createSolanaMessageSigner` of [`@tuwaio/orbit-solana`](https://orbit.docs.tuwa.io/packages/orbit-solana).
 - **Off-chain messages and hardware wallets:** the wallet signs either the UTF-8 bytes of the message (`solana:signMessage`) or its [version 1 off-chain message](https://github.com/solana-foundation/SRFCs/discussions/3) (`solana:signOffchainMessage`), which hardware wallets can show and sign. By default the signer picks the off-chain message when the account supports it but not `solana:signMessage`; `messageFormat` forces one or the other.
 - **Verification:** `verifyEd25519` accepts a `{ message, signature }` payload (base58 strings or bytes) or the output of the Wallet Standard `solana:signIn` feature, signed as the message itself or as its version 1 off-chain message. It requires a `solana` chain and a 64-byte signature, validates the message (format, expiration, `notBefore` and an `issuedAt` in the future) and the address, and checks the signature with `crypto.subtle`. It runs locally, without RPC calls, and returns `{ success, data, error }` instead of throwing.
 - **Runtimes:** any runtime whose Web Crypto API supports Ed25519, such as Node.js 20+ and current browsers. No native modules or polyfills.
@@ -19,11 +19,11 @@
 ## 💾 Installation
 
 ```bash
-pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @solana/kit @wallet-standard/base
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @tuwaio/orbit-solana @solana/kit @wallet-standard/base
 ```
 
 > [!IMPORTANT]
-> `@tuwaio/siwx-core`, `@solana/kit` (>=6) and `@wallet-standard/base` (>=1.1.0) are peer dependencies and must be installed alongside `@tuwaio/siwx-solana`.
+> `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `@tuwaio/orbit-solana` (>=0.7.1), `@solana/kit` (>=6) and `@wallet-standard/base` (>=1.1.0) are peer dependencies and must be installed alongside `@tuwaio/siwx-solana`. The signer comes from `@tuwaio/orbit-solana/signer`, which loads only `@solana/kit`, so the server verification of `@tuwaio/siwx-server` needs no Wallet Standard runtime.
 
 ---
 

@@ -52,12 +52,14 @@
   ],
   "peerDependencies": {
     "@tuwaio/orbit-core": ">=0.5",
+    "@tuwaio/orbit-solana": ">=0.7.1",
     "@tuwaio/siwx-core": ">=0.4.1",
     "@wallet-standard/base": ">=1.1.0",
     "@solana/kit": ">=6"
   },
   "devDependencies": {
     "@tuwaio/orbit-core": "^0.6.0",
+    "@tuwaio/orbit-solana": "^0.7.1",
     "@tuwaio/siwx-core": "workspace:*",
     "@wallet-standard/base": "^1.1.1",
     "@solana/kit": "^8.5.0",

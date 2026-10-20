@@ -17,7 +17,7 @@ SIWX is built only on modern Web3 libraries: `viem` and `@wagmi/core` for EVM, `
 
 ## 🏛️ Ecosystem Layer Architecture
 
-TUWA is built in stages. SIWX sits in **Stage 1 (Core Auth & Primitives)** next to [Orbit Utils](https://orbit.docs.tuwa.io/), below [Satellite Connect](https://satellite.docs.tuwa.io/) and [Pulsar](https://pulsar.docs.tuwa.io/) (Stage 2), [Quasar](https://docs.tuwa.io/quasar) (Stage 3) and [Nova UI Kit](https://stories.tuwa.io/) (Stage 4). Higher layers such as Satellite Connect and the TUWA SDK use SIWX. SIWX reads chain and account IDs (CAIP-2, CAIP-10, Solana genesis-hash chain IDs) with `@tuwaio/orbit-core` of Orbit Utils, a package without dependencies of its own, and depends on nothing else in TUWA, so it can be used on its own.
+TUWA is built in stages. SIWX sits in **Stage 1 (Core Auth & Primitives)** next to [Orbit Utils](https://orbit.docs.tuwa.io/), below [Satellite Connect](https://satellite.docs.tuwa.io/) and [Pulsar](https://pulsar.docs.tuwa.io/) (Stage 2), [Quasar](https://docs.tuwa.io/quasar) (Stage 3) and [Nova UI Kit](https://stories.tuwa.io/) (Stage 4). Higher layers such as Satellite Connect and the TUWA SDK use SIWX. SIWX reads chain and account IDs (CAIP-2, CAIP-10, Solana genesis-hash chain IDs) with `@tuwaio/orbit-core` of Orbit Utils, a package without dependencies of its own; `@tuwaio/siwx-solana` signs with the message signer of `@tuwaio/orbit-solana`. SIWX depends on nothing else in TUWA, so it can be used on its own.
 
 Inside the monorepo, packages are split into two layers:
 
@@ -67,7 +67,7 @@ pnpm add @tuwaio/siwx-core @tuwaio/orbit-core
 pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @tuwaio/orbit-core @wagmi/core viem
 
 # L2 Solana
-pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @solana/kit @wallet-standard/base
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @tuwaio/orbit-solana @solana/kit @wallet-standard/base
 
 # L2 React
 pnpm add @tuwaio/siwx-react @tuwaio/siwx-core @tuwaio/orbit-core react zustand immer
