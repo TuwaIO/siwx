@@ -1,0 +1,13 @@
+# 软件包
+
+SIWX 包含一个与链无关的核心包（**L1**）和四个基于它构建的 **L2** 包：每个链平台（EVM、Solana）各一个适配器、React 绑定以及服务端工具。安装核心包，并只安装应用所需的 L2 包。L2 包将 `@tuwaio/siwx-core` 以及各自的 Web3 库或框架库声明为对等依赖 (peer dependencies)，因此应用中的 `viem`、`@wagmi/core`、`@solana/kit`、`react` 或 `zustand` 都只保留一份。
+
+每个包页面以该包的 README（与发布到 npm 的文本相同）开头，随后是其全部导出的完整列表。每个函数、类、类型与常量页面都根据 TypeScript 源码及其 JSDoc 生成，因此参考文档始终与已发布的代码一致。包的 README 与参考文档均为英文。
+
+## 软件包 [#packages]
+
+- [@tuwaio/siwx-core](/packages/siwx-core)
+- [@tuwaio/siwx-evm](/packages/siwx-evm)
+- [@tuwaio/siwx-react](/packages/siwx-react)
+- [@tuwaio/siwx-server](/packages/siwx-server)
+- [@tuwaio/siwx-solana](/packages/siwx-solana)

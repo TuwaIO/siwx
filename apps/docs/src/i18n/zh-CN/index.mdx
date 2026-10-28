@@ -1,0 +1,117 @@
+# 简介
+
+<p align="center">
+  <img
+    src="https://tuwa.io/brand/siwx.png"
+    alt="SIWX"
+    width="450"
+    style={{ borderRadius: '12px', margin: '24px auto', display: 'block' }}
+  />
+</p>
+
+**SIWX** (Sign-In With X) 是 TUWA 第 1 阶段的身份认证项目：基于 [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) 标准，为 EVM 与 Solana 账户提供无头、框架无关的签名登录。它构建并签署与链无关的登录消息，在您的后端借助一次性 Nonce 与 Cookie 会话进行验证，并在 React 中跟踪登录状态。它不包含 UI 组件，也不依赖任何托管云服务。
+
+---
+
+## 🏛️ SIWX 在 TUWA 中的位置 [#️-where-siwx-fits-in-tuwa]
+
+TUWA 按阶段构建，每个阶段都建立在之前的阶段之上，SIWX 位于最底层：
+
+| 阶段                       | 项目                                                                                                                  | 作用                        |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| **1 — 核心认证与底层原语** | **SIWX**、[Orbit Utils](https://orbit.docs.tuwa.io/)                                                                  | CAIP-122 身份认证与多链原语 |
+| **2 — 状态机与连接层**     | [Satellite Connect](https://satellite.docs.tuwa.io/)、[Pulsar](https://pulsar.docs.tuwa.io/)                          | 钱包连接状态机与交易追踪    |
+| **3 — 服务端与状态同步**   | [Quasar Cloud](https://docs.tuwa.io/quasar) 或自部署的 [Quasar Community](https://github.com/TuwaIO/quasar-community) | 交易索引与跨设备同步        |
+| **4 — 用户界面组件**       | [Nova UI Kit](https://stories.tuwa.io/)                                                                               | React 设计系统与组件        |
+
+除 Orbit Utils（来自 `@tuwaio/orbit-core` 的链与账户标识符，以及来自 `@tuwaio/orbit-solana` 的 Solana 消息签名器）外，SIWX 不依赖 TUWA 中的任何其他项目。更高层的项目会使用它（例如 Satellite Connect 与 TUWA SDK），反之则不会。您也可以在任何应用中单独使用 SIWX。
+
+---
+
+## 🧭 设计原则 [#-principles]
+
+1. **所有链使用同一标准：** 消息遵循 CAIP-122（EIP-4361 的文本格式），使用 `eip155:1` 这样的 CAIP-2 链 ID 与 CAIP-10 账户。EVM 与 Solana 共用同一套流程、类型与后端路由。
+2. **无头且框架无关：** 不含 CSS 或 UI 组件。核心包与服务端包都是普通函数，使用 Web API（`Request`、`Response`、Web Crypto）；React 绑定位于独立的包中。
+3. **只使用现代 Web3 库：** EVM 使用 `viem` 与 `@wagmi/core`，Solana 使用 `@solana/kit` 与 Web Crypto ed25519。不使用 `ethers.js`、`web3.js`、`@solana/web3.js` 或 `gill`。
+4. **您的后端，您的数据：** 没有托管的身份认证服务。Nonce 与会话保存在您提供的存储中（Redis、SQL、KV 等），钱包始终由用户自己掌控。
+5. **由服务端决定：** 客户端状态仅用于 UI。会话是在服务端校验的 `HttpOnly` Cookie，Nonce 只能使用一次，每个验证器都在文档中写明了它校验的内容。
+
+---
+
+## 🔐 签名登录如何工作 [#-how-a-sign-in-works]
+
+```
+Browser (@tuwaio/siwx-react)            Wallet            Your backend (@tuwaio/siwx-server)
+  │── GET /api/siwx/nonce ───────────────────────────────────▶ issue nonce (SiwxNonceStore, 300 s)
+  │◀─ { nonce } ────────────────────────────────────────────── │
+  │── buildMessage(fields) ─────────▶ sign (EIP-191 / ed25519)  │
+  │◀─ signature ─────────────────────│                          │
+  │── POST /api/siwx/verify { message, signature } ──────────▶ verify policy + signature,
+  │                                                            consume nonce, create session
+  │◀─ session JSON + Set-Cookie (HttpOnly) ─────────────────── │
+  │── useSiwxSession(): authenticated                          │
+```
+
+钱包签署的消息：
+
+```text
+app.tuwa.io wants you to sign in with your blockchain account:
+eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+
+Sign in to TUWA.
+
+URI: https://app.tuwa.io
+Version: 1
+Chain ID: eip155:1
+Nonce: 3f9c1e2a7b4d8f6051c2e9a0d7b3f418
+Issued At: 2026-09-26T10:00:00.000Z
+Expiration Time: 2026-09-26T10:10:00.000Z
+```
+
+---
+
+## 🧩 软件包 [#-packages]
+
+| 软件包                                         | 层级 | 提供的功能                                                                                   | 对等依赖                                                                                                                      |
+| ---------------------------------------------- | ---- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [`@tuwaio/siwx-core`](/packages/siwx-core)     | L1   | CAIP-122 消息的构建、解析与校验；验证策略、会话匹配、Nonce、错误与类型                       | `@tuwaio/orbit-core` ≥ 0.5                                                                                                    |
+| [`@tuwaio/siwx-evm`](/packages/siwx-evm)       | L2   | EVM 签名器，EIP-191 (EOA)、EIP-1271 与 ERC-6492（智能合约钱包）签名验证                      | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `viem` ≥ 2.18.6, `@wagmi/core` ≥ 3                                                 |
+| [`@tuwaio/siwx-solana`](/packages/siwx-solana) | L2   | Solana 签名器，基于 Web Crypto 的 ed25519 签名验证                                           | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `@tuwaio/orbit-solana` ≥ 0.7.1, `@solana/kit` ≥ 6, `@wallet-standard/base` ≥ 1.1.0 |
+| [`@tuwaio/siwx-react`](/packages/siwx-react)   | L2   | `useSiwx` 与 `useSiwxSession` Hook、可持久化的 zustand 会话存储、Satellite Connect 辅助函数  | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `react` ≥ 18, `zustand` ≥ 5, `immer` ≥ 10                                          |
+| [`@tuwaio/siwx-server`](/packages/siwx-server) | L2   | 服务端验证、Nonce 与会话存储、Cookie、Next.js App Router 路由处理器、面向外部认证的 JWT/JWKS | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`；可选：`@tuwaio/siwx-evm` ≥ 0.5, `@tuwaio/siwx-solana`, `viem` ≥ 2                  |
+
+每个包页面先展示该包的 README，然后是根据 TypeScript 源码生成的全部导出的参考文档。
+
+---
+
+## 💾 安装 [#-installation]
+
+安装核心包以及应用所需的 L2 包：
+
+```bash
+# L1 core
+pnpm add @tuwaio/siwx-core @tuwaio/orbit-core
+
+# L2 EVM
+pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @tuwaio/orbit-core @wagmi/core viem
+
+# L2 Solana
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @tuwaio/orbit-solana @solana/kit @wallet-standard/base
+
+# L2 React
+pnpm add @tuwaio/siwx-react @tuwaio/siwx-core @tuwaio/orbit-core react zustand immer
+
+# L2 Server
+pnpm add @tuwaio/siwx-server @tuwaio/siwx-core @tuwaio/orbit-core
+```
+
+---
+
+## 📚 后续步骤 [#-next-steps]
+
+- 浏览 **[软件包](/packages)** 部分，查看使用示例以及每个包的完整参考。
+- 阅读 **[基于 SIWX 的多链身份认证指南](https://docs.tuwa.io/guides/multi-chain-auth-siwx-caip122)**，了解为何 CAIP-122 取代了只支持单链的 SIWE 登录流程，以及 SIWX 如何在 EVM 与 Solana 上实现它。
+- 通过 JWT 将登录结果交给 Coinbase CDP 自定义认证、其他嵌入式钱包服务商或您自己的服务：参见 **[使用 SIWX JWT 对接外部认证指南](https://docs.tuwa.io/guides/siwx-jwt-external-auth)**。
+- 让 Supabase 信任同一个 JWT，并通过行级安全策略 (Row Level Security) 让每个钱包只能访问自己的数据行：参见 **[结合 SIWX 使用 Supabase RLS 指南](https://docs.tuwa.io/guides/siwx-supabase)**。
+- 在 **[docs.tuwa.io/guides](https://docs.tuwa.io/guides)** 查看更多生态指南。
+- 阅读 **[CAIP-122 规范](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md)**，并在 **[GitHub](https://github.com/TuwaIO/siwx)** 查看源代码。

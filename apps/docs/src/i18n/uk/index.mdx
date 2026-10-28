@@ -1,0 +1,117 @@
+# Вступ
+
+<p align="center">
+  <img
+    src="https://tuwa.io/brand/siwx.png"
+    alt="SIWX"
+    width="450"
+    style={{ borderRadius: '12px', margin: '24px auto', display: 'block' }}
+  />
+</p>
+
+**SIWX** (Sign-In With X) — проєкт автентифікації Етапу 1 TUWA: headless-вхід для акаунтів EVM і Solana, який не залежить від фреймворку й побудований на стандарті [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md). Він створює й підписує незалежні від мережі повідомлення входу, перевіряє їх на вашому бекенді з одноразовими нонсами та сесіями в cookie і відстежує стан входу в React. Без UI-компонентів і без хостингових сервісів.
+
+---
+
+## 🏛️ Місце SIWX у TUWA [#️-where-siwx-fits-in-tuwa]
+
+TUWA побудовано етапами. Кожен етап спирається на попередні, а SIWX лежить у самій основі:
+
+| Етап                                       | Проєкти                                                                                                                            | Роль                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **1 — Базова автентифікація та примітиви** | **SIWX**, [Orbit Utils](https://orbit.docs.tuwa.io/)                                                                               | Автентифікація CAIP-122 і мультичейн-примітиви              |
+| **2 — Стан та підключення**                | [Satellite Connect](https://satellite.docs.tuwa.io/), [Pulsar](https://pulsar.docs.tuwa.io/)                                       | Машина станів підключення гаманців і відстеження транзакцій |
+| **3 — Бекенд та синхронізація**            | [Quasar Cloud](https://docs.tuwa.io/quasar) або [Quasar Community](https://github.com/TuwaIO/quasar-community) на власному сервері | Індексація транзакцій і синхронізація між пристроями        |
+| **4 — Інтерфейс користувача**              | [Nova UI Kit](https://stories.tuwa.io/)                                                                                            | Дизайн-система та компоненти React                          |
+
+Крім Orbit Utils (ідентифікатори мереж і акаунтів з `@tuwaio/orbit-core` та підписувач повідомлень Solana з `@tuwaio/orbit-solana`), SIWX ні від чого іншого в TUWA не залежить. Його використовують вищі рівні (наприклад, Satellite Connect і TUWA SDK), але ніколи навпаки. SIWX можна використовувати й окремо, у будь-якому застосунку.
+
+---
+
+## 🧭 Принципи [#-principles]
+
+1. **Один стандарт для всіх мереж:** повідомлення відповідають CAIP-122 (текстовий формат EIP-4361), з ідентифікаторами мереж CAIP-2, як-от `eip155:1`, і акаунтами CAIP-10. EVM і Solana мають той самий процес входу, ті самі типи й ті самі маршрути бекенду.
+2. **Headless і без прив’язки до фреймворку:** жодного CSS чи UI-компонентів. Основний і серверний пакети — це звичайні функції на Web API (`Request`, `Response`, Web Crypto); прив’язки до React винесено в окремий пакет.
+3. **Лише сучасні Web3-бібліотеки:** `viem` і `@wagmi/core` для EVM, `@solana/kit` і ed25519 з Web Crypto для Solana. Жодних `ethers.js`, `web3.js`, `@solana/web3.js` чи `gill`.
+4. **Ваш бекенд, ваші дані:** хостингового сервісу автентифікації немає. Нонси й сесії зберігаються у сховищах, які надаєте ви (Redis, SQL, KV…), а гаманці залишаються в користувача.
+5. **Рішення ухвалює сервер:** стан на клієнті потрібен лише для UI. Сесії — це cookie `HttpOnly`, які перевіряє сервер, нонси одноразові, а кожен верифікатор документує, що саме він перевіряє.
+
+---
+
+## 🔐 Як працює вхід [#-how-a-sign-in-works]
+
+```
+Browser (@tuwaio/siwx-react)            Wallet            Your backend (@tuwaio/siwx-server)
+  │── GET /api/siwx/nonce ───────────────────────────────────▶ issue nonce (SiwxNonceStore, 300 s)
+  │◀─ { nonce } ────────────────────────────────────────────── │
+  │── buildMessage(fields) ─────────▶ sign (EIP-191 / ed25519)  │
+  │◀─ signature ─────────────────────│                          │
+  │── POST /api/siwx/verify { message, signature } ──────────▶ verify policy + signature,
+  │                                                            consume nonce, create session
+  │◀─ session JSON + Set-Cookie (HttpOnly) ─────────────────── │
+  │── useSiwxSession(): authenticated                          │
+```
+
+Повідомлення, яке підписує гаманець:
+
+```text
+app.tuwa.io wants you to sign in with your blockchain account:
+eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+
+Sign in to TUWA.
+
+URI: https://app.tuwa.io
+Version: 1
+Chain ID: eip155:1
+Nonce: 3f9c1e2a7b4d8f6051c2e9a0d7b3f418
+Issued At: 2026-09-26T10:00:00.000Z
+Expiration Time: 2026-09-26T10:10:00.000Z
+```
+
+---
+
+## 🧩 Пакети [#-packages]
+
+| Пакет                                          | Рівень | Що надає                                                                                                                       | Peer-залежності                                                                                                               |
+| ---------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| [`@tuwaio/siwx-core`](/packages/siwx-core)     | L1     | Створення, розбір і валідація повідомлень CAIP-122; політики верифікації, перевірка відповідності сесії, нонси, помилки й типи | `@tuwaio/orbit-core` ≥ 0.5                                                                                                    |
+| [`@tuwaio/siwx-evm`](/packages/siwx-evm)       | L2     | EVM-підписувач, верифікація EIP-191 (EOA), EIP-1271 і ERC-6492 (смарт-гаманці)                                                 | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `viem` ≥ 2.18.6, `@wagmi/core` ≥ 3                                                 |
+| [`@tuwaio/siwx-solana`](/packages/siwx-solana) | L2     | Solana-підписувач, верифікація ed25519 через Web Crypto                                                                        | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `@tuwaio/orbit-solana` ≥ 0.7.1, `@solana/kit` ≥ 6, `@wallet-standard/base` ≥ 1.1.0 |
+| [`@tuwaio/siwx-react`](/packages/siwx-react)   | L2     | Хуки `useSiwx` і `useSiwxSession`, сховище сесій zustand зі збереженням між перезавантаженнями, помічники Satellite Connect    | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`, `react` ≥ 18, `zustand` ≥ 5, `immer` ≥ 10                                          |
+| [`@tuwaio/siwx-server`](/packages/siwx-server) | L2     | Серверна верифікація, сховища нонсів і сесій, cookie, обробники Next.js App Router, JWT/JWKS для зовнішньої автентифікації     | `@tuwaio/siwx-core`, `@tuwaio/orbit-core`; необов’язкові: `@tuwaio/siwx-evm` ≥ 0.5, `@tuwaio/siwx-solana`, `viem` ≥ 2         |
+
+Кожна сторінка пакета показує README пакета, а за ним — довідник усіх експортів, згенерований із вихідного коду TypeScript.
+
+---
+
+## 💾 Встановлення [#-installation]
+
+Встановіть основний пакет і ті пакети L2, які потрібні вашому застосунку:
+
+```bash
+# L1 core
+pnpm add @tuwaio/siwx-core @tuwaio/orbit-core
+
+# L2 EVM
+pnpm add @tuwaio/siwx-evm @tuwaio/siwx-core @tuwaio/orbit-core @wagmi/core viem
+
+# L2 Solana
+pnpm add @tuwaio/siwx-solana @tuwaio/siwx-core @tuwaio/orbit-core @tuwaio/orbit-solana @solana/kit @wallet-standard/base
+
+# L2 React
+pnpm add @tuwaio/siwx-react @tuwaio/siwx-core @tuwaio/orbit-core react zustand immer
+
+# L2 Server
+pnpm add @tuwaio/siwx-server @tuwaio/siwx-core @tuwaio/orbit-core
+```
+
+---
+
+## 📚 Що далі [#-next-steps]
+
+- Перегляньте розділ **[Пакети](/packages)**: там приклади використання та повний довідник кожного пакета.
+- Прочитайте **[посібник «Мультичейн-автентифікація з SIWX»](https://docs.tuwa.io/guides/multi-chain-auth-siwx-caip122)**: чому CAIP-122 замінює одномережеві процеси входу SIWE і як SIWX реалізує його для EVM і Solana.
+- Передайте вхід кастомній автентифікації Coinbase CDP, іншим провайдерам вбудованих гаманців або власним сервісам як JWT: дивіться **[посібник «Зовнішня автентифікація з SIWX JWT»](https://docs.tuwa.io/guides/siwx-jwt-external-auth)**.
+- Дозвольте Supabase довіряти тому самому JWT і відкрийте кожному гаманцю лише його власні рядки через Row Level Security: **[посібник «Supabase RLS із SIWX»](https://docs.tuwa.io/guides/siwx-supabase)**.
+- Більше посібників екосистеми — на **[docs.tuwa.io/guides](https://docs.tuwa.io/guides)**.
+- Прочитайте **[специфікацію CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md)** і вихідний код на **[GitHub](https://github.com/TuwaIO/siwx)**.
