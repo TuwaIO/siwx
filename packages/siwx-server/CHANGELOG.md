@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.8.0...siwx-server-v0.8.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies except TypeScript ([a1c035f](https://github.com/TuwaIO/siwx/commit/a1c035f18da34acb14ed5a210d6a0886288bb4db))
+
 ## [0.8.0](https://github.com/TuwaIO/siwx/compare/siwx-server-v0.7.2...siwx-server-v0.8.0) (2026-10-20)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.5](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.6.4...siwx-react-v0.6.5) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies except TypeScript ([a1c035f](https://github.com/TuwaIO/siwx/commit/a1c035f18da34acb14ed5a210d6a0886288bb4db))
+
 ## [0.6.4](https://github.com/TuwaIO/siwx/compare/siwx-react-v0.6.3...siwx-react-v0.6.4) (2026-10-16)
 
 

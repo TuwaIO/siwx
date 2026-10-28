@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.7.0...siwx-solana-v0.7.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** @tuwaio/orbit-solana 0.7.2 ([5beebdc](https://github.com/TuwaIO/siwx/commit/5beebdceb7db1afa80f351e4c129b3ff1f09188a))
+
 ## [0.7.0](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.6.2...siwx-solana-v0.7.0) (2026-10-20)
 
 
