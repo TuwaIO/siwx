@@ -5,24 +5,7 @@ allowBuilds:
   esbuild: false
   sharp: false
 minimumReleaseAgeExclude:
-  - viem@2.51.3 || 2.55.11 || 2.55.16 || 2.57.1 || 2.57.7
-  - '@wagmi/core@3.5.1'
   - '@tuwaio/*'
-  - framer-motion@14.0.0 || 14.3.0
-  - motion-dom@14.0.0 || 14.3.0
-  - motion-utils@14.0.0
-  - immer@11.1.16
-  - '@next/env@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-darwin-arm64@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-darwin-x64@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-linux-arm64-gnu@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-linux-arm64-musl@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-linux-x64-gnu@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-linux-x64-musl@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-win32-arm64-msvc@16.3.1 || 16.3.7 || 16.4.1'
-  - '@next/swc-win32-x64-msvc@16.3.1 || 16.3.7 || 16.4.1'
-  - next@16.3.1 || 16.3.7 || 16.4.1
-  - '@asamuzakjp/dom-selector@10.0.3'
   - '@vitest/coverage-v8@5.0.5'
   - '@vitest/mocker@5.0.5'
   - '@vitest/pretty-format@5.0.5'

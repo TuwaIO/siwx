@@ -60,10 +60,10 @@
     "@tuwaio/orbit-core": "^0.6.0",
     "@tuwaio/siwx-core": "workspace:*",
     "@types/react": "^19",
-    "immer": "^11.1.21",
+    "immer": "^11.2.9",
     "react": "^19.3.1",
     "tsup": "^9.0.0",
     "typescript": "6.0.3",
-    "zustand": "^5.0.15"
+    "zustand": "^5.0.16"
   }
 }
