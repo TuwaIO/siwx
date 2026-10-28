@@ -400,8 +400,8 @@ importers:
         specifier: ^0.6.0
         version: 0.6.0
       '@tuwaio/orbit-solana':
-        specifier: ^0.7.1
-        version: 0.7.1(@solana/kit@8.5.0(typescript@6.0.3))(@tuwaio/orbit-core@0.6.0)
+        specifier: ^0.7.2
+        version: 0.7.2(@solana/kit@8.5.0(typescript@6.0.3))(@tuwaio/orbit-core@0.6.0)
       '@tuwaio/siwx-core':
         specifier: workspace:*
         version: link:../siwx-core
@@ -2418,8 +2418,8 @@ packages:
   '@tuwaio/orbit-core@0.6.0':
     resolution: {integrity: sha512-/AkQm7E1krivk1m5gfpCYepJc0/gloPOmUWkzErKYFMap0ZWCg9q/pHxCEpPAlSxNuiZ0r5gix8MW/Csrmjb3g==}
 
-  '@tuwaio/orbit-solana@0.7.1':
-    resolution: {integrity: sha512-aceeqFYZBjmy8eGerhvN5LpIWYFH4aLqCsIhnGdElnRkFhCyDDCKUxnB8VWUqOoNO9McCzP2A/ftESdaJqeMgw==}
+  '@tuwaio/orbit-solana@0.7.2':
+    resolution: {integrity: sha512-quiA5AsHKLHe9M/YuvGiFejXUZ1CQZKKnrioHIrJAUki1V+v3O3/2HYSymKFfyJSx+h4SiaoPa+k3cDSmmZyBg==}
     peerDependencies:
       '@solana/kit': '>=6'
       '@tuwaio/orbit-core': '>=0.4'
@@ -8301,7 +8301,7 @@ snapshots:
 
   '@tuwaio/orbit-core@0.6.0': {}
 
-  '@tuwaio/orbit-solana@0.7.1(@solana/kit@8.5.0(typescript@6.0.3))(@tuwaio/orbit-core@0.6.0)':
+  '@tuwaio/orbit-solana@0.7.2(@solana/kit@8.5.0(typescript@6.0.3))(@tuwaio/orbit-core@0.6.0)':
     dependencies:
       '@solana/kit': 8.5.0(typescript@6.0.3)
       '@tuwaio/orbit-core': 0.6.0
