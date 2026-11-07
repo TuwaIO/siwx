@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.5.3...siwx-evm-v0.5.4) (2026-11-07)
+
+
+### Bug Fixes
+
+* SIWX takes the address rule and the storage guard from Orbit, and dependencies are updated ([#29](https://github.com/TuwaIO/siwx/issues/29)) ([a4b0198](https://github.com/TuwaIO/siwx/commit/a4b019847efd0fc3b4176b2bfdd1d0453a577352))
+
 ## [0.5.3](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.5.2...siwx-evm-v0.5.3) (2026-10-28)
 
 

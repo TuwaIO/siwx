@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.7.1...siwx-solana-v0.7.2) (2026-11-07)
+
+
+### Bug Fixes
+
+* SIWX takes the address rule and the storage guard from Orbit, and dependencies are updated ([#29](https://github.com/TuwaIO/siwx/issues/29)) ([a4b0198](https://github.com/TuwaIO/siwx/commit/a4b019847efd0fc3b4176b2bfdd1d0453a577352))
+
 ## [0.7.1](https://github.com/TuwaIO/siwx/compare/siwx-solana-v0.7.0...siwx-solana-v0.7.1) (2026-10-28)
 
 
