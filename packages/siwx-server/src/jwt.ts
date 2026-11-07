@@ -4,7 +4,7 @@
  * wallet sign-in. Web Crypto API only.
  */
 
-import { formatCaip10AccountId, parseCaip10AccountId } from '@tuwaio/orbit-core';
+import { formatCaip10AccountId, isRecord, parseCaip10AccountId } from '@tuwaio/orbit-core';
 import { normalizeSolanaChainId } from '@tuwaio/siwx-core';
 
 import { base64UrlToBytes, base64UrlToUtf8, bytesToBase64Url, utf8ToBase64Url } from './encoding';
@@ -243,11 +243,6 @@ export async function verifySiwxJwt(
   } catch {
     return null;
   }
-}
-
-/** `true` for a plain object (not `null`, not an array). */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**

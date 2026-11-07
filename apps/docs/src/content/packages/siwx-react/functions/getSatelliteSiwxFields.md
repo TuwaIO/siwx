@@ -2,7 +2,7 @@
 
 > **getSatelliteSiwxFields**(`activeConnection`, `options?`): `Omit`\<[`SiwxMessageFields`](/packages/siwx-react/interfaces/SiwxMessageFields.md), `"nonce"` \| `"issuedAt"` \| `"version"`\>
 
-Defined in: [siwx-react/src/satelliteHelpers.ts:76](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L76)
+Defined in: [siwx-react/src/satelliteHelpers.ts:82](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/satelliteHelpers.ts#L82)
 
 Builds the CAIP-122 `fields` for `useSiwx().signIn` from an active Satellite Connect connection.
 

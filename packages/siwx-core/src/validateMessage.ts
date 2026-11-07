@@ -3,7 +3,7 @@
  * Provides individual validators and a composite `validateMessage` function.
  */
 
-import { parseCaip2ChainId, parseCaip10AccountId } from '@tuwaio/orbit-core';
+import { isSameAddress, parseCaip2ChainId, parseCaip10AccountId } from '@tuwaio/orbit-core';
 
 import { isChainIdAllowed, normalizeSolanaChainId } from './solanaChainId';
 import type { SiwxMessageFields, SiwxValidationResult, SiwxVerificationPolicy, ValidateMessageOptions } from './types';
@@ -402,10 +402,7 @@ export function isSessionMatchingTarget(
   }
 
   // 2. Account address equality check (case-insensitive for EVM, case-sensitive for Solana)
-  const isAddressMatch = isEvmSession
-    ? account.address.toLowerCase() === targetAccount.toLowerCase()
-    : account.address === targetAccount;
-  if (!isAddressMatch) {
+  if (!isSameAddress(account.namespace, account.address, targetAccount)) {
     return false;
   }
 

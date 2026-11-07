@@ -1,4 +1,10 @@
-import { formatCaip10AccountId, parseCaip10AccountId, toCaip2ChainId, toEvmChainId } from '@tuwaio/orbit-core';
+import {
+  formatCaip10AccountId,
+  isSameAddress,
+  parseCaip10AccountId,
+  toCaip2ChainId,
+  toEvmChainId,
+} from '@tuwaio/orbit-core';
 import type { SiwxChainId, SiwxMessageFields } from '@tuwaio/siwx-core';
 
 import type { SiwxClientSession } from './sessionStore';
@@ -172,9 +178,7 @@ export function isSessionMatchingConnection(
 
     // A Solana session signed with a cluster name (`solana:devnet`) still belongs to the same cluster
     if ((toCaip2ChainId(session.chainId) ?? session.chainId) !== fields.chainId) return false;
-    return account.namespace === 'eip155'
-      ? account.address.toLowerCase() === connected.address.toLowerCase()
-      : account.address === connected.address;
+    return isSameAddress(account.namespace, account.address, connected.address);
   } catch {
     return false;
   }

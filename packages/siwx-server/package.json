@@ -75,7 +75,7 @@
     }
   ],
   "peerDependencies": {
-    "@tuwaio/orbit-core": ">=0.5",
+    "@tuwaio/orbit-core": ">=0.6.1",
     "@tuwaio/siwx-core": ">=0.5",
     "@tuwaio/siwx-evm": ">=0.5",
     "@tuwaio/siwx-solana": ">=0.4.2",

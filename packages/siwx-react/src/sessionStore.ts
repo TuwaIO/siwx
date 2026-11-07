@@ -4,6 +4,7 @@
  * completely independent of any backend or SDK (e.g., Quasar).
  */
 
+import { getBrowserStorage } from '@tuwaio/orbit-core';
 import type { ParsedSiwxMessage, SiwxStatus } from '@tuwaio/siwx-core';
 import { create } from 'zustand';
 import {
@@ -111,11 +112,7 @@ const noopStorage: StateStorage = {
  * @internal
  */
 function getSessionStorage(): StateStorage {
-  try {
-    return typeof window !== 'undefined' && window.localStorage ? window.localStorage : noopStorage;
-  } catch {
-    return noopStorage;
-  }
+  return getBrowserStorage() ?? noopStorage;
 }
 
 /**

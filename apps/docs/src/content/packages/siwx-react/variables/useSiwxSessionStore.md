@@ -2,7 +2,7 @@
 
 > `const` **useSiwxSessionStore**: `UseBoundStore`\<`WithImmer`\<`WithPersist`\<`StoreApi`\<[`SiwxSessionStore`](/packages/siwx-react/type-aliases/SiwxSessionStore.md)\>, \{ `session`: [`SiwxClientSession`](/packages/siwx-react/interfaces/SiwxClientSession.md) \| `null`; \}\>\>\>
 
-Defined in: [siwx-react/src/sessionStore.ts:189](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L189)
+Defined in: [siwx-react/src/sessionStore.ts:186](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L186)
 
 Zustand store (with the `immer` and `persist` middlewares) that holds the client-side SIWX sign-in state. Use it
 as a hook, optionally with a selector: `useSiwxSessionStore((state) => state.session)`.
