@@ -1,6 +1,6 @@
 # SiwxSessionActions
 
-Defined in: [siwx-react/src/sessionStore.ts:51](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L51)
+Defined in: [siwx-react/src/sessionStore.ts:52](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L52)
 
 Actions of [useSiwxSessionStore](/packages/siwx-react/variables/useSiwxSessionStore.md). [useSiwx](/packages/siwx-react/functions/useSiwx.md) calls them for you; call them directly only to drive
 a custom sign-in flow.
@@ -11,7 +11,7 @@ a custom sign-in flow.
 
 > **reset**: () => `void`
 
-Defined in: [siwx-react/src/sessionStore.ts:87](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L87)
+Defined in: [siwx-react/src/sessionStore.ts:88](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L88)
 
 Resets the store to `idle` and clears the session and error. Does not call the server; clear the server session
 cookie separately (for example `DELETE /api/siwx/session`).
@@ -26,7 +26,7 @@ cookie separately (for example `DELETE /api/siwx/session`).
 
 > **setAuthenticated**: (`parsed`) => `void`
 
-Defined in: [siwx-react/src/sessionStore.ts:75](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L75)
+Defined in: [siwx-react/src/sessionStore.ts:76](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L76)
 
 Sets the store to `authenticated` and stores `address`, `chainId`, `issuedAt`, `expirationTime` and `domain` of
 the message as the session.
@@ -49,7 +49,7 @@ The verified CAIP-122 message.
 
 > **setBuilding**: () => `void`
 
-Defined in: [siwx-react/src/sessionStore.ts:56](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L56)
+Defined in: [siwx-react/src/sessionStore.ts:57](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L57)
 
 Sets the store into the `building` state (getting the nonce and building the message).
 Call this when a sign-in starts.
@@ -64,7 +64,7 @@ Call this when a sign-in starts.
 
 > **setError**: (`error`) => `void`
 
-Defined in: [siwx-react/src/sessionStore.ts:81](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L81)
+Defined in: [siwx-react/src/sessionStore.ts:82](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L82)
 
 Sets the store to `error` with a message. The current `session` is kept.
 
@@ -86,7 +86,7 @@ Human-readable error description.
 
 > **setSigning**: () => `void`
 
-Defined in: [siwx-react/src/sessionStore.ts:62](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L62)
+Defined in: [siwx-react/src/sessionStore.ts:63](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L63)
 
 Sets the store into the `signing` state.
 Call this before triggering the wallet sign request.
@@ -101,7 +101,7 @@ Call this before triggering the wallet sign request.
 
 > **setVerifying**: () => `void`
 
-Defined in: [siwx-react/src/sessionStore.ts:68](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L68)
+Defined in: [siwx-react/src/sessionStore.ts:69](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-react/src/sessionStore.ts#L69)
 
 Sets the store into the `verifying` state.
 Call this after the user has signed but before server verification.

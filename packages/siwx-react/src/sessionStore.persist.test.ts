@@ -29,6 +29,30 @@ function readStoredSession() {
 beforeEach(() => localStorage.clear());
 afterEach(() => localStorage.clear());
 
+// A browser that blocks site data throws on reaching `window.localStorage`, so the store must load and keep working
+// for the page, with nothing saved
+it('works with nothing saved when the browser blocks storage', async () => {
+  vi.resetModules();
+  const realLocalStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    get: () => {
+      throw new DOMException('The operation is insecure.', 'SecurityError');
+    },
+  });
+  try {
+    const { useSiwxSessionStore: store } = await import('./sessionStore');
+    expect(store.getState().session).toBeNull();
+    expect(() => store.getState().reset()).not.toThrow();
+    await expect(store.persist.rehydrate()).resolves.toBeUndefined();
+    expect(store.getState().session).toBeNull();
+  } finally {
+    if (realLocalStorage) Object.defineProperty(window, 'localStorage', realLocalStorage);
+    else delete (window as { localStorage?: Storage }).localStorage;
+    vi.resetModules();
+  }
+});
+
 describe('useSiwxSessionStore persistence', () => {
   it('does not read storage before it is rehydrated', async () => {
     storeSession(SESSION);

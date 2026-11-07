@@ -75,7 +75,7 @@
     }
   ],
   "peerDependencies": {
-    "@tuwaio/orbit-core": ">=0.5",
+    "@tuwaio/orbit-core": ">=0.6.1",
     "@tuwaio/siwx-core": ">=0.5",
     "@tuwaio/siwx-evm": ">=0.5",
     "@tuwaio/siwx-solana": ">=0.4.2",
@@ -93,12 +93,12 @@
     }
   },
   "devDependencies": {
-    "@tuwaio/orbit-core": "^0.6.0",
+    "@tuwaio/orbit-core": "^0.6.1",
     "@tuwaio/siwx-core": "workspace:*",
     "@tuwaio/siwx-evm": "workspace:*",
     "@tuwaio/siwx-solana": "workspace:*",
     "tsup": "^9.0.0",
     "typescript": "6.0.3",
-    "viem": "^2.57.12"
+    "viem": "^2.57.16"
   }
 }

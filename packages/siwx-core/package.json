@@ -51,10 +51,10 @@
     }
   ],
   "peerDependencies": {
-    "@tuwaio/orbit-core": ">=0.5"
+    "@tuwaio/orbit-core": ">=0.6.1"
   },
   "devDependencies": {
-    "@tuwaio/orbit-core": "^0.6.0",
+    "@tuwaio/orbit-core": "^0.6.1",
     "tsup": "^9.0.0",
     "typescript": "6.0.3"
   }
