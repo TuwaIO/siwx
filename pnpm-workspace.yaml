@@ -17,6 +17,8 @@ minimumReleaseAgeExclude:
   - react@19.3.1
   - vitest@5.0.5
 overrides:
+  # Only the docs toolchain reaches it. Its parents hold a range that excludes the fixed version.
+  katex: ^0.19.1
   # nextra-theme-docs 4.6.1 validates its Layout props with zod; with zod 4.4 and newer the validation rejects them
   # ("expected nonoptional ... at children"). Keep 4.3 for Nextra only.
   nextra>zod: 4.3.6
