@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TuwaIO/siwx/release.yml?branch=main)](https://github.com/TuwaIO/siwx/actions)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/TuwaIO/workflows/refs/heads/main/preview/repos/siwx.png" alt="SIWX" width="450" style="border-radius: 12px; margin: 24px auto;" />
+  <img src="https://tuwa.io/brand/siwx.png" alt="SIWX" width="450" style="border-radius: 12px; margin: 24px auto;" />
 </p>
 
 **SIWX** (Sign-In With X) is the authentication project of TUWA Stage 1: headless, framework-agnostic sign-in for EVM and Solana accounts, built on the [CAIP-122](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-122.md) standard. It builds and signs chain-agnostic sign-in messages, verifies them on your backend with single-use nonces and cookie sessions, and tracks the sign-in state in React, with no UI components and no hosted services.
