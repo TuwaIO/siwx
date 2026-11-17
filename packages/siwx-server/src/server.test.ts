@@ -127,7 +127,11 @@ describe('verifySiwxPayload()', () => {
       issuedAt: new Date().toISOString(),
     });
     const call = vi.fn(async () => ({ data: '0x01' as const }));
-    const base = { chain: { id: 8453 }, call } as unknown as PublicClient;
+    const request = vi.fn(async () => {
+      await call();
+      return '0x01' as const;
+    });
+    const base = { chain: { id: 8453 }, call, request } as unknown as PublicClient;
     const clients = vi.fn((chainId: number) => (chainId === 8453 ? base : undefined));
 
     const result = await verifySiwxPayload({ message, signature: `0x${'ab'.repeat(65)}` }, { publicClient: clients });
