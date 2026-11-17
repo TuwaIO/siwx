@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.5.4...siwx-evm-v0.5.5) (2026-11-17)
+
+
+### Bug Fixes
+
+* **deps:** Next.js 16.4.6, docs-ui 0.12.3, and the latest external packages ([#37](https://github.com/TuwaIO/siwx/issues/37)) ([1f586f8](https://github.com/TuwaIO/siwx/commit/1f586f88a5b7164029ff83ab88e55c129f4c1bc3))
+
 ## [0.5.4](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.5.3...siwx-evm-v0.5.4) (2026-11-07)
 
 
