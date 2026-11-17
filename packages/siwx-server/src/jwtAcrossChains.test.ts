@@ -17,10 +17,11 @@ const CONTRACT_SIGNATURE = `0x${'ab'.repeat(65)}`;
 
 /** A client whose `eth_call` answers like the ERC-6492 universal validator: valid only for `CONTRACT_WALLET`. */
 function contractWalletClient(chainId: number): PublicClient {
-  const call = async ({ data }: { data: Hex }) => ({
-    data: (data.toLowerCase().includes(CONTRACT_WALLET.slice(2)) ? '0x01' : '0x00') as Hex,
-  });
-  return { chain: { id: chainId }, call } as unknown as PublicClient;
+  const answer = ({ data }: { data: Hex }): Hex =>
+    data.toLowerCase().includes(CONTRACT_WALLET.slice(2)) ? '0x01' : '0x00';
+  const call = async (args: { data: Hex }) => ({ data: answer(args) });
+  const request = async ({ params }: { params: [{ data: Hex }] }) => answer(params[0]);
+  return { chain: { id: chainId }, call, request } as unknown as PublicClient;
 }
 
 const handler = createSiwxApiHandler({

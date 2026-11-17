@@ -24,9 +24,14 @@ function messageOn(chainId: SiwxChainId): string {
 
 /** A client whose `eth_call` answers what the ERC-6492 universal validator would: `0x01` valid, `0x00` invalid. */
 function clientOf(chainId: number | undefined, valid = true) {
-  const call = vi.fn(async () => ({ data: (valid ? '0x01' : '0x00') as Hex }));
+  const answer = (valid ? '0x01' : '0x00') as Hex;
+  const call = vi.fn(async () => ({ data: answer }));
+  const request = vi.fn(async ({ params }: { params: [{ data: Hex }] }) => {
+    await (call as (arg: { data: Hex }) => Promise<{ data: Hex }>)(params[0]);
+    return answer;
+  });
   return {
-    client: { chain: chainId === undefined ? undefined : { id: chainId }, call } as unknown as PublicClient,
+    client: { chain: chainId === undefined ? undefined : { id: chainId }, call, request } as unknown as PublicClient,
     call,
   };
 }

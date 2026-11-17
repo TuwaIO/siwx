@@ -159,7 +159,7 @@ function withoutStaleSession(
 const sessionPersistStorage: PersistStorage<PersistedSession> = {
   getItem: (name) => {
     const value = jsonStorage?.getItem(name) ?? null;
-    return value instanceof Promise
+    return value && 'then' in value
       ? value.then((stored) => withoutStaleSession(name, stored))
       : withoutStaleSession(name, value);
   },
