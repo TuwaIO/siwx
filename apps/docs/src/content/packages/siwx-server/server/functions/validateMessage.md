@@ -2,13 +2,13 @@
 
 > **validateMessage**(`fields`, `options?`): [`SiwxValidationResult`](/packages/siwx-core/interfaces/SiwxValidationResult.md)
 
-Defined in: [siwx-core/src/validateMessage.ts:273](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L273)
+Defined in: [siwx-core/src/validateMessage.ts:289](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L289)
 
 Validates the format of CAIP-122 message fields and, optionally, a verification policy. Collects every failure
 instead of stopping at the first one.
 
-Checks: non-empty single-line `domain`, CAIP-10 `address`, `http(s)://` `uri`, `version` `"1"`, CAIP-2 `chainId`,
-alphanumeric `nonce` of at least 8 characters, ISO 8601 `issuedAt` / `expirationTime` / `notBefore`, single-line
+Checks: non-empty single-line `domain`, CAIP-10 `address`, `http(s)://` `uri`, `version` `"1"`, CAIP-2 `chainId`, an
+`address` on the chain of `chainId` (a Solana cluster is one chain under its name and its genesis hash), alphanumeric `nonce` of at least 8 characters, ISO 8601 `issuedAt` / `expirationTime` / `notBefore`, single-line
 `statement`, and that `expirationTime` (plus the policy clock skew, 60 seconds by default) has not passed.
 Then it runs [validatePolicy](/packages/siwx-server/server/functions/validatePolicy.md) with `options.policy`, or with an empty policy: so `issuedAt` in the future
 and a `notBefore` that has not been reached are always rejected (unless `enforceNotBefore` is `false`), and the

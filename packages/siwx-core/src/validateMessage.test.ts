@@ -150,6 +150,34 @@ describe('validateMessage()', () => {
     });
   });
 
+  // The signature of a contract wallet is checked on the chain of `chainId`, and the account says whose session it is: with two chains a
+  // wallet of one network signed in as the same address of another, where it may have other owners
+  describe('the chain of the account', () => {
+    it('fails on an account of another chain than the message', () => {
+      for (const chainId of ['eip155:8453', 'eip155:10', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'] as const) {
+        const result = validateMessage({ ...VALID_FIELDS, chainId });
+        expect(result.valid).toBe(false);
+        expect(result.errors).toEqual([expect.stringContaining('eip155:1')]);
+        expect(result.errors[0]).toContain(chainId);
+      }
+    });
+
+    it('takes a Solana cluster under its name and under its genesis hash for one chain', () => {
+      const address = '4sGjMW1sRLRbt4zvMKXQc9oFKhfffJyEBscCNVS1NTLG';
+      const genesis = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1' as const;
+      const named = { ...VALID_FIELDS, address: `solana:devnet:${address}`, chainId: genesis };
+      const hashed = { ...VALID_FIELDS, address: `${genesis}:${address}`, chainId: 'solana:devnet' as const };
+      expect(validateMessage(named).errors).toEqual([]);
+      expect(validateMessage(hashed).errors).toEqual([]);
+      expect(validateMessage({ ...named, chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' }).valid).toBe(false);
+    });
+
+    it('is not asked of an account or a chain that is none', () => {
+      expect(validateMessage({ ...VALID_FIELDS, address: '0x1234' }).errors).toHaveLength(1);
+      expect(validateMessage({ ...VALID_FIELDS, chainId: 'eip155' as `eip155:${string}` }).errors).toHaveLength(1);
+    });
+  });
+
   describe('nonce validation', () => {
     it('fails when nonce is shorter than 8 characters', () => {
       const result = validateMessage({ ...VALID_FIELDS, nonce: 'abc' });

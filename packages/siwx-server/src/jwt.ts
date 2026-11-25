@@ -39,8 +39,9 @@ function sessionAccount(session: SiwxSession): { chainId: string; namespace: str
  * - an EVM account that signed with its own key (`verificationMethod` `eip191`): the account without its chain,
  *   `eip155:<address in lowercase>`, so signing in on another network is the same user;
  * - an EVM smart contract wallet (`eip1271`, `erc6492`) or an EVM session without `verificationMethod`: the account
- *   with its chain, `eip155:<chain>:<address in lowercase>`. A contract wallet is controlled on each chain
- *   separately: the same address can have other owners on another network;
+ *   with the chain of the session (`chainId`), on which the signature was checked,
+ *   `eip155:<chain>:<address in lowercase>`. A contract wallet is controlled on each chain separately: the same
+ *   address can have other owners on another network;
  * - a Solana account: `solana:<address>` (base58 is case-sensitive and kept as is) under either form of its chain ID;
  *   `<namespace>:<address>` otherwise.
  *
@@ -59,11 +60,12 @@ function sessionAccount(session: SiwxSession): { chainId: string; namespace: str
  */
 export function siwxJwtSubject(session: SiwxSession, subjectId?: string): string {
   if (subjectId) return subjectId;
-  const { chainId, namespace, address } = sessionAccount(session);
+  const { namespace, address } = sessionAccount(session);
   if (namespace !== 'eip155') return `${namespace}:${address}`;
   if (session.verificationMethod === 'eip191') return `eip155:${address.toLowerCase()}`;
-  // A contract wallet is controlled on each chain separately; a session without the method may be one
-  return formatCaip10AccountId(chainId, address.toLowerCase()) ?? session.address.toLowerCase();
+  // A contract wallet is controlled on each chain separately, and its signature was checked on the chain of the session; a session
+  // without the method may be one
+  return formatCaip10AccountId(session.chainId, address.toLowerCase()) ?? session.address.toLowerCase();
 }
 
 /**

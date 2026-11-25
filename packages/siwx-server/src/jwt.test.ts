@@ -82,6 +82,13 @@ describe('siwxJwtSubject', () => {
     expect(siwxJwtSubject(contractOnMainnet)).toBe('eip155:1:0xabc0000000000000000000000000000000000001');
   });
 
+  // A session of before the two chains were checked against each other, or of a store of the app's own
+  it('binds the subject of a smart contract wallet to the chain its signature was checked on', () => {
+    const mixed: SiwxSession = { ...evmSession, verificationMethod: 'eip1271', chainId: 'eip155:10' };
+    expect(siwxJwtSubject(mixed)).toBe('eip155:10:0xabc0000000000000000000000000000000000001');
+    expect(siwxJwtSubject({ ...mixed, verificationMethod: undefined })).toBe(siwxJwtSubject(mixed));
+  });
+
   it('binds the subject to the chain when the session does not say how it was verified', () => {
     expect(siwxJwtSubject({ ...evmSession, verificationMethod: undefined })).toBe(
       'eip155:8453:0xabc0000000000000000000000000000000000001',

@@ -81,6 +81,22 @@ function validateChainId(chainId: string): string | undefined {
 }
 
 /**
+ * Validates that the account is one of the chain of the message. The signature of a contract wallet is checked on the chain of
+ * `chainId`, and the session is of the account: with two chains, whoever controls an address on one network would sign in as the
+ * same address on another, where it may have other owners.
+ *
+ * @param address - The account address string.
+ * @param chainId - The chain ID string.
+ * @returns An error string if the chains differ, or undefined if they are one, or if either is invalid (its own validator says so).
+ */
+function validateAccountChain(address: string, chainId: string): string | undefined {
+  const account = parseCaip10AccountId(address);
+  if (!account || !parseCaip2ChainId(chainId)) return undefined;
+  if (normalizeSolanaChainId(account.chainId) === normalizeSolanaChainId(chainId)) return undefined;
+  return `address is an account of "${account.chainId}", and chainId is "${chainId}": a sign-in is of one chain.`;
+}
+
+/**
  * Validates that the `nonce` field is a non-empty alphanumeric string of at least 8 characters.
  *
  * @param nonce - The nonce string to validate.
@@ -247,8 +263,8 @@ export function validatePolicy(
  * Validates the format of CAIP-122 message fields and, optionally, a verification policy. Collects every failure
  * instead of stopping at the first one.
  *
- * Checks: non-empty single-line `domain`, CAIP-10 `address`, `http(s)://` `uri`, `version` `"1"`, CAIP-2 `chainId`,
- * alphanumeric `nonce` of at least 8 characters, ISO 8601 `issuedAt` / `expirationTime` / `notBefore`, single-line
+ * Checks: non-empty single-line `domain`, CAIP-10 `address`, `http(s)://` `uri`, `version` `"1"`, CAIP-2 `chainId`, an
+ * `address` on the chain of `chainId` (a Solana cluster is one chain under its name and its genesis hash), alphanumeric `nonce` of at least 8 characters, ISO 8601 `issuedAt` / `expirationTime` / `notBefore`, single-line
  * `statement`, and that `expirationTime` (plus the policy clock skew, 60 seconds by default) has not passed.
  * Then it runs {@link validatePolicy} with `options.policy`, or with an empty policy: so `issuedAt` in the future
  * and a `notBefore` that has not been reached are always rejected (unless `enforceNotBefore` is `false`), and the
@@ -288,6 +304,9 @@ export function validateMessage(fields: SiwxMessageFields, options?: ValidateMes
 
   const chainIdError = validateChainId(fields.chainId);
   if (chainIdError) errors.push(chainIdError);
+
+  const accountChainError = validateAccountChain(fields.address, fields.chainId);
+  if (accountChainError) errors.push(accountChainError);
 
   const nonceError = validateNonce(fields.nonce);
   if (nonceError) errors.push(nonceError);

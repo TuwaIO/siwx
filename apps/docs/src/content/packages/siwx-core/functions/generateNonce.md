@@ -2,7 +2,7 @@
 
 > **generateNonce**(): `string`
 
-Defined in: [validateMessage.ts:337](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L337)
+Defined in: [validateMessage.ts:356](https://github.com/TuwaIO/siwx/blob/main/packages/siwx-core/src/validateMessage.ts#L356)
 
 Generates a random CAIP-122 nonce: 16 bytes from `globalThis.crypto.getRandomValues`, hex-encoded.
 Works in browsers, Node.js 20+ and edge runtimes that provide the Web Crypto API.
