@@ -50,6 +50,18 @@ describe('verifyEip1271()', () => {
     expect(data).toContain(SIGNATURE.slice(2));
   });
 
+  it('refuses a contract wallet that signs in as the same address of another network', async () => {
+    const { client, call } = clientOf(8453);
+    const message = messageOn('eip155:8453').replace('eip155:8453:', 'eip155:1:');
+    expect(message).toContain(`eip155:1:${SMART_CONTRACT_ADDRESS}`);
+
+    const result = await verifyEip1271(message, SIGNATURE, { publicClient: client });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('eip155:8453');
+    expect(call).not.toHaveBeenCalled();
+  });
+
   it('verifies a counterfactual wallet that signed with an ERC-6492 wrapper', async () => {
     const { client } = clientOf(8453);
     const wrapped = serializeErc6492Signature({ address: FACTORY, data: '0xdeadbeef', signature: SIGNATURE });
