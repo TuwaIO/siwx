@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.5.5...siwx-evm-v0.5.6) (2026-11-26)
+
+
+### Bug Fixes
+
+* a sign-in is of one chain: the account must be on the chain of the message ([#39](https://github.com/TuwaIO/siwx/issues/39)) ([33996b0](https://github.com/TuwaIO/siwx/commit/33996b08776c3a1eccddbe16fb1da79efb95a728))
+
 ## [0.5.5](https://github.com/TuwaIO/siwx/compare/siwx-evm-v0.5.4...siwx-evm-v0.5.5) (2026-11-17)
 
 
